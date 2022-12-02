@@ -12,7 +12,7 @@ var defaultLogger = NewDefault(os.Stderr)
 
 // NewDefault returns a new default logger.
 func NewDefault(w io.Writer, opts ...Option) Logger {
-	return New(os.Stderr, append(opts, WithTimestamp(), WithLevel(InfoLevel))...)
+	return New(w, append(opts, WithTimestamp(), WithLevel(InfoLevel))...)
 }
 
 // Default returns the default logger.
