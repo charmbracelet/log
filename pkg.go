@@ -15,27 +15,22 @@ func NewDefault(w io.Writer, opts ...Option) Logger {
 	return New(w, append(opts, WithTimestamp(), WithLevel(InfoLevel))...)
 }
 
+// SetLogger sets the default logger.
+func SetLogger(logger Logger) {
+	defaultLogger = logger
+}
+
 // Default returns the default logger.
 func Default() Logger {
 	return defaultLogger
 }
 
-// SetOutput sets the default logger's output.
-func SetOutput(w io.Writer) {
-	defaultLogger.SetOutput(w)
-}
-
-// SetLevel sets the default logger's level.
+// SetLevel sets the log level.
 func SetLevel(lvl Level) {
 	defaultLogger.SetLevel(lvl)
 }
 
-// SetOptions sets the default logger's options.
-func SetOptions(opts ...Option) {
-	defaultLogger.SetOptions(opts...)
-}
-
-// SetFields sets the default logger's fields.
+// SetFields sets the default log fields.
 func SetFields(keyvals ...interface{}) {
 	defaultLogger.SetFields(keyvals...)
 }

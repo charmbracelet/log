@@ -15,8 +15,6 @@ import (
 type Output struct {
 	logger log.Logger
 	level  Level
-	opts   []Option
-	fields []interface{}
 	mtx    sync.Mutex
 }
 
@@ -33,8 +31,9 @@ func New(w io.Writer, opts ...Option) *Output {
 	}
 	output := &Output{level: InfoLevel}
 	output.logger = output.newLogger(w)
-	output.SetOutput(w)
-	output.SetOptions(opts...)
+	for _, opt := range opts {
+		opt(output)
+	}
 	return output
 }
 
@@ -47,38 +46,6 @@ func (l *Output) newLogger(w io.Writer, keyvals ...interface{}) log.Logger {
 	return log.With(logger, keyvals...)
 }
 
-// SetOutput implements the Logger interface.
-func (l *Output) SetOutput(w io.Writer) {
-	l.mtx.Lock()
-	l.logger = l.newLogger(w, l.fields...)
-	l.mtx.Unlock()
-	l.SetOptions(l.opts...)
-}
-
-// SetLevel implements the Logger interface.
-func (l *Output) SetLevel(lvl Level) {
-	l.mtx.Lock()
-	defer l.mtx.Unlock()
-	l.level = lvl
-}
-
-// SetOptions implements Logger.
-func (l *Output) SetOptions(opts ...Option) {
-	l.mtx.Lock()
-	l.opts = opts
-	l.mtx.Unlock()
-	for _, opt := range opts {
-		opt(l)
-	}
-}
-
-// SetFields implements Logger.
-func (l *Output) SetFields(keyvals ...interface{}) {
-	l.mtx.Lock()
-	defer l.mtx.Unlock()
-	l.fields = append(l.fields, keyvals...)
-}
-
 // filteredLogger returns a logger that is filtered by the current log level.
 func (l *Output) filteredLogger() log.Logger {
 	return level.NewFilter(l, levelOption(l.level))
@@ -86,7 +53,21 @@ func (l *Output) filteredLogger() log.Logger {
 
 // Log implements the log.Logger interface.
 func (l *Output) Log(keyvals ...interface{}) error {
-	return l.logger.Log(append(l.fields, keyvals...)...)
+	return l.logger.Log(keyvals...)
+}
+
+// SetFields implements Logger.
+func (l *Output) SetFields(keyvals ...interface{}) {
+	l.mtx.Lock()
+	defer l.mtx.Unlock()
+	l.logger = log.With(l.logger, keyvals...)
+}
+
+// SetLevel implements Logger.
+func (l *Output) SetLevel(lvl Level) {
+	l.mtx.Lock()
+	defer l.mtx.Unlock()
+	l.level = lvl
 }
 
 // WithFields implements Logger.

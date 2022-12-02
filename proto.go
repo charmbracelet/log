@@ -2,7 +2,6 @@ package log
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-kit/log/level"
 )
@@ -15,13 +14,7 @@ var (
 )
 
 type Logger interface {
-	// SetOutput sets the output destination for the logger.
-	SetOutput(w io.Writer)
-	// SetLevel sets the minimum level for the logger.
-	SetLevel(level Level)
-	// SetOptions sets the logger options.
-	SetOptions(opts ...Option)
-	// SetFields sets the logger fields.
+	SetLevel(lvl Level)
 	SetFields(keyvals ...interface{})
 
 	With(keyvals ...interface{}) Logger

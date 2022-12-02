@@ -21,7 +21,7 @@ func LogToFile(path string, prefix string) (*os.File, error) {
 	if err != nil {
 		return nil, err
 	}
-	SetOutput(f)
+	SetLogger(NewDefault(f))
 	if prefix != "" {
 		SetFields("prefix", prefix)
 	}
