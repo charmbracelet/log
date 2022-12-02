@@ -3,8 +3,8 @@ package log
 import (
 	"fmt"
 	"io"
-	stdlog "log"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/go-kit/log"
@@ -14,7 +14,10 @@ import (
 // Logger is the main type in the log package.
 type Output struct {
 	logger log.Logger
-	w      io.Writer
+	level  Level
+	opts   []Option
+	fields []interface{}
+	mtx    sync.Mutex
 }
 
 var _ log.Logger = (*Output)(nil)
@@ -25,37 +28,45 @@ type Option func(*Output)
 
 // New returns a new Logger.
 func New(w io.Writer, opts ...Option) *Output {
-	var logger log.Logger
 	if w == nil {
 		w = os.Stderr
 	}
-	w = log.NewSyncWriter(w)
-	if IsTerminal(w) {
-		logger = newColorLogger(w, log.NewLogfmtLogger, DefaultStyles())
-	} else {
-		logger = log.NewLogfmtLogger(w)
-	}
-	output := &Output{
-		logger: logger,
-	}
-	output.SetLevel(DebugLevel)
+	output := &Output{level: InfoLevel}
+	output.logger = output.newLogger(w)
+	output.SetOutput(w)
 	output.SetOptions(opts...)
 	return output
 }
 
+func (l *Output) newLogger(w io.Writer, keyvals ...interface{}) log.Logger {
+	w = log.NewSyncWriter(w)
+	var logger log.Logger = log.NewLogfmtLogger(w)
+	if IsTerminal(w) {
+		logger = NewPrettyLogger(w, log.NewLogfmtLogger, DefaultStyles())
+	}
+	return log.With(logger, keyvals...)
+}
+
 // SetOutput implements the Logger interface.
 func (l *Output) SetOutput(w io.Writer) {
-	l.logger = New(w)
+	l.mtx.Lock()
+	l.logger = l.newLogger(w, l.fields...)
+	l.mtx.Unlock()
+	l.SetOptions(l.opts...)
 }
 
 // SetLevel implements the Logger interface.
 func (l *Output) SetLevel(lvl Level) {
-	stdlog.Printf("SetLevel %s", lvl)
-	l.logger = level.NewFilter(l.logger, levelOption(lvl))
+	l.mtx.Lock()
+	defer l.mtx.Unlock()
+	l.level = lvl
 }
 
 // SetOptions implements Logger.
 func (l *Output) SetOptions(opts ...Option) {
+	l.mtx.Lock()
+	l.opts = opts
+	l.mtx.Unlock()
 	for _, opt := range opts {
 		opt(l)
 	}
@@ -63,12 +74,19 @@ func (l *Output) SetOptions(opts ...Option) {
 
 // SetFields implements Logger.
 func (l *Output) SetFields(keyvals ...interface{}) {
-	l.logger = log.With(l.logger, keyvals...)
+	l.mtx.Lock()
+	defer l.mtx.Unlock()
+	l.fields = append(l.fields, keyvals...)
+}
+
+// filteredLogger returns a logger that is filtered by the current log level.
+func (l *Output) filteredLogger() log.Logger {
+	return level.NewFilter(l, levelOption(l.level))
 }
 
 // Log implements the log.Logger interface.
 func (l *Output) Log(keyvals ...interface{}) error {
-	return l.logger.Log(keyvals...)
+	return l.logger.Log(append(l.fields, keyvals...)...)
 }
 
 // WithFields implements Logger.
@@ -92,6 +110,8 @@ func WithTimestampUTC() Option {
 // each log event.
 func WithTimestampUTCFormat(format string) Option {
 	return func(l *Output) {
+		l.mtx.Lock()
+		defer l.mtx.Unlock()
 		l.logger = log.With(l.logger, tsKey, log.TimestampFormat(
 			func() time.Time { return time.Now().UTC() },
 			format,
@@ -102,6 +122,8 @@ func WithTimestampUTCFormat(format string) Option {
 // WithTimestampFormat returns a logger option that adds a timestamp to each log event.
 func WithTimestampFormat(format string) Option {
 	return func(l *Output) {
+		l.mtx.Lock()
+		defer l.mtx.Unlock()
 		l.logger = log.With(l.logger, tsKey,
 			log.TimestampFormat(time.Now, format))
 	}
@@ -117,20 +139,22 @@ func WithLevel(lvl Level) Option {
 // With returns a new Logger with the given keyvals set.
 func (l *Output) With(keyvals ...interface{}) Logger {
 	return &Output{
-		logger: log.With(l.logger, keyvals...),
+		logger: log.With(l, keyvals...),
+		level:  l.level,
 	}
 }
 
 // WithError returns a new Logger with the given error.
 func (l *Output) WithError(err error) Logger {
 	return &Output{
-		logger: log.With(l.logger, errKey, err),
+		logger: log.With(l, errKey, err),
+		level:  l.level,
 	}
 }
 
 // Debug implements Logger
 func (l *Output) Debug(v ...interface{}) {
-	level.Debug(l.logger).Log(msgKey, fmt.Sprint(v...))
+	level.Debug(l.filteredLogger()).Log(msgKey, fmt.Sprint(v...))
 }
 
 // Debugf implements Logger
@@ -145,7 +169,7 @@ func (l *Output) Debugln(v ...interface{}) {
 
 // Error implements Logger
 func (l *Output) Error(v ...interface{}) {
-	level.Debug(l.logger).Log(msgKey, fmt.Sprint(v...))
+	level.Error(l.filteredLogger()).Log(msgKey, fmt.Sprint(v...))
 }
 
 // Errorf implements Logger
@@ -177,7 +201,7 @@ func (l *Output) Fatalln(v ...interface{}) {
 
 // Info implements Logger
 func (l *Output) Info(v ...interface{}) {
-	level.Info(l.logger).Log(msgKey, fmt.Sprint(v...))
+	level.Info(l.filteredLogger()).Log(msgKey, fmt.Sprint(v...))
 }
 
 // Infof implements Logger
@@ -207,7 +231,7 @@ func (l *Output) Println(v ...interface{}) {
 
 // Warn implements Logger
 func (l *Output) Warn(v ...interface{}) {
-	level.Warn(l.logger).Log(msgKey, fmt.Sprint(v...))
+	level.Warn(l.filteredLogger()).Log(msgKey, fmt.Sprint(v...))
 }
 
 // Warnf implements Logger

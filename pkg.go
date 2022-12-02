@@ -3,11 +3,17 @@ package log
 import (
 	"io"
 	"os"
+	"time"
 )
 
-var DefaultTimestampFormat = "3:04:05PM"
+var DefaultTimestampFormat = time.Kitchen
 
-var defaultLogger = New(os.Stderr, WithTimestamp(), WithLevel(InfoLevel))
+var defaultLogger = NewDefault(os.Stderr)
+
+// NewDefault returns a new default logger.
+func NewDefault(w io.Writer, opts ...Option) Logger {
+	return New(os.Stderr, append(opts, WithTimestamp(), WithLevel(InfoLevel))...)
+}
 
 // Default returns the default logger.
 func Default() Logger {
@@ -49,7 +55,7 @@ func Debug(v ...interface{}) {
 	defaultLogger.Debug(v...)
 }
 
-// Print logs a message.
+// Print logs an into message.
 func Print(v ...interface{}) {
 	defaultLogger.Print(v...)
 }
@@ -79,7 +85,7 @@ func Debugln(v ...interface{}) {
 	defaultLogger.Debugln(v...)
 }
 
-// Println logs a message.
+// Println logs an info message.
 func Println(v ...interface{}) {
 	defaultLogger.Println(v...)
 }
@@ -109,7 +115,7 @@ func Debugf(format string, v ...interface{}) {
 	defaultLogger.Debugf(format, v...)
 }
 
-// Printf logs a message.
+// Printf logs an info message.
 func Printf(format string, v ...interface{}) {
 	defaultLogger.Printf(format, v...)
 }
