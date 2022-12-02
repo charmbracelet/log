@@ -66,28 +66,26 @@ func DefaultStyles() *Styles {
 	}
 }
 
-// newColorLogger returns a Logger which writes colored logs to w. ANSI color
+// NewPrettyLogger returns a Logger which writes colored logs to w. ANSI color
 // codes for the colors returned by color are added to the formatted output
 // from the Logger returned by newLogger and the combined result written to w.
-func newColorLogger(w io.Writer, newLogger func(io.Writer) log.Logger, styles *Styles) log.Logger {
+func NewPrettyLogger(w io.Writer, newLogger func(io.Writer) log.Logger, styles *Styles) log.Logger {
 	if styles == nil {
 		styles = DefaultStyles()
 	}
 	return &colorLogger{
-		w:             w,
-		newLogger:     newLogger,
-		styles:        styles,
-		bufPool:       sync.Pool{New: func() interface{} { return &loggerBuf{} }},
-		noColorLogger: newLogger(w),
+		w:         w,
+		newLogger: newLogger,
+		styles:    styles,
+		bufPool:   sync.Pool{New: func() interface{} { return &loggerBuf{} }},
 	}
 }
 
 type colorLogger struct {
-	w             io.Writer
-	newLogger     func(io.Writer) log.Logger
-	styles        *Styles
-	bufPool       sync.Pool
-	noColorLogger log.Logger
+	w         io.Writer
+	newLogger func(io.Writer) log.Logger
+	styles    *Styles
+	bufPool   sync.Pool
 }
 
 func (l *colorLogger) Log(keyvals ...interface{}) error {
@@ -95,7 +93,6 @@ func (l *colorLogger) Log(keyvals ...interface{}) error {
 	defer l.putLoggerBuf(lb)
 	var ts string
 	var msg string
-	var err string
 	var lvl string
 	keys := make([]interface{}, 0, len(keyvals)/2)
 	values := make([]interface{}, 0, len(keyvals)/2)
@@ -107,8 +104,6 @@ func (l *colorLogger) Log(keyvals ...interface{}) error {
 			ts = fmt.Sprint(keyvals[i+1])
 		case msgKey:
 			msg = fmt.Sprint(keyvals[i+1])
-		case errKey:
-			err = fmt.Sprint(keyvals[i+1])
 		case lvlKey:
 			lvl = fmt.Sprint(keyvals[i+1])
 		default:
@@ -134,19 +129,15 @@ func (l *colorLogger) Log(keyvals ...interface{}) error {
 		name = styles.Name
 	}
 
-	fmt.Fprintf(lb.buf, "%s %s %s ",
+	fmt.Fprintf(lb.buf, "%s %s %s",
 		styles.Timestamp.Render(fmt.Sprint(ts)),
 		styles.Level.Render(name),
 		styles.Message.Render(msg),
 	)
 
-	if err != "" {
-		fmt.Fprintf(lb.buf, "%s", styles.Keys.Render(err))
-	}
-
 	for i := 0; i < len(keys); i++ {
 		switch keys[i] {
-		case msgKey, tsKey, errKey, lvlKey:
+		case msgKey, tsKey, lvlKey:
 			continue
 		}
 		fmt.Fprintf(lb.buf, " %s=%s",

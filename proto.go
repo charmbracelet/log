@@ -8,8 +8,8 @@ import (
 )
 
 var (
+	tsKey  = "timestamp"
 	msgKey = "message"
-	tsKey  = "ts"
 	errKey = "error"
 	lvlKey = fmt.Sprint(level.Key())
 )
