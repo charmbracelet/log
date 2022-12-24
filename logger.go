@@ -2,6 +2,7 @@ package log
 
 import (
 	"io"
+	"log"
 	"time"
 )
 
@@ -35,4 +36,6 @@ type Logger interface {
 	Info(msg interface{}, keyval ...interface{})
 	Warn(msg interface{}, keyval ...interface{})
 	Error(msg interface{}, keyval ...interface{})
+
+	StandardLogger() *log.Logger
 }

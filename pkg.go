@@ -1,6 +1,9 @@
 package log
 
-import "io"
+import (
+	"io"
+	"log"
+)
 
 var defaultLogger = New(WithTimestamp())
 
@@ -87,4 +90,9 @@ func Warn(msg interface{}, keyvals ...interface{}) {
 // Error logs an error message.
 func Error(msg interface{}, keyvals ...interface{}) {
 	defaultLogger.Error(msg, keyvals...)
+}
+
+// StandardLogger returns a standard logger from the default logger.
+func StandardLogger() *log.Logger {
+	return defaultLogger.StandardLogger()
 }
