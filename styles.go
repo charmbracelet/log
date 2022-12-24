@@ -25,6 +25,14 @@ var (
 	SeparetorStyle = lipgloss.NewStyle().Faint(true)
 )
 
+// LevelString is a map of level to string.
+var LevelString = map[Level]string{
+	DebugLevel: "DEBUG",
+	InfoLevel:  "INFO",
+	WarnLevel:  "WARN",
+	ErrorLevel: "ERROR",
+}
+
 // LevelStyle is a map of level to style.
 var LevelStyle = map[Level]lipgloss.Style{
 	DebugLevel: lipgloss.NewStyle().

@@ -204,7 +204,7 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		l.b.WriteByte(' ')
 	}
 
-	lvl := strings.ToUpper(level.String())
+	lvl := LevelString[level]
 	if !l.noColor {
 		lvl = LevelStyle[level].Render(lvl)
 	}
