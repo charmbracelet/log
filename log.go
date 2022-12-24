@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"runtime"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -183,7 +182,10 @@ func needsQuoting(str string) bool {
 }
 
 func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
-	if l.w == io.Discard {
+	l.mu.RLock()
+	w := l.w
+	l.mu.RUnlock()
+	if w == io.Discard {
 		return
 	}
 
@@ -194,33 +196,48 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	defer l.b.Reset()
 
 	if l.timestamp {
-		l.b.WriteString(t.Format(l.timeFormat))
+		ts := t.Format(l.timeFormat)
+		if !l.noColor {
+			ts = TimestampSytle.Render(ts)
+		}
+		l.b.WriteString(ts)
 		l.b.WriteByte(' ')
 	}
 
 	lvl := strings.ToUpper(level.String())
+	if !l.noColor {
+		lvl = LevelStyle[level].Render(lvl)
+	}
 	l.b.WriteString(lvl)
 	l.b.WriteByte(' ')
 
 	if l.caller {
 		// Call stack is log.Error -> log.log (2)
 		if _, file, line, ok := runtime.Caller(l.callerOffset); ok {
-			l.b.WriteString(trimCallerPath(file))
-			l.b.WriteByte(':')
-			l.b.WriteString(strconv.Itoa(line))
-			l.b.WriteByte(':')
+			caller := fmt.Sprintf("%s:%d:", trimCallerPath(file), line)
+			if !l.noColor {
+				caller = CallerStyle.Render(caller)
+			}
+			l.b.WriteString(caller)
 			l.b.WriteByte(' ')
 		}
 	}
 
 	if l.prefix != "" {
-		l.b.WriteString(l.prefix)
-		l.b.WriteByte(':')
+		prefix := l.prefix + ":"
+		if !l.noColor {
+			prefix = PrefixStyle.Render(prefix)
+		}
+		l.b.WriteString(prefix)
 		l.b.WriteByte(' ')
 	}
 
 	if msg != nil {
-		l.b.WriteString(fmt.Sprint(msg))
+		m := fmt.Sprint(msg)
+		if !l.noColor {
+			m = MessageStyle.Render(m)
+		}
+		l.b.WriteString(m)
 	}
 
 	keyvals = append(l.keyvals, keyvals...)
@@ -231,12 +248,17 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	for i := 0; i < len(keyvals); i += 2 {
 		key := fmt.Sprint(keyvals[i])
 		val := fmt.Sprint(keyvals[i+1])
+		sep := SeparetorStyle.Render
 		raw := val == ""
 		if raw {
 			val = `""`
 		}
 		if key == "" {
 			key = "MISSING_KEY"
+		}
+		if !l.noColor {
+			key = KeyStyle.Render(key)
+			val = ValueStyle.Render(val)
 		}
 
 		// Values may contain multiple lines, and that format
@@ -249,20 +271,20 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		if strings.Contains(val, "\n") {
 			l.b.WriteString("\n  ")
 			l.b.WriteString(key)
-			l.b.WriteString("=\n")
-			writeIndent(&l.b, val, "  │ ")
+			l.b.WriteString(sep("=") + "\n")
+			writeIndent(&l.b, val, sep("  │ "))
 			l.b.WriteByte(' ')
 		} else if !raw && needsQuoting(val) {
 			l.b.WriteByte(' ')
 			l.b.WriteString(key)
-			l.b.WriteByte('=')
+			l.b.WriteString(sep("="))
 			l.b.WriteByte('"')
 			writeEscapedForOutput(&l.b, val, true)
 			l.b.WriteByte('"')
 		} else {
 			l.b.WriteByte(' ')
 			l.b.WriteString(key)
-			l.b.WriteByte('=')
+			l.b.WriteString(sep("="))
 			l.b.WriteString(val)
 		}
 	}
