@@ -1,38 +1,67 @@
 package log
 
-import (
-	"io"
-	"os"
-	"time"
-)
+import "io"
 
-var DefaultTimestampFormat = time.Kitchen
+var defaultLogger = New(WithTimestamp())
 
-var defaultLogger = NewDefault(os.Stderr)
-
-// NewDefault returns a new default logger.
-func NewDefault(w io.Writer, opts ...Option) Logger {
-	return New(w, append(opts, WithTimestamp(), WithLevel(InfoLevel))...)
-}
-
-// SetLogger sets the default logger.
-func SetLogger(logger Logger) {
-	defaultLogger = logger
-}
-
-// Default returns the default logger.
+// Default returns the default logger. The default logger comes with timestamp enabled.
 func Default() Logger {
 	return defaultLogger
 }
 
-// SetLevel sets the log level.
-func SetLevel(lvl Level) {
-	defaultLogger.SetLevel(lvl)
+// EnableTimestamp enables timestamps for the default logger.
+func EnableTimestamp() {
+	defaultLogger.EnableTimestamp()
 }
 
-// SetFields sets the default log fields.
-func SetFields(keyvals ...interface{}) {
-	defaultLogger.SetFields(keyvals...)
+// DisableTimestamp disables timestamps for the default logger.
+func DisableTimestamp() {
+	defaultLogger.DisableTimestamp()
+}
+
+// EnableCaller enables caller for the default logger.
+func EnableCaller() {
+	defaultLogger.EnableCaller()
+}
+
+// DisableCaller disables caller for the default logger.
+func DisableCaller() {
+	defaultLogger.DisableCaller()
+}
+
+// SetLevel sets the level for the default logger.
+func SetLevel(level Level) {
+	defaultLogger.SetLevel(level)
+}
+
+// GetLevel returns the level for the default logger.
+func GetLevel() Level {
+	return defaultLogger.GetLevel()
+}
+
+// SetTimeFormat sets the time format for the default logger.
+func SetTimeFormat(format string) {
+	defaultLogger.SetTimeFormat(format)
+}
+
+// SetTimeFunction sets the time function for the default logger.
+func SetTimeFunction(f TimeFunction) {
+	defaultLogger.SetTimeFunction(f)
+}
+
+// SetOutput sets the output for the default logger.
+func SetOutput(w io.Writer) {
+	defaultLogger.SetOutput(w)
+}
+
+// SetPrefix sets the prefix for the default logger.
+func SetPrefix(prefix string) {
+	defaultLogger.SetPrefix(prefix)
+}
+
+// GetPrefix returns the prefix for the default logger.
+func GetPrefix() string {
+	return defaultLogger.GetPrefix()
 }
 
 // With returns a new logger with the given keyvals.
@@ -40,97 +69,22 @@ func With(keyvals ...interface{}) Logger {
 	return defaultLogger.With(keyvals...)
 }
 
-// WithError returns a new logger with the given error.
-func WithError(err error) Logger {
-	return defaultLogger.WithError(err)
-}
-
 // Debug logs a debug message.
-func Debug(v ...interface{}) {
-	defaultLogger.Debug(v...)
-}
-
-// Print logs an into message.
-func Print(v ...interface{}) {
-	defaultLogger.Print(v...)
+func Debug(msg interface{}, keyvals ...interface{}) {
+	defaultLogger.Debug(msg, keyvals...)
 }
 
 // Info logs an info message.
-func Info(v ...interface{}) {
-	defaultLogger.Info(v...)
+func Info(msg interface{}, keyvals ...interface{}) {
+	defaultLogger.Info(msg, keyvals...)
 }
 
 // Warn logs a warning message.
-func Warn(v ...interface{}) {
-	defaultLogger.Warn(v...)
+func Warn(msg interface{}, keyvals ...interface{}) {
+	defaultLogger.Warn(msg, keyvals...)
 }
 
 // Error logs an error message.
-func Error(v ...interface{}) {
-	defaultLogger.Error(v...)
-}
-
-// Fatal logs a fatal message.
-func Fatal(v ...interface{}) {
-	defaultLogger.Fatal(v...)
-}
-
-// Debugln logs a debug message.
-func Debugln(v ...interface{}) {
-	defaultLogger.Debugln(v...)
-}
-
-// Println logs an info message.
-func Println(v ...interface{}) {
-	defaultLogger.Println(v...)
-}
-
-// Infoln logs an info message.
-func Infoln(v ...interface{}) {
-	defaultLogger.Infoln(v...)
-}
-
-// Warnln logs a warning message.
-func Warnln(v ...interface{}) {
-	defaultLogger.Warnln(v...)
-}
-
-// Errorln logs an error message.
-func Errorln(v ...interface{}) {
-	defaultLogger.Errorln(v...)
-}
-
-// Fatalln logs a fatal message.
-func Fatalln(v ...interface{}) {
-	defaultLogger.Fatalln(v...)
-}
-
-// Debugf logs a debug message.
-func Debugf(format string, v ...interface{}) {
-	defaultLogger.Debugf(format, v...)
-}
-
-// Printf logs an info message.
-func Printf(format string, v ...interface{}) {
-	defaultLogger.Printf(format, v...)
-}
-
-// Infof logs an info message.
-func Infof(format string, v ...interface{}) {
-	defaultLogger.Infof(format, v...)
-}
-
-// Warnf logs a warning message.
-func Warnf(format string, v ...interface{}) {
-	defaultLogger.Warnf(format, v...)
-}
-
-// Errorf logs an error message.
-func Errorf(format string, v ...interface{}) {
-	defaultLogger.Errorf(format, v...)
-}
-
-// Fatalf logs a fatal message.
-func Fatalf(format string, v ...interface{}) {
-	defaultLogger.Fatalf(format, v...)
+func Error(msg interface{}, keyvals ...interface{}) {
+	defaultLogger.Error(msg, keyvals...)
 }

@@ -1,21 +1,20 @@
 package log
 
-import "github.com/go-kit/log/level"
+// Level is a logging level.
+type Level int32
 
-type Level = level.Value
-
-var (
-	// DebugLevel is the lowest level of logging.
-	DebugLevel Level = level.DebugValue()
-	// InfoLevel is the default level of logging.
-	InfoLevel Level = level.InfoValue()
-	// WarnLevel is the level of logging for warnings.
-	WarnLevel Level = level.WarnValue()
-	// ErrorLevel is the level of logging for errors.
-	ErrorLevel Level = level.ErrorValue()
+const (
+	// DebugLevel is the debug level.
+	DebugLevel Level = iota
+	// InfoLevel is the info level.
+	InfoLevel
+	// WarnLevel is the warn level.
+	WarnLevel
+	// ErrorLevel is the error level.
+	ErrorLevel
 )
 
-// option returns a level.Option that sets the level to l.
-func levelOption(l Level) level.Option {
-	return level.Allow(l)
+// String returns the string representation of the level.
+func (l Level) String() string {
+	return [...]string{"debug", "info", "warn", "error"}[l]
 }
