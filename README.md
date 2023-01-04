@@ -7,6 +7,8 @@
 
 A minimal and colorful Go logging library. 📝
 
+![Demo](./demo.gif)
+
 It provides a leveled structured human readable logger with a small API. Unlike
 [standard `log`][stdlog], the Charm logger provides a customizable colorful
 human readable logging with batteries included.
