@@ -12,6 +12,8 @@ const (
 	WarnLevel
 	// ErrorLevel is the error level.
 	ErrorLevel
+	// OffLevel is the off level.
+	OffLevel
 )
 
 // String returns the string representation of the level.

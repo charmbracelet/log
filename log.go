@@ -203,7 +203,7 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 		return
 	}
 	// check if the level is allowed
-	if l.level > level {
+	if l.level == OffLevel || l.level > level {
 		return
 	}
 
