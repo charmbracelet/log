@@ -30,6 +30,7 @@ type Logger interface {
 	SetTimeFormat(format string)
 	SetOutput(w io.Writer)
 
+	Helper()
 	With(keyval ...interface{}) Logger
 
 	Debug(msg interface{}, keyval ...interface{})

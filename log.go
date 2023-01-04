@@ -40,10 +40,9 @@ type logger struct {
 // New returns a new logger. It uses os.Stderr as the default output.
 func New(opts ...LoggerOption) Logger {
 	l := &logger{
-		b:            bytes.Buffer{},
-		mu:           &sync.RWMutex{},
-		level:        InfoLevel,
-		callerOffset: 2,
+		b:     bytes.Buffer{},
+		mu:    &sync.RWMutex{},
+		level: InfoLevel,
 	}
 
 	for _, opt := range opts {
@@ -66,6 +65,7 @@ func New(opts ...LoggerOption) Logger {
 }
 
 func writeIndent(w io.Writer, str string, indent string) {
+	// kindly borrowed from hclog
 	for {
 		nl := strings.IndexByte(str, '\n')
 		if nl == -1 {
@@ -105,6 +105,7 @@ var bufPool = sync.Pool{
 }
 
 func writeEscapedForOutput(w io.Writer, str string, escapeQuotes bool) {
+	// kindly borrowed from hclog
 	if !needsEscaping(str) {
 		w.Write([]byte(str))
 		return
@@ -213,13 +214,10 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 
 	if l.caller {
 		// Call stack is log.Error -> log.log (2)
-		if _, file, line, ok := runtime.Caller(l.callerOffset); ok {
-			caller := fmt.Sprintf("%s:%d:", trimCallerPath(file), line)
-			if !l.noColor {
-				caller = CallerStyle.Render(caller)
-			}
-			l.b.WriteString(caller)
-			l.b.WriteByte(' ')
+		file, line, _ := l.fillLoc(l.callerOffset + skip + 2)
+		caller := fmt.Sprintf("<%s:%d>", trimCallerPath(file), line)
+		if !l.noColor {
+			caller = CallerStyle.Render(caller)
 		}
 	}
 
@@ -292,6 +290,44 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	l.b.WriteByte('\n')
 
 	l.w.Write(l.b.Bytes())
+}
+
+// Helper marks the calling function as a helper
+// and skips it for source location information.
+// It's the equivalent of testing.TB.Helper().
+func (l *logger) Helper() {
+	l.helper(1)
+}
+
+func (l *logger) helper(skip int) {
+	_, _, fn := location(skip + 1)
+	l.helpers.LoadOrStore(fn, struct{}{})
+}
+
+func (l *logger) fillLoc(skip int) (file string, line int, fn string) {
+	// Copied from testing.T
+	const maxStackLen = 50
+	var pc [maxStackLen]uintptr
+
+	// Skip two extra frames to account for this function
+	// and runtime.Callers itself.
+	n := runtime.Callers(skip+2, pc[:])
+	frames := runtime.CallersFrames(pc[:n])
+	for {
+		frame, more := frames.Next()
+		_, helper := l.helpers.Load(frame.Function)
+		if !helper || !more {
+			// Found a frame that wasn't a helper function.
+			// Or we ran out of frames to check.
+			return frame.File, frame.Line, frame.Function
+		}
+	}
+}
+
+func location(skip int) (file string, line int, fn string) {
+	pc, file, line, _ := runtime.Caller(skip + 1)
+	f := runtime.FuncForPC(pc)
+	return file, line, f.Name()
 }
 
 // Cleanup a path by returning the last 2 segments of the path only.
@@ -411,44 +447,20 @@ func (l *logger) With(keyvals ...interface{}) Logger {
 
 // Debug prints a debug message.
 func (l *logger) Debug(msg interface{}, keyvals ...interface{}) {
-	l.mu.RLock()
-	level := l.level
-	l.mu.RUnlock()
-	if level > DebugLevel {
-		return
-	}
-	l.log(DebugLevel, msg, keyvals...)
+	l.log(DebugLevel, 0, msg, keyvals...)
 }
 
 // Info prints an info message.
 func (l *logger) Info(msg interface{}, keyvals ...interface{}) {
-	l.mu.RLock()
-	level := l.level
-	l.mu.RUnlock()
-	if level > InfoLevel {
-		return
-	}
-	l.log(InfoLevel, msg, keyvals...)
+	l.log(InfoLevel, 0, msg, keyvals...)
 }
 
 // Warn prints a warning message.
 func (l *logger) Warn(msg interface{}, keyvals ...interface{}) {
-	l.mu.RLock()
-	level := l.level
-	l.mu.RUnlock()
-	if level > WarnLevel {
-		return
-	}
-	l.log(WarnLevel, msg, keyvals...)
+	l.log(WarnLevel, 0, msg, keyvals...)
 }
 
 // Error prints an error message.
 func (l *logger) Error(msg interface{}, keyvals ...interface{}) {
-	l.mu.RLock()
-	level := l.level
-	l.mu.RUnlock()
-	if level > ErrorLevel {
-		return
-	}
-	l.log(ErrorLevel, msg, keyvals...)
+	l.log(ErrorLevel, 0, msg, keyvals...)
 }

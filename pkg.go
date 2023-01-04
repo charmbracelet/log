@@ -72,24 +72,32 @@ func With(keyvals ...interface{}) Logger {
 	return defaultLogger.With(keyvals...)
 }
 
+// Helper marks the calling function as a helper
+// and skips it for source location information.
+// It's the equivalent of testing.TB.Helper().
+func Helper() {
+	// skip this function frame
+	defaultLogger.helper(1)
+}
+
 // Debug logs a debug message.
 func Debug(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Debug(msg, keyvals...)
+	defaultLogger.log(DebugLevel, 1, msg, keyvals...)
 }
 
 // Info logs an info message.
 func Info(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Info(msg, keyvals...)
+	defaultLogger.log(InfoLevel, 1, msg, keyvals...)
 }
 
 // Warn logs a warning message.
 func Warn(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Warn(msg, keyvals...)
+	defaultLogger.log(WarnLevel, 1, msg, keyvals...)
 }
 
 // Error logs an error message.
 func Error(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Error(msg, keyvals...)
+	defaultLogger.log(ErrorLevel, 1, msg, keyvals...)
 }
 
 // StandardLogger returns a standard logger from the default logger.
