@@ -10,7 +10,7 @@ type stdLogger struct {
 }
 
 func (l *stdLogger) Write(p []byte) (n int, err error) {
-	str := strings.TrimSpace(string(p))
+	str := strings.TrimSuffix(string(p), "\n")
 
 	switch {
 	case strings.HasPrefix(str, "DEBUG"):
