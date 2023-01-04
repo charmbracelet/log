@@ -31,18 +31,23 @@ type logger struct {
 	callerOffset int
 
 	caller    bool
-	noColor   bool
+	noStyles  bool
 	timestamp bool
 
 	keyvals []interface{}
+
+	helpers sync.Map
+
+	styles Styles
 }
 
 // New returns a new logger. It uses os.Stderr as the default output.
 func New(opts ...LoggerOption) Logger {
 	l := &logger{
-		b:     bytes.Buffer{},
-		mu:    &sync.RWMutex{},
-		level: InfoLevel,
+		b:      bytes.Buffer{},
+		mu:     &sync.RWMutex{},
+		level:  InfoLevel,
+		styles: DefaultStyles(),
 	}
 
 	for _, opt := range opts {
@@ -171,7 +176,7 @@ func isNormal(r rune) bool {
 }
 
 // needsQuoting returns false if all the runes in string are normal, according
-// to isNormal
+// to isNormal.
 func needsQuoting(str string) bool {
 	for _, r := range str {
 		if !isNormal(r) {
@@ -182,32 +187,39 @@ func needsQuoting(str string) bool {
 	return false
 }
 
-func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
-	l.mu.RLock()
-	w := l.w
-	l.mu.RUnlock()
-	if w == io.Discard {
-		return
-	}
+const (
+	separator       = "="
+	indentSeparator = "  │ "
+)
 
-	t := l.timeFunc()
-
+func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interface{}) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	defer l.b.Reset()
+	t := l.timeFunc()
 
+	// skip logging if writer is discard
+	if l.w == io.Discard {
+		return
+	}
+	// check if the level is allowed
+	if l.level > level {
+		return
+	}
+
+	s := l.styles
 	if l.timestamp {
 		ts := t.Format(l.timeFormat)
-		if !l.noColor {
-			ts = TimestampSytle.Render(ts)
+		if !l.noStyles {
+			ts = s.Timestamp.Render(ts)
 		}
 		l.b.WriteString(ts)
 		l.b.WriteByte(' ')
 	}
 
-	lvl := LevelString[level]
-	if !l.noColor {
-		lvl = LevelStyle[level].Render(lvl)
+	lvl := strings.ToUpper(level.String())
+	if !l.noStyles {
+		lvl = s.Level(level).String()
 	}
 	l.b.WriteString(lvl)
 	l.b.WriteByte(' ')
@@ -216,15 +228,17 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		// Call stack is log.Error -> log.log (2)
 		file, line, _ := l.fillLoc(l.callerOffset + skip + 2)
 		caller := fmt.Sprintf("<%s:%d>", trimCallerPath(file), line)
-		if !l.noColor {
-			caller = CallerStyle.Render(caller)
+		if !l.noStyles {
+			caller = s.Caller.Render(caller)
 		}
+		l.b.WriteString(caller)
+		l.b.WriteByte(' ')
 	}
 
 	if l.prefix != "" {
 		prefix := l.prefix + ":"
-		if !l.noColor {
-			prefix = PrefixStyle.Render(prefix)
+		if !l.noStyles {
+			prefix = s.Prefix.Render(prefix)
 		}
 		l.b.WriteString(prefix)
 		l.b.WriteByte(' ')
@@ -232,8 +246,8 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 
 	if msg != nil {
 		m := fmt.Sprint(msg)
-		if !l.noColor {
-			m = MessageStyle.Render(m)
+		if !l.noStyles {
+			m = s.Message.Render(m)
 		}
 		l.b.WriteString(m)
 	}
@@ -243,10 +257,15 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		keyvals = append(keyvals, "MISSING_VALUE")
 	}
 
+	sep := separator
+	indentSep := indentSeparator
+	if !l.noStyles {
+		sep = s.Separetor.Render(sep)
+		indentSep = s.Separetor.Render(indentSep)
+	}
 	for i := 0; i < len(keyvals); i += 2 {
 		key := fmt.Sprint(keyvals[i])
 		val := fmt.Sprint(keyvals[i+1])
-		sep := SeparetorStyle.Render
 		raw := val == ""
 		if raw {
 			val = `""`
@@ -254,9 +273,9 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		if key == "" {
 			key = "MISSING_KEY"
 		}
-		if !l.noColor {
-			key = KeyStyle.Render(key)
-			val = ValueStyle.Render(val)
+		if !l.noStyles {
+			key = s.Key.Render(key)
+			val = s.Value.Render(val)
 		}
 
 		// Values may contain multiple lines, and that format
@@ -269,20 +288,20 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		if strings.Contains(val, "\n") {
 			l.b.WriteString("\n  ")
 			l.b.WriteString(key)
-			l.b.WriteString(sep("=") + "\n")
-			writeIndent(&l.b, val, sep("  │ "))
+			l.b.WriteString(sep + "\n")
+			writeIndent(&l.b, val, indentSep)
 			l.b.WriteByte(' ')
 		} else if !raw && needsQuoting(val) {
 			l.b.WriteByte(' ')
 			l.b.WriteString(key)
-			l.b.WriteString(sep("="))
+			l.b.WriteString(sep)
 			l.b.WriteByte('"')
 			writeEscapedForOutput(&l.b, val, true)
 			l.b.WriteByte('"')
 		} else {
 			l.b.WriteByte(' ')
 			l.b.WriteString(key)
-			l.b.WriteString(sep("="))
+			l.b.WriteString(sep)
 			l.b.WriteString(val)
 		}
 	}
@@ -385,6 +404,20 @@ func (l *logger) DisableCaller() {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.caller = false
+}
+
+// EnableStyles enables colored output.
+func (l *logger) EnableStyles() {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.noStyles = false
+}
+
+// DisableStyles disables colored output.
+func (l *logger) DisableStyles() {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.noStyles = true
 }
 
 // GetLevel returns the current level.

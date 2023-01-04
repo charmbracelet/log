@@ -37,10 +37,18 @@ func WithPrefix(prefix string) LoggerOption {
 	}
 }
 
-// WithNoColor returns a LoggerOption that disables colors for the logger.
-func WithNoColor() LoggerOption {
+// WithNoStyles returns a LoggerOption that disables colors for the logger.
+func WithNoStyles() LoggerOption {
 	return func(l *logger) {
-		l.noColor = true
+		l.noStyles = true
+	}
+}
+
+// WithStyles returns a LoggerOption that sets the styles for the logger.
+func WithStyles(styles Styles) LoggerOption {
+	return func(l *logger) {
+		l.noStyles = false
+		l.styles = styles
 	}
 }
 

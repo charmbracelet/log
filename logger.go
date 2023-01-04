@@ -20,6 +20,9 @@ type Logger interface {
 	EnableCaller()
 	DisableCaller()
 
+	EnableStyles()
+	DisableStyles()
+
 	SetLevel(level Level)
 	GetLevel() Level
 

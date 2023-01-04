@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-var defaultLogger = New(WithTimestamp())
+var defaultLogger = New(WithTimestamp()).(*logger)
 
 // Default returns the default logger. The default logger comes with timestamp enabled.
 func Default() Logger {
@@ -30,6 +30,16 @@ func EnableCaller() {
 // DisableCaller disables caller for the default logger.
 func DisableCaller() {
 	defaultLogger.DisableCaller()
+}
+
+// EnableStyles enables colored output for the default logger.
+func EnableStyles() {
+	defaultLogger.EnableStyles()
+}
+
+// DisableStyles disables colored output for the default logger.
+func DisableStyles() {
+	defaultLogger.DisableStyles()
 }
 
 // SetLevel sets the level for the default logger.

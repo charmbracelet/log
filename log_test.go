@@ -17,7 +17,7 @@ func TestLogger(t *testing.T) {
 	logger := New()
 	logger.SetOutput(&buf)
 	logger.SetTimeFunction(_zeroTime)
-	logger.DisableColors()
+	logger.DisableStyles()
 	cases := []struct {
 		name     string
 		expected string

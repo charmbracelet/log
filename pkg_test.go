@@ -11,7 +11,7 @@ func TestGlobal(t *testing.T) {
 	var buf bytes.Buffer
 	SetOutput(&buf)
 	SetTimeFunction(_zeroTime)
-	DisableColors()
+	DisableStyles()
 	cases := []struct {
 		name     string
 		expected string
