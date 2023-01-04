@@ -2,10 +2,14 @@ package log
 
 import (
 	"bytes"
+	"fmt"
+	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func _zeroTime() time.Time {
@@ -14,10 +18,8 @@ func _zeroTime() time.Time {
 
 func TestLogger(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New()
-	logger.SetOutput(&buf)
-	logger.SetTimeFunction(_zeroTime)
-	logger.DisableStyles()
+	logger := New(WithOutput(&buf), WithTimeFunction(_zeroTime),
+		WithNoStyles())
 	cases := []struct {
 		name     string
 		expected string
@@ -65,11 +67,8 @@ func TestLogger(t *testing.T) {
 
 func TestOffLevel(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New()
-	logger.SetOutput(&buf)
-	logger.SetTimeFunction(_zeroTime)
-	logger.DisableStyles()
-	logger.SetLevel(LevelOff)
+	logger := New(WithOutput(&buf), WithTimeFunction(_zeroTime),
+		WithNoStyles(), WithLevel(LevelOff))
 	cases := []struct {
 		name     string
 		expected string
@@ -92,4 +91,20 @@ func TestOffLevel(t *testing.T) {
 			assert.Equal(t, c.expected, buf.String())
 		})
 	}
+}
+
+func TestLogHelper(t *testing.T) {
+	var buf bytes.Buffer
+	logger := New(WithOutput(&buf),
+		WithCaller(), WithNoStyles())
+
+	helper := func() {
+		logger.Helper()
+		logger.Info("helper func")
+	}
+
+	helper()
+	_, file, line, ok := runtime.Caller(0)
+	require.True(t, ok)
+	assert.Equal(t, fmt.Sprintf("INFO <log/%s:%d> helper func\n", filepath.Base(file), line-1), buf.String())
 }
