@@ -272,8 +272,6 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 		}
 		if key == "" {
 			key = "MISSING_KEY"
-		} else if needsQuoting(key) {
-			key = `"` + key + `"`
 		}
 		if !l.noStyles {
 			key = s.Key.Render(key)
