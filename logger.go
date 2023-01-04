@@ -78,5 +78,5 @@ type Logger interface {
 	Error(msg interface{}, keyval ...interface{})
 
 	// StandardLogger returns a standard logger from this logger.
-	StandardLogger() *log.Logger
+	StandardLogger(...StandardLoggerOption) *log.Logger
 }
