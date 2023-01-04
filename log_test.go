@@ -69,7 +69,7 @@ func TestOffLevel(t *testing.T) {
 	logger.SetOutput(&buf)
 	logger.SetTimeFunction(_zeroTime)
 	logger.DisableStyles()
-	logger.SetLevel(OffLevel)
+	logger.SetLevel(LevelOff)
 	cases := []struct {
 		name     string
 		expected string

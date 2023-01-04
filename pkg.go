@@ -92,22 +92,22 @@ func Helper() {
 
 // Debug logs a debug message.
 func Debug(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(DebugLevel, 1, msg, keyvals...)
+	defaultLogger.log(LevelDebug, 1, msg, keyvals...)
 }
 
 // Info logs an info message.
 func Info(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(InfoLevel, 1, msg, keyvals...)
+	defaultLogger.log(LevelInfo, 1, msg, keyvals...)
 }
 
 // Warn logs a warning message.
 func Warn(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(WarnLevel, 1, msg, keyvals...)
+	defaultLogger.log(LevelWarn, 1, msg, keyvals...)
 }
 
 // Error logs an error message.
 func Error(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(ErrorLevel, 1, msg, keyvals...)
+	defaultLogger.log(LevelError, 1, msg, keyvals...)
 }
 
 // StandardLogger returns a standard logger from the default logger.

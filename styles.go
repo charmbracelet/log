@@ -88,13 +88,13 @@ func DefaultStyles() Styles {
 // Level returns the style for the level.
 func (s Styles) Level(level Level) lipgloss.Style {
 	switch level {
-	case DebugLevel:
+	case LevelDebug:
 		return s.DebugLevel
-	case InfoLevel:
+	case LevelInfo:
 		return s.InfoLevel
-	case WarnLevel:
+	case LevelWarn:
 		return s.WarnLevel
-	case ErrorLevel:
+	case LevelError:
 		return s.ErrorLevel
 	default:
 		return lipgloss.NewStyle()

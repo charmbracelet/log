@@ -46,7 +46,7 @@ func New(opts ...LoggerOption) Logger {
 	l := &logger{
 		b:      bytes.Buffer{},
 		mu:     &sync.RWMutex{},
-		level:  InfoLevel,
+		level:  LevelInfo,
 		styles: DefaultStyles(),
 	}
 
@@ -203,7 +203,7 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 		return
 	}
 	// check if the level is allowed
-	if l.level == OffLevel || l.level > level {
+	if l.level == LevelOff || l.level > level {
 		return
 	}
 
@@ -480,20 +480,20 @@ func (l *logger) With(keyvals ...interface{}) Logger {
 
 // Debug prints a debug message.
 func (l *logger) Debug(msg interface{}, keyvals ...interface{}) {
-	l.log(DebugLevel, 0, msg, keyvals...)
+	l.log(LevelDebug, 0, msg, keyvals...)
 }
 
 // Info prints an info message.
 func (l *logger) Info(msg interface{}, keyvals ...interface{}) {
-	l.log(InfoLevel, 0, msg, keyvals...)
+	l.log(LevelInfo, 0, msg, keyvals...)
 }
 
 // Warn prints a warning message.
 func (l *logger) Warn(msg interface{}, keyvals ...interface{}) {
-	l.log(WarnLevel, 0, msg, keyvals...)
+	l.log(LevelWarn, 0, msg, keyvals...)
 }
 
 // Error prints an error message.
 func (l *logger) Error(msg interface{}, keyvals ...interface{}) {
-	l.log(ErrorLevel, 0, msg, keyvals...)
+	l.log(LevelError, 0, msg, keyvals...)
 }
