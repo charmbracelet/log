@@ -58,17 +58,17 @@ func TestStdLog_forceLevel(t *testing.T) {
 		{
 			name:     "debug",
 			expected: "",
-			level:    LevelDebug,
+			level:    DebugLevel,
 		},
 		{
 			name:     "info",
 			expected: "INFO coffee\n",
-			level:    LevelInfo,
+			level:    InfoLevel,
 		},
 		{
 			name:     "error",
 			expected: "ERROR coffee\n",
-			level:    LevelError,
+			level:    ErrorLevel,
 		},
 	}
 	for _, c := range cases {

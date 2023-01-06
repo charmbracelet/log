@@ -15,14 +15,14 @@ func (l *stdLogger) Write(p []byte) (n int, err error) {
 
 	if l.opt != nil {
 		switch l.opt.ForceLevel {
-		case LevelDebug:
+		case DebugLevel:
 			l.l.Debug(str)
-		case LevelInfo:
+		case InfoLevel:
 			l.l.Info(str)
-		case LevelWarn:
-		l.l.Warn(str)
-		case LevelError:
-		l.l.Error(str)
+		case WarnLevel:
+			l.l.Warn(str)
+		case ErrorLevel:
+			l.l.Error(str)
 		}
 	} else {
 		switch {

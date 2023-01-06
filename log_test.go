@@ -68,7 +68,7 @@ func TestLogger(t *testing.T) {
 func TestOffLevel(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(WithOutput(&buf), WithTimeFunction(_zeroTime),
-		WithNoStyles(), WithLevel(LevelOff))
+		WithNoStyles(), WithLevel(OffLevel))
 	cases := []struct {
 		name     string
 		expected string

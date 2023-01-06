@@ -74,7 +74,7 @@ var myCustomStyles log.Styles
 ...
 logger.DisableTimestamp()
 logger.DisableCaller()
-logger.SetLevel(log.LevelDebug)
+logger.SetLevel(log.DebugLevel)
 logger.SetStyles(myCustomStyles)
 logger.Debug("Preparing batch 2...") // DEBUG baking 🍪: Preparing batch 2...
 ```
@@ -139,7 +139,7 @@ a `*log.Logger` interface compatible with the standard logger interface.
 
 ```go
 stdlog := log.New(WithPrefix("http")).StandardLogger(log.StandardLoggerOption{
-    ForceLevel: log.LevelError,
+    ForceLevel: log.ErrorLevel,
 })
 s := &http.Server{
     Addr:     ":8080",
