@@ -5,7 +5,7 @@
 [![Build Status](https://github.com/charmbracelet/log/workflows/build/badge.svg)](https://github.com/charmbracelet/log/actions)
 [![Go ReportCard](https://goreportcard.com/badge/charmbracelet/log)](https://goreportcard.com/report/charmbracelet/log)
 
-A minimal and colorful Go logging library. 📝
+A minimal and colorful Go logging library. 🪵
 
 ![Demo](./demo.gif)
 
@@ -87,7 +87,7 @@ logger.DisableStyles()
 
 ### Sub-logger
 
-Create sub-loggers with their own specific fields.
+Create sub-loggers with their specific fields.
 
 ```go
 batch2 := logger.With("batch", 2, "chocolateChips", true)
