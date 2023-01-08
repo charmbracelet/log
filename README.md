@@ -10,13 +10,13 @@ A minimal and colorful Go logging library. 📝
 ![Demo](./demo.gif)
 
 It provides a leveled structured human readable logger with a small API. Unlike
-[standard `log`][stdlog], the Charm logger provides a customizable colorful
-human readable logging with batteries included.
+[standard `log`][stdlog], the Charm logger provides customizable colorful human
+readable logging with batteries included.
 
 * Uses [lipgloss][lipgloss] to style and colorize the output.
 * Beautiful human readable format.
 * Ability to customize the time stamp format.
-* Skips caller frames and mark functions as helpers.
+* Skips caller frames and marks function as helpers.
 * Leveled logging with the ability to turn off logging altogether.
 * Store and retrieve logger in and from context.
 * Standard log Adapter.
@@ -24,7 +24,7 @@ human readable logging with batteries included.
 ## Usage
 
 The Charm logger comes with a global package-wise logger with timestamps turned
-on and logging level set to `info`.
+on and the logging level set to `info`.
 
 ```go
 log.Debug("cookie 🍪") // won't print anything
@@ -135,7 +135,7 @@ the [standard logger][stdlog] interface. For instance, the HTTP Server from
 `net/http` will only take a `*log.Logger` for its `ErrorLog` field.
 
 For this, you can use the standard log adapter which simply wraps the logger in
-a `*log.Logger` interface compatible with the standard logger interface.
+a `*log.Logger` interface.
 
 ```go
 stdlog := log.New(WithPrefix("http")).StandardLogger(log.StandardLoggerOption{
