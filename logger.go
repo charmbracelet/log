@@ -77,6 +77,8 @@ type Logger interface {
 	// Error logs an error message.
 	Error(msg interface{}, keyval ...interface{})
 
+	// StandardLoggerWriter returns a io.Writer that can be used along with the
+	StandardLoggerWriter(...StandardLoggerOption) io.Writer
 	// StandardLogger returns a standard logger from this logger.
 	StandardLogger(...StandardLoggerOption) *log.Logger
 }

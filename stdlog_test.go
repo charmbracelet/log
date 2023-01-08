@@ -80,3 +80,37 @@ func TestStdLog_forceLevel(t *testing.T) {
 		})
 	}
 }
+
+func TestStdLog_writer(t *testing.T) {
+	var buf bytes.Buffer
+	logger := New(WithOutput(&buf), WithCaller(), WithNoStyles())
+	cases := []struct {
+		name     string
+		expected string
+		level    Level
+	}{
+		{
+			name:     "debug",
+			expected: "",
+			level:    DebugLevel,
+		},
+		{
+			name:     "info",
+			expected: "INFO <log/stdlog_test.go:112> coffee\n",
+			level:    InfoLevel,
+		},
+		{
+			name:     "error",
+			expected: "ERROR <log/stdlog_test.go:112> coffee\n",
+			level:    ErrorLevel,
+		},
+	}
+	for _, c := range cases {
+		buf.Reset()
+		t.Run(c.name, func(t *testing.T) {
+			l := log.New(logger.StandardLoggerWriter(StandardLoggerOption{ForceLevel: c.level}), "", 0)
+			l.Print("coffee")
+			assert.Equal(t, c.expected, buf.String())
+		})
+	}
+}

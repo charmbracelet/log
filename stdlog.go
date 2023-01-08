@@ -1,16 +1,17 @@
 package log
 
 import (
+	"io"
 	"log"
 	"strings"
 )
 
-type stdLogger struct {
+type stdLoggerWriter struct {
 	l   *logger
 	opt *StandardLoggerOption
 }
 
-func (l *stdLogger) Write(p []byte) (n int, err error) {
+func (l *stdLoggerWriter) Write(p []byte) (n int, err error) {
 	str := strings.TrimSuffix(string(p), "\n")
 
 	if l.opt != nil {
@@ -44,24 +45,31 @@ func (l *stdLogger) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-// StandardLoggerOption can be used to configure the standard log addapter.
+// StandardLoggerOption can be used to configure the standard log adapter.
 type StandardLoggerOption struct {
 	ForceLevel Level
+}
+
+// StandardLoggerWriter is a io.Writer that can be used along with the standard
+// log library. The writer can infer log levels from message prefix. Expected
+// prefixes are DEBUG, INFO, WARN, ERROR, and ERR.
+func (l *logger) StandardLoggerWriter(opts ...StandardLoggerOption) io.Writer {
+	nl := *l
+	// The caller stack is
+	// log.Printf() -> l.Output() -> l.out.Write(stdLogger.Write)
+	nl.callerOffset += 3
+	sl := &stdLoggerWriter{
+		l: &nl,
+	}
+	if len(opts) > 0 {
+		sl.opt = &opts[0]
+	}
+	return sl
 }
 
 // StandardLogger returns a standard logger from Logger. The returned logger
 // can infer log levels from message prefix. Expected prefixes are DEBUG, INFO,
 // WARN, ERROR, and ERR.
 func (l *logger) StandardLogger(opts ...StandardLoggerOption) *log.Logger {
-	nl := *l
-	// The caller stack is
-	// log.Printf() -> l.Output() -> l.out.Write(stdLogger.Write)
-	nl.callerOffset += 3
-	sl := &stdLogger{
-		l: &nl,
-	}
-	if len(opts) > 0 {
-		sl.opt = &opts[0]
-	}
-	return log.New(sl, "", 0)
+	return log.New(l.StandardLoggerWriter(opts...), "", 0)
 }
