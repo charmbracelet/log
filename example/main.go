@@ -21,7 +21,7 @@ func (c cup) String() string {
 
 func startOven(degree int) {
 	log.Helper()
-	log.Debug("Starting oven", "temprature", degree)
+	log.Debug("Starting oven", "temperature", degree)
 }
 
 func main() {
@@ -41,10 +41,10 @@ func main() {
 	time.Sleep(time.Second)
 	log.Debug("Mixing ingredients", "ingredients",
 		strings.Join([]string{
-			"butter " + butter.String(),
-			"chocolate " + chocolate.String(),
-			"flour " + flour.String(),
-			"sugar " + sugar.String(),
+			butter.String() + " of butter",
+			chocolate.String() + " of chocolate",
+			flour.String() + " of flour",
+			sugar.String() + " of sugar",
 		}, "\n"),
 	)
 	time.Sleep(time.Second)
@@ -53,11 +53,11 @@ func main() {
 	}
 	log.Info("Baking cookies", "time", fmt.Sprintf("%d minutes", bakeTime))
 	time.Sleep(2 * time.Second)
-	log.Info("Increasing temprature", "amount", 300)
+	log.Info("Increasing temperature", "amount", 300)
 	temp += 300
 	time.Sleep(time.Second)
 	if temp > 500 {
-		log.Error("Oven is too hot", "temprature", temp)
+		log.Error("Oven is too hot, aborting", "temperature", temp)
 		os.Exit(1)
 	}
 }
