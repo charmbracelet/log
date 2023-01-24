@@ -48,8 +48,8 @@ func DefaultStyles() Styles {
 		Bold(true).
 		MaxWidth(4).
 		Foreground(lipgloss.AdaptiveColor{
-			Light: "62",
-			Dark:  "62",
+			Light: "63",
+			Dark:  "63",
 		})
 
 	// InfoLevel is the style for info level.
