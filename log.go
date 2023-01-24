@@ -69,7 +69,7 @@ func New(opts ...LoggerOption) Logger {
 	return l
 }
 
-func writeIndent(w io.Writer, str string, indent string) {
+func writeIndent(w io.Writer, str string, indent string, newline bool) {
 	// kindly borrowed from hclog
 	for {
 		nl := strings.IndexByte(str, '\n')
@@ -77,7 +77,9 @@ func writeIndent(w io.Writer, str string, indent string) {
 			if str != "" {
 				w.Write([]byte(indent))
 				writeEscapedForOutput(w, str, false)
-				w.Write([]byte{'\n'})
+				if newline {
+					w.Write([]byte{'\n'})
+				}
 			}
 			return
 		}
@@ -264,6 +266,7 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 		indentSep = s.Separetor.Render(indentSep)
 	}
 	for i := 0; i < len(keyvals); i += 2 {
+		moreKeys := i < len(keyvals)-2
 		key := fmt.Sprint(keyvals[i])
 		val := fmt.Sprint(keyvals[i+1])
 		raw := val == ""
@@ -289,8 +292,11 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 			l.b.WriteString("\n  ")
 			l.b.WriteString(key)
 			l.b.WriteString(sep + "\n")
-			writeIndent(&l.b, val, indentSep)
-			l.b.WriteByte(' ')
+			writeIndent(&l.b, val, indentSep, moreKeys)
+			// If there are more keyvals, separate them with a space.
+			if moreKeys {
+				l.b.WriteByte(' ')
+			}
 		} else if !raw && needsQuoting(val) {
 			l.b.WriteByte(' ')
 			l.b.WriteString(key)
