@@ -66,6 +66,10 @@ func New(opts ...LoggerOption) Logger {
 		l.timeFormat = DefaultTimeFormat
 	}
 
+	if !isTerminal(l.w) {
+		l.noStyles = true
+	}
+
 	return l
 }
 
