@@ -29,7 +29,6 @@ on and the logging level set to `info`.
 ```go
 log.Debug("cookie 🍪") // won't print anything
 log.Info("Hello World!") // 2023/01/04 10:04:06 INFO Hello World!
-log.Print("Baking 101") // 2023/01/04 10:04:06 Baking 101
 ```
 
 All logging levels accept optional key/value pairs to be printed along with the
@@ -39,6 +38,12 @@ message.
 err := fmt.Errorf("too much sugar")
 log.Error("failed to bake cookies", "err", err, "butter", "1 cup")
 // 2023/01/04 10:04:06 ERROR failed to bake cookies err="too much sugar" butter="1 cup"
+```
+
+You can use `log.Print()` to print messages without a level prefix.
+
+```go
+log.Print("Baking 101") // 2023/01/04 10:04:06 Baking 101
 ```
 
 ### New loggers
