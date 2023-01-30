@@ -223,7 +223,7 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 		l.b.WriteByte(' ')
 	}
 
-	if level != NoLevel {
+	if level != noLevel {
 		lvl := strings.ToUpper(level.String())
 		if !l.noStyles {
 			lvl = s.Level(level).String()
@@ -518,5 +518,5 @@ func (l *logger) Fatal(msg interface{}, keyvals ...interface{}) {
 
 // Print prints a message with no level.
 func (l *logger) Print(msg interface{}, keyvals ...interface{}) {
-	l.log(NoLevel, 0, msg, keyvals...)
+	l.log(noLevel, 0, msg, keyvals...)
 }

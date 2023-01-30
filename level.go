@@ -14,8 +14,8 @@ const (
 	ErrorLevel
 	// FatalLevel is the fatal level.
 	FatalLevel
-	// NoLevel is the no level.
-	NoLevel
+	// noLevel is the no level.
+	noLevel
 	// OffLevel is the off level.
 	OffLevel
 )
