@@ -29,6 +29,7 @@ on and the logging level set to `info`.
 ```go
 log.Debug("cookie 🍪") // won't print anything
 log.Info("Hello World!") // 2023/01/04 10:04:06 INFO Hello World!
+log.Print("Baking 101") // 2023/01/04 10:04:06 Baking 101
 ```
 
 All logging levels accept optional key/value pairs to be printed along with the
@@ -110,6 +111,19 @@ for item := 1; i <= 100; i++ {
 }
 ```
 
+Or arguments:
+
+```go
+for temp := 375; temp <= 400; temp++ {
+    log.Info("Increasing temperature", "degree", fmt.Sprintf("%d℃", temp))
+    // INFO Increasing temperature degree=375℃
+    // INFO Increasing temperature degree=376℃
+    // INFO Increasing temperature degree=377℃
+    // ...
+    // INFO Increasing temperature degree=400℃
+}
+```
+
 ### Helper Functions
 
 Skip caller frames in helper functions. Similar to what you can do with
@@ -148,6 +162,19 @@ s := &http.Server{
 }
 stdlog.Printf("Failed to make bake request, %s", fmt.Errorf("temperature is to low"))
 // ERROR http: Failed to make bake request, temperature is to low
+```
+
+Instead, you can use the global logger with the standard log writer. The
+standard log adapter will infer the log level from the log message prefix unless
+you provide `ForceLevel` option.
+
+```go
+stdlog.SetOutput(log.StandardWriter())
+stdlog.Printf("ERROR Failed to make bake request, %s", fmt.Errorf("temperature is to low"))
+// ERROR Failed to make bake request, temperature is to low
+stdlog.Printf("DEBUG Failed to make bake request, %s", fmt.Errorf("temperature is to low"))
+// Won't print anything because the default log level is info.
+// You can change the log level with `log.SetLevel()`
 ```
 
 [lipgloss]: https://github.com/charmbracelet/lipgloss
