@@ -115,6 +115,11 @@ func Fatal(msg interface{}, keyvals ...interface{}) {
 	defaultLogger.log(FatalLevel, 0, msg, keyvals...)
 }
 
+// Print logs a message with no level.
+func Print(msg interface{}, keyvals ...interface{}) {
+	defaultLogger.log(NoLevel, 0, msg, keyvals...)
+}
+
 // StandardLogger returns a standard logger from the default logger.
 func StandardLogger() *log.Logger {
 	return defaultLogger.StandardLogger()

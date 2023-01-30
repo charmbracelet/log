@@ -209,7 +209,7 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 		return
 	}
 	// check if the level is allowed
-	if l.level == OffLevel || l.level > level {
+	if l.level > level {
 		return
 	}
 
@@ -223,12 +223,14 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 		l.b.WriteByte(' ')
 	}
 
-	lvl := strings.ToUpper(level.String())
-	if !l.noStyles {
-		lvl = s.Level(level).String()
+	if level != NoLevel {
+		lvl := strings.ToUpper(level.String())
+		if !l.noStyles {
+			lvl = s.Level(level).String()
+		}
+		l.b.WriteString(lvl)
+		l.b.WriteByte(' ')
 	}
-	l.b.WriteString(lvl)
-	l.b.WriteByte(' ')
 
 	if l.caller {
 		// Call stack is log.Error -> log.log (2)
@@ -512,4 +514,9 @@ func (l *logger) Error(msg interface{}, keyvals ...interface{}) {
 func (l *logger) Fatal(msg interface{}, keyvals ...interface{}) {
 	l.log(FatalLevel, 0, msg, keyvals...)
 	os.Exit(1)
+}
+
+// Print prints a message with no level.
+func (l *logger) Print(msg interface{}, keyvals ...interface{}) {
+	l.log(NoLevel, 0, msg, keyvals...)
 }

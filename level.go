@@ -14,11 +14,28 @@ const (
 	ErrorLevel
 	// FatalLevel is the fatal level.
 	FatalLevel
+	// NoLevel is the no level.
+	NoLevel
 	// OffLevel is the off level.
 	OffLevel
 )
 
 // String returns the string representation of the level.
 func (l Level) String() string {
-	return [...]string{"debug", "info", "warn", "error", "fatal"}[l]
+	switch l {
+	case DebugLevel:
+		return "debug"
+	case InfoLevel:
+		return "info"
+	case WarnLevel:
+		return "warn"
+	case ErrorLevel:
+		return "error"
+	case FatalLevel:
+		return "fatal"
+	case OffLevel:
+		return "off"
+	default:
+		return ""
+	}
 }

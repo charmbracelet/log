@@ -78,6 +78,8 @@ type Logger interface {
 	Error(msg interface{}, keyval ...interface{})
 	// Fatal logs a fatal message.
 	Fatal(msg interface{}, keyval ...interface{})
+	// Print logs a message with no level.
+	Print(msg interface{}, keyval ...interface{})
 
 	// StandardLoggerWriter returns a io.Writer that can be used along with the
 	StandardLoggerWriter(...StandardLoggerOption) io.Writer
