@@ -76,6 +76,8 @@ type Logger interface {
 	Warn(msg interface{}, keyval ...interface{})
 	// Error logs an error message.
 	Error(msg interface{}, keyval ...interface{})
+	// Fatal logs a fatal message.
+	Fatal(msg interface{}, keyval ...interface{})
 
 	// StandardLoggerWriter returns a io.Writer that can be used along with the
 	StandardLoggerWriter(...StandardLoggerOption) io.Writer

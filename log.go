@@ -507,3 +507,9 @@ func (l *logger) Warn(msg interface{}, keyvals ...interface{}) {
 func (l *logger) Error(msg interface{}, keyvals ...interface{}) {
 	l.log(ErrorLevel, 0, msg, keyvals...)
 }
+
+// Fatal prints a fatal message and exits.
+func (l *logger) Fatal(msg interface{}, keyvals ...interface{}) {
+	l.log(FatalLevel, 0, msg, keyvals...)
+	os.Exit(1)
+}

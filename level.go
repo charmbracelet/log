@@ -12,11 +12,13 @@ const (
 	WarnLevel
 	// ErrorLevel is the error level.
 	ErrorLevel
+	// FatalLevel is the fatal level.
+	FatalLevel
 	// OffLevel is the off level.
 	OffLevel
 )
 
 // String returns the string representation of the level.
 func (l Level) String() string {
-	return [...]string{"debug", "info", "warn", "error"}[l]
+	return [...]string{"debug", "info", "warn", "error", "fatal"}[l]
 }

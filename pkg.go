@@ -110,6 +110,11 @@ func Error(msg interface{}, keyvals ...interface{}) {
 	defaultLogger.log(ErrorLevel, 0, msg, keyvals...)
 }
 
+// Fatal logs a fatal message and exit.
+func Fatal(msg interface{}, keyvals ...interface{}) {
+	defaultLogger.log(FatalLevel, 0, msg, keyvals...)
+}
+
 // StandardLogger returns a standard logger from the default logger.
 func StandardLogger() *log.Logger {
 	return defaultLogger.StandardLogger()

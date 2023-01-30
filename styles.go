@@ -15,6 +15,7 @@ type Styles struct {
 	InfoLevel  lipgloss.Style
 	WarnLevel  lipgloss.Style
 	ErrorLevel lipgloss.Style
+	FatalLevel lipgloss.Style
 }
 
 // DefaultStyles returns the default styles for the logger.
@@ -82,6 +83,16 @@ func DefaultStyles() Styles {
 			Dark:  "204",
 		})
 
+	// FatalLevel is the style for error level.
+	s.FatalLevel = lipgloss.NewStyle().
+		SetString("FATAL").
+		Bold(true).
+		MaxWidth(4).
+		Foreground(lipgloss.AdaptiveColor{
+			Light: "133",
+			Dark:  "134",
+		})
+
 	return s
 }
 
@@ -96,6 +107,8 @@ func (s Styles) Level(level Level) lipgloss.Style {
 		return s.WarnLevel
 	case ErrorLevel:
 		return s.ErrorLevel
+	case FatalLevel:
+		return s.FatalLevel
 	default:
 		return lipgloss.NewStyle()
 	}
