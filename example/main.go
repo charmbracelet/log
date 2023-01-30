@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
@@ -57,7 +56,7 @@ func main() {
 	temp += 300
 	time.Sleep(time.Second)
 	if temp > 500 {
-		log.Error("Oven is too hot, aborting", "temperature", temp)
-		os.Exit(1)
+		log.Error("Oven is too hot", "temperature", temp)
+		log.Fatal("Cookies are burnt!")
 	}
 }
