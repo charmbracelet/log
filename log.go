@@ -266,8 +266,8 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 	sep := separator
 	indentSep := indentSeparator
 	if !l.noStyles {
-		sep = s.Separetor.Render(sep)
-		indentSep = s.Separetor.Render(indentSep)
+		sep = s.Separator.Render(sep)
+		indentSep = s.Separator.Render(indentSep)
 	}
 	for i := 0; i < len(keyvals); i += 2 {
 		moreKeys := i < len(keyvals)-2

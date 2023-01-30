@@ -10,7 +10,7 @@ type Styles struct {
 	Message    lipgloss.Style
 	Key        lipgloss.Style
 	Value      lipgloss.Style
-	Separetor  lipgloss.Style
+	Separator  lipgloss.Style
 	DebugLevel lipgloss.Style
 	InfoLevel  lipgloss.Style
 	WarnLevel  lipgloss.Style
@@ -39,8 +39,8 @@ func DefaultStyles() Styles {
 	// ValueStyle is the style for values.
 	s.Value = lipgloss.NewStyle()
 
-	// SeparetorStyle is the style for separetors.
-	s.Separetor = lipgloss.NewStyle().Faint(true)
+	// SeparatorStyle is the style for separators.
+	s.Separator = lipgloss.NewStyle().Faint(true)
 
 	// DebugLevel is the style for debug level.
 	s.DebugLevel = lipgloss.NewStyle().
