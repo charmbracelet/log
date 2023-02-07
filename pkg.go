@@ -3,6 +3,7 @@ package log
 import (
 	"io"
 	"log"
+	"os"
 )
 
 var defaultLogger = New(WithTimestamp()).(*logger)
@@ -113,6 +114,7 @@ func Error(msg interface{}, keyvals ...interface{}) {
 // Fatal logs a fatal message and exit.
 func Fatal(msg interface{}, keyvals ...interface{}) {
 	defaultLogger.log(FatalLevel, 0, msg, keyvals...)
+	os.Exit(1)
 }
 
 // Print logs a message with no level.
