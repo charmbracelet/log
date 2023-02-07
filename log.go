@@ -79,18 +79,18 @@ func writeIndent(w io.Writer, str string, indent string, newline bool) {
 		nl := strings.IndexByte(str, '\n')
 		if nl == -1 {
 			if str != "" {
-				w.Write([]byte(indent))
+				_, _ = w.Write([]byte(indent))
 				writeEscapedForOutput(w, str, false)
 				if newline {
-					w.Write([]byte{'\n'})
+					_, _ = w.Write([]byte{'\n'})
 				}
 			}
 			return
 		}
 
-		w.Write([]byte(indent))
+		_, _ = w.Write([]byte(indent))
 		writeEscapedForOutput(w, str[:nl], false)
-		w.Write([]byte{'\n'})
+		_, _ = w.Write([]byte{'\n'})
 		str = str[nl+1:]
 	}
 }
@@ -118,7 +118,7 @@ var bufPool = sync.Pool{
 func writeEscapedForOutput(w io.Writer, str string, escapeQuotes bool) {
 	// kindly borrowed from hclog
 	if !needsEscaping(str) {
-		w.Write([]byte(str))
+		_, _ = w.Write([]byte(str))
 		return
 	}
 
@@ -172,7 +172,7 @@ func writeEscapedForOutput(w io.Writer, str string, escapeQuotes bool) {
 		}
 	}
 
-	w.Write(bb.Bytes())
+	_, _ = w.Write(bb.Bytes())
 }
 
 // isNormal indicates if the rune is one allowed to exist as an unquoted
@@ -320,7 +320,7 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 
 	l.b.WriteByte('\n')
 
-	l.w.Write(l.b.Bytes())
+	_, _ = l.w.Write(l.b.Bytes())
 }
 
 // Helper marks the calling function as a helper
