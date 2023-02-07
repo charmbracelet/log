@@ -120,12 +120,12 @@ Or arguments:
 
 ```go
 for temp := 375; temp <= 400; temp++ {
-    log.Info("Increasing temperature", "degree", fmt.Sprintf("%d℃", temp))
-    // INFO Increasing temperature degree=375℃
-    // INFO Increasing temperature degree=376℃
-    // INFO Increasing temperature degree=377℃
+    log.Info("Increasing temperature", "degree", fmt.Sprintf("%d°F", temp))
+    // INFO Increasing temperature degree=375°F
+    // INFO Increasing temperature degree=376°F
+    // INFO Increasing temperature degree=377°F
     // ...
-    // INFO Increasing temperature degree=400℃
+    // INFO Increasing temperature degree=400°F
 }
 ```
 
