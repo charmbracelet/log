@@ -30,6 +30,9 @@ func (l *logger) jsonFormatter(keyvals ...interface{}) {
 			if msg := keyvals[i+1]; msg != nil {
 				m[msgKey] = fmt.Sprint(msg)
 			}
+		case "":
+			// ignore empty keys
+			continue
 		default:
 			var k string
 			if key, ok := keyvals[i].(string); ok {
