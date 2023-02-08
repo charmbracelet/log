@@ -72,7 +72,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				val = `""`
 			}
 			if key == "" {
-				key = "MISSING_KEY"
+				continue
 			}
 			if !l.noStyles {
 				key = s.Key.Render(key)
