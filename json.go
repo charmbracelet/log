@@ -41,6 +41,7 @@ func (l *logger) jsonFormatter(keyvals ...interface{}) {
 		}
 	}
 
-	json.NewEncoder(l.w).SetEscapeHTML(false)
-	_ = json.NewEncoder(l.w).Encode(m)
+	e := json.NewEncoder(&l.b)
+	e.SetEscapeHTML(false)
+	_ = e.Encode(m)
 }
