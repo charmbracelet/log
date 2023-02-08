@@ -68,6 +68,11 @@ func SetOutput(w io.Writer) {
 	defaultLogger.SetOutput(w)
 }
 
+// SetFormatter sets the formatter for the default logger.
+func SetFormatter(f Formatter) {
+	defaultLogger.SetFormatter(f)
+}
+
 // SetPrefix sets the prefix for the default logger.
 func SetPrefix(prefix string) {
 	defaultLogger.SetPrefix(prefix)

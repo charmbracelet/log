@@ -29,6 +29,7 @@ type logger struct {
 	timeFunc     TimeFunction
 	timeFormat   string
 	callerOffset int
+	formatter    Formatter
 
 	caller    bool
 	noStyles  bool
@@ -193,16 +194,10 @@ func needsQuoting(str string) bool {
 	return false
 }
 
-const (
-	separator       = "="
-	indentSeparator = "  │ "
-)
-
 func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	defer l.b.Reset()
-	t := l.timeFunc()
 
 	// skip logging if writer is discard
 	if l.w == io.Discard {
@@ -213,112 +208,44 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		return
 	}
 
-	s := l.styles
+	var kvs []interface{}
 	if l.timestamp {
-		ts := t.Format(l.timeFormat)
-		if !l.noStyles {
-			ts = s.Timestamp.Render(ts)
-		}
-		l.b.WriteString(ts)
-		l.b.WriteByte(' ')
+		kvs = append(kvs, tsKey, l.timeFunc())
 	}
 
 	if level != noLevel {
-		lvl := strings.ToUpper(level.String())
-		if !l.noStyles {
-			lvl = s.Level(level).String()
-		}
-		l.b.WriteString(lvl)
-		l.b.WriteByte(' ')
+		kvs = append(kvs, lvlKey, level)
 	}
 
 	if l.caller {
 		// Call stack is log.Error -> log.log (2)
 		file, line, _ := l.fillLoc(l.callerOffset + 2)
 		caller := fmt.Sprintf("<%s:%d>", trimCallerPath(file), line)
-		if !l.noStyles {
-			caller = s.Caller.Render(caller)
-		}
-		l.b.WriteString(caller)
-		l.b.WriteByte(' ')
+		kvs = append(kvs, callerKey, caller)
 	}
 
 	if l.prefix != "" {
-		prefix := l.prefix + ":"
-		if !l.noStyles {
-			prefix = s.Prefix.Render(prefix)
-		}
-		l.b.WriteString(prefix)
-		l.b.WriteByte(' ')
+		kvs = append(kvs, prefixKey, l.prefix)
 	}
 
 	if msg != nil {
 		m := fmt.Sprint(msg)
-		if !l.noStyles {
-			m = s.Message.Render(m)
-		}
-		l.b.WriteString(m)
+		kvs = append(kvs, msgKey, m)
 	}
 
-	keyvals = append(l.keyvals, keyvals...)
+	// append logger fields
+	kvs = append(kvs, l.keyvals...)
+	// append the rest
+	kvs = append(kvs, keyvals...)
+	// check if the number of keyvals is even
 	if len(keyvals)%2 != 0 {
 		keyvals = append(keyvals, "MISSING_VALUE")
 	}
 
-	sep := separator
-	indentSep := indentSeparator
-	if !l.noStyles {
-		sep = s.Separator.Render(sep)
-		indentSep = s.Separator.Render(indentSep)
+	switch l.formatter {
+	default:
+		l.textFormatter(kvs...)
 	}
-	for i := 0; i < len(keyvals); i += 2 {
-		moreKeys := i < len(keyvals)-2
-		key := fmt.Sprint(keyvals[i])
-		val := fmt.Sprint(keyvals[i+1])
-		raw := val == ""
-		if raw {
-			val = `""`
-		}
-		if key == "" {
-			key = "MISSING_KEY"
-		}
-		if !l.noStyles {
-			key = s.Key.Render(key)
-			val = s.Value.Render(val)
-		}
-
-		// Values may contain multiple lines, and that format
-		// is preserved, with each line prefixed with a "  | "
-		// to show it's part of a collection of lines.
-		//
-		// Values may also need quoting, if not all the runes
-		// in the value string are "normal", like if they
-		// contain ANSI escape sequences.
-		if strings.Contains(val, "\n") {
-			l.b.WriteString("\n  ")
-			l.b.WriteString(key)
-			l.b.WriteString(sep + "\n")
-			writeIndent(&l.b, val, indentSep, moreKeys)
-			// If there are more keyvals, separate them with a space.
-			if moreKeys {
-				l.b.WriteByte(' ')
-			}
-		} else if !raw && needsQuoting(val) {
-			l.b.WriteByte(' ')
-			l.b.WriteString(key)
-			l.b.WriteString(sep)
-			l.b.WriteByte('"')
-			writeEscapedForOutput(&l.b, val, true)
-			l.b.WriteByte('"')
-		} else {
-			l.b.WriteByte(' ')
-			l.b.WriteString(key)
-			l.b.WriteString(sep)
-			l.b.WriteString(val)
-		}
-	}
-
-	l.b.WriteByte('\n')
 
 	_, _ = l.w.Write(l.b.Bytes())
 }
@@ -479,6 +406,13 @@ func (l *logger) SetOutput(w io.Writer) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.w = w
+}
+
+// SetFormatter sets the formatter.
+func (l *logger) SetFormatter(f Formatter) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.formatter = f
 }
 
 // With returns a new logger with the given keyvals added.

@@ -60,6 +60,8 @@ type Logger interface {
 	SetTimeFormat(format string)
 	// SetOutput sets the output destination. The default is os.Stderr.
 	SetOutput(w io.Writer)
+	// SetFormatter sets the formatter. The default is TextFormatter.
+	SetFormatter(f Formatter)
 
 	// Helper marks the calling function as a helper
 	// and skips it for source location information.

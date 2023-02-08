@@ -76,3 +76,10 @@ func WithFields(keyvals ...interface{}) LoggerOption {
 		l.keyvals = keyvals
 	}
 }
+
+// WithFormatter returns a LoggerOption that sets the formatter for the logger.
+func WithFormatter(f Formatter) LoggerOption {
+	return func(l *logger) {
+		l.formatter = f
+	}
+}
