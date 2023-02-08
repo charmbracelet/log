@@ -243,6 +243,8 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	}
 
 	switch l.formatter {
+	case JSONFormatter:
+		l.jsonFormatter(kvs...)
 	default:
 		l.textFormatter(kvs...)
 	}
