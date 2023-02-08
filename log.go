@@ -9,8 +9,11 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"unicode"
-	"unicode/utf8"
+)
+
+var (
+	// ErrMissingValue is returned when a key is missing a value.
+	ErrMissingValue = fmt.Errorf("missing value")
 )
 
 // LoggerOption is an option for a logger.
@@ -74,126 +77,6 @@ func New(opts ...LoggerOption) Logger {
 	return l
 }
 
-func writeIndent(w io.Writer, str string, indent string, newline bool) {
-	// kindly borrowed from hclog
-	for {
-		nl := strings.IndexByte(str, '\n')
-		if nl == -1 {
-			if str != "" {
-				_, _ = w.Write([]byte(indent))
-				writeEscapedForOutput(w, str, false)
-				if newline {
-					_, _ = w.Write([]byte{'\n'})
-				}
-			}
-			return
-		}
-
-		_, _ = w.Write([]byte(indent))
-		writeEscapedForOutput(w, str[:nl], false)
-		_, _ = w.Write([]byte{'\n'})
-		str = str[nl+1:]
-	}
-}
-
-func needsEscaping(str string) bool {
-	for _, b := range str {
-		if !unicode.IsPrint(b) || b == '"' {
-			return true
-		}
-	}
-
-	return false
-}
-
-const (
-	lowerhex = "0123456789abcdef"
-)
-
-var bufPool = sync.Pool{
-	New: func() interface{} {
-		return new(bytes.Buffer)
-	},
-}
-
-func writeEscapedForOutput(w io.Writer, str string, escapeQuotes bool) {
-	// kindly borrowed from hclog
-	if !needsEscaping(str) {
-		_, _ = w.Write([]byte(str))
-		return
-	}
-
-	bb := bufPool.Get().(*bytes.Buffer)
-	bb.Reset()
-
-	defer bufPool.Put(bb)
-
-	for _, r := range str {
-		if escapeQuotes && r == '"' {
-			bb.WriteString(`\"`)
-		} else if unicode.IsPrint(r) {
-			bb.WriteRune(r)
-		} else {
-			switch r {
-			case '\a':
-				bb.WriteString(`\a`)
-			case '\b':
-				bb.WriteString(`\b`)
-			case '\f':
-				bb.WriteString(`\f`)
-			case '\n':
-				bb.WriteString(`\n`)
-			case '\r':
-				bb.WriteString(`\r`)
-			case '\t':
-				bb.WriteString(`\t`)
-			case '\v':
-				bb.WriteString(`\v`)
-			default:
-				switch {
-				case r < ' ':
-					bb.WriteString(`\x`)
-					bb.WriteByte(lowerhex[byte(r)>>4])
-					bb.WriteByte(lowerhex[byte(r)&0xF])
-				case !utf8.ValidRune(r):
-					r = 0xFFFD
-					fallthrough
-				case r < 0x10000:
-					bb.WriteString(`\u`)
-					for s := 12; s >= 0; s -= 4 {
-						bb.WriteByte(lowerhex[r>>uint(s)&0xF])
-					}
-				default:
-					bb.WriteString(`\U`)
-					for s := 28; s >= 0; s -= 4 {
-						bb.WriteByte(lowerhex[r>>uint(s)&0xF])
-					}
-				}
-			}
-		}
-	}
-
-	_, _ = w.Write(bb.Bytes())
-}
-
-// isNormal indicates if the rune is one allowed to exist as an unquoted
-// string value. This is a subset of ASCII, `-` through `~`.
-func isNormal(r rune) bool {
-	return '-' <= r && r <= '~'
-}
-
-// needsQuoting returns false if all the runes in string are normal, according
-// to isNormal.
-func needsQuoting(str string) bool {
-	for _, r := range str {
-		if !isNormal(r) {
-			return true
-		}
-	}
-
-	return false
-}
-
 func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -220,7 +103,7 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	if l.caller {
 		// Call stack is log.Error -> log.log (2)
 		file, line, _ := l.fillLoc(l.callerOffset + 2)
-		caller := fmt.Sprintf("<%s:%d>", trimCallerPath(file), line)
+		caller := fmt.Sprintf("%s:%d", trimCallerPath(file), line)
 		kvs = append(kvs, callerKey, caller)
 	}
 
@@ -235,11 +118,13 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 
 	// append logger fields
 	kvs = append(kvs, l.keyvals...)
+	if len(l.keyvals)%2 != 0 {
+		kvs = append(kvs, ErrMissingValue)
+	}
 	// append the rest
 	kvs = append(kvs, keyvals...)
-	// check if the number of keyvals is even
 	if len(keyvals)%2 != 0 {
-		kvs = append(keyvals, "MISSING_VALUE")
+		kvs = append(kvs, ErrMissingValue)
 	}
 
 	switch l.formatter {

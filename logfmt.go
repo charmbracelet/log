@@ -25,7 +25,7 @@ func (l *logger) logfmtFormatter(keyvals ...interface{}) {
 		err := e.EncodeKeyval(keyvals[i], keyvals[i+1])
 		if err != nil && errors.Is(err, logfmt.ErrUnsupportedValueType) {
 			// If the value is not supported by logfmt, we try to convert it to a string.
-			_ = e.EncodeKeyval(keyvals[i], fmt.Sprint(keyvals[i+1]))
+			_ = e.EncodeKeyval(keyvals[i], fmt.Sprintf("%+v", keyvals[i+1]))
 		}
 	}
 	_ = e.EndRecord()

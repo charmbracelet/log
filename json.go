@@ -16,7 +16,7 @@ func (l *logger) jsonFormatter(keyvals ...interface{}) {
 				m[tsKey] = t.Format(l.timeFormat)
 			}
 		case lvlKey:
-			if level, ok := keyvals[i+1].(Level); ok && level != noLevel {
+			if level, ok := keyvals[i+1].(Level); ok {
 				m[lvlKey] = level.String()
 			}
 		case callerKey:
@@ -52,7 +52,7 @@ func (l *logger) jsonFormatter(keyvals ...interface{}) {
 			case fmt.Stringer:
 				val = v.String()
 			default:
-				val = fmt.Sprint(v)
+				val = fmt.Sprintf("%+v", v)
 			}
 			m[key] = val
 		}
