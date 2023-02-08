@@ -239,7 +239,7 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	kvs = append(kvs, keyvals...)
 	// check if the number of keyvals is even
 	if len(keyvals)%2 != 0 {
-		keyvals = append(keyvals, "MISSING_VALUE")
+		kvs = append(keyvals, "MISSING_VALUE")
 	}
 
 	switch l.formatter {
