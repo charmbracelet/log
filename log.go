@@ -198,7 +198,7 @@ const (
 	indentSeparator = "  │ "
 )
 
-func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interface{}) {
+func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	defer l.b.Reset()
@@ -234,7 +234,7 @@ func (l *logger) log(level Level, skip int, msg interface{}, keyvals ...interfac
 
 	if l.caller {
 		// Call stack is log.Error -> log.log (2)
-		file, line, _ := l.fillLoc(l.callerOffset + skip + 2)
+		file, line, _ := l.fillLoc(l.callerOffset + 2)
 		caller := fmt.Sprintf("<%s:%d>", trimCallerPath(file), line)
 		if !l.noStyles {
 			caller = s.Caller.Render(caller)
@@ -492,31 +492,31 @@ func (l *logger) With(keyvals ...interface{}) Logger {
 
 // Debug prints a debug message.
 func (l *logger) Debug(msg interface{}, keyvals ...interface{}) {
-	l.log(DebugLevel, 0, msg, keyvals...)
+	l.log(DebugLevel, msg, keyvals...)
 }
 
 // Info prints an info message.
 func (l *logger) Info(msg interface{}, keyvals ...interface{}) {
-	l.log(InfoLevel, 0, msg, keyvals...)
+	l.log(InfoLevel, msg, keyvals...)
 }
 
 // Warn prints a warning message.
 func (l *logger) Warn(msg interface{}, keyvals ...interface{}) {
-	l.log(WarnLevel, 0, msg, keyvals...)
+	l.log(WarnLevel, msg, keyvals...)
 }
 
 // Error prints an error message.
 func (l *logger) Error(msg interface{}, keyvals ...interface{}) {
-	l.log(ErrorLevel, 0, msg, keyvals...)
+	l.log(ErrorLevel, msg, keyvals...)
 }
 
 // Fatal prints a fatal message and exits.
 func (l *logger) Fatal(msg interface{}, keyvals ...interface{}) {
-	l.log(FatalLevel, 0, msg, keyvals...)
+	l.log(FatalLevel, msg, keyvals...)
 	os.Exit(1)
 }
 
 // Print prints a message with no level.
 func (l *logger) Print(msg interface{}, keyvals ...interface{}) {
-	l.log(noLevel, 0, msg, keyvals...)
+	l.log(noLevel, msg, keyvals...)
 }

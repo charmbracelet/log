@@ -93,33 +93,33 @@ func Helper() {
 
 // Debug logs a debug message.
 func Debug(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(DebugLevel, 0, msg, keyvals...)
+	defaultLogger.log(DebugLevel, msg, keyvals...)
 }
 
 // Info logs an info message.
 func Info(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(InfoLevel, 0, msg, keyvals...)
+	defaultLogger.log(InfoLevel, msg, keyvals...)
 }
 
 // Warn logs a warning message.
 func Warn(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(WarnLevel, 0, msg, keyvals...)
+	defaultLogger.log(WarnLevel, msg, keyvals...)
 }
 
 // Error logs an error message.
 func Error(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(ErrorLevel, 0, msg, keyvals...)
+	defaultLogger.log(ErrorLevel, msg, keyvals...)
 }
 
 // Fatal logs a fatal message and exit.
 func Fatal(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(FatalLevel, 0, msg, keyvals...)
+	defaultLogger.log(FatalLevel, msg, keyvals...)
 	os.Exit(1)
 }
 
 // Print logs a message with no level.
 func Print(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(noLevel, 0, msg, keyvals...)
+	defaultLogger.log(noLevel, msg, keyvals...)
 }
 
 // StandardLogger returns a standard logger from the default logger.

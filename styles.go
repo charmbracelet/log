@@ -23,7 +23,7 @@ func DefaultStyles() Styles {
 	s := Styles{}
 
 	// TimestampStyle is the style for timestamps.
-	s.Timestamp = lipgloss.NewStyle() //.Faint(true)
+	s.Timestamp = lipgloss.NewStyle()
 
 	// CallerStyle is the style for caller.
 	s.Caller = lipgloss.NewStyle().Faint(true)
