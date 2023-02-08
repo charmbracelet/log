@@ -13,13 +13,13 @@ It provides a leveled structured human readable logger with a small API. Unlike
 [standard `log`][stdlog], the Charm logger provides customizable colorful human
 readable logging with batteries included.
 
-* Uses [lipgloss][lipgloss] to style and colorize the output.
-* Beautiful human readable format.
-* Ability to customize the time stamp format.
-* Skips caller frames and marks function as helpers.
-* Leveled logging with the ability to turn off logging altogether.
-* Store and retrieve logger in and from context.
-* Standard log Adapter.
+- Uses [lipgloss][lipgloss] to style and colorize the output.
+- Beautiful human readable format.
+- Ability to customize the time stamp format.
+- Skips caller frames and marks function as helpers.
+- Leveled logging with the ability to turn off logging altogether.
+- Store and retrieve logger in and from context.
+- Standard log Adapter.
 
 ## Usage
 
@@ -63,12 +63,13 @@ You can customize the logger with options. Use `WithCaller()` to enable printing
 source location. `WithTimestamp()` prints the timestamp of each log.
 
 ```go
-logger := log.New(WithTimestamp(), WithCaller(), WithPrefix("baking 🍪"))
+logger := log.New(WithTimestamp(), WithTimeFormat(time.Kitchen),
+  WithCaller(), WithPrefix("baking 🍪"))
 logger.Info("Starting oven!", "degree", 375)
-// 2023/01/04 10:00:02 INFO <cookies/oven.go:56> baking 🍪: Starting oven! degree=375
+// 10:00AM INFO <cookies/oven.go:56> baking 🍪: Starting oven! degree=375
 time.Sleep(10 * time.Minute)
 logger.Info("Finished baking")
-// 2023/01/04 10:10:02 INFO <cookies/oven.go:60> baking 🍪: Finished baking
+// 10:10AM INFO <cookies/oven.go:60> baking 🍪: Finished baking
 ```
 
 For a list of available options, refer to [options.go](./options.go).
@@ -189,7 +190,7 @@ stdlog.Printf("DEBUG Failed to make bake request, %s", fmt.Errorf("temperature i
 
 [MIT](https://github.com/charmbracelet/log/raw/master/LICENSE)
 
-***
+---
 
 Part of [Charm](https://charm.sh).
 
