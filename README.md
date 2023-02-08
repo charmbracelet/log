@@ -63,14 +63,21 @@ You can customize the logger with options. Use `WithCaller()` to enable printing
 source location. `WithTimestamp()` prints the timestamp of each log.
 
 ```go
-logger := log.New(WithTimestamp(), WithTimeFormat(time.Kitchen),
-  WithCaller(), WithPrefix("baking 🍪"))
+logger := log.New(log.WithTimestamp(), log.WithTimeFormat(time.Kitchen),
+    log.WithCaller(), log.WithPrefix("baking 🍪"))
 logger.Info("Starting oven!", "degree", 375)
 // 10:00AM INFO <cookies/oven.go:56> baking 🍪: Starting oven! degree=375
 time.Sleep(10 * time.Minute)
 logger.Info("Finished baking")
 // 10:10AM INFO <cookies/oven.go:60> baking 🍪: Finished baking
 ```
+
+Use `log.SetFormatter()` or `log.WithFormatter()` to change the output format.
+Available options are:
+
+- `log.TextFormatter` (_default_)
+- `log.JSONFormatter`
+- `log.LogfmtFormatter`
 
 For a list of available options, refer to [options.go](./options.go).
 
@@ -91,6 +98,9 @@ Or if you prefer your logger with no styles at all.
 ```go
 logger.DisableStyles()
 ```
+
+> **_NOTE:_** this only affects the `TextFormatter`. `JSONFormatter` and
+> `LogfmtFormatter` won't use any styles.
 
 ### Sub-logger
 
