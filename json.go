@@ -1,6 +1,7 @@
 package log
 
 import (
+	"encoding"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -9,7 +10,7 @@ import (
 func (l *logger) jsonFormatter(keyvals ...interface{}) {
 	m := make(map[string]interface{}, len(keyvals)/2)
 	for i := 0; i < len(keyvals); i += 2 {
-		switch keyvals[i].(string) {
+		switch keyvals[i] {
 		case tsKey:
 			if t, ok := keyvals[i+1].(time.Time); ok {
 				m[tsKey] = t.Format(l.timeFormat)
@@ -30,17 +31,30 @@ func (l *logger) jsonFormatter(keyvals ...interface{}) {
 			if msg := keyvals[i+1]; msg != nil {
 				m[msgKey] = fmt.Sprint(msg)
 			}
-		case "":
-			// ignore empty keys
-			continue
 		default:
-			var k string
-			if key, ok := keyvals[i].(string); ok {
-				k = key
-			} else {
-				k = fmt.Sprint(keyvals[i])
+			var (
+				key string
+				val interface{}
+			)
+			switch k := keyvals[i].(type) {
+			case fmt.Stringer:
+				key = k.String()
+			case error:
+				key = k.Error()
+			default:
+				key = fmt.Sprint(k)
 			}
-			m[k] = keyvals[i+1]
+			switch v := keyvals[i+1].(type) {
+			// Prefer json.Marshaler & encoding.Marshaler over others.
+			case json.Marshaler, encoding.TextMarshaler:
+			case error:
+				val = v.Error()
+			case fmt.Stringer:
+				val = v.String()
+			default:
+				val = fmt.Sprint(v)
+			}
+			m[key] = val
 		}
 	}
 

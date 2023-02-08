@@ -14,7 +14,7 @@ const (
 func (l *logger) textFormatter(keyvals ...interface{}) {
 	s := l.styles
 	for i := 0; i < len(keyvals); i += 2 {
-		switch keyvals[i].(string) {
+		switch keyvals[i] {
 		case tsKey:
 			if t, ok := keyvals[i+1].(time.Time); ok {
 				ts := t.Format(l.timeFormat)
