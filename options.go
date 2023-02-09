@@ -41,13 +41,6 @@ func WithPrefix(prefix string) LoggerOption {
 	}
 }
 
-// WithNoStyles returns a LoggerOption that disables colors for the logger.
-func WithNoStyles() LoggerOption {
-	return func(l *logger) {
-		l.noStyles = true
-	}
-}
-
 // WithTimestamp returns a LoggerOption that enables timestamps for the logger.
 func WithTimestamp() LoggerOption {
 	return func(l *logger) {

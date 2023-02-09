@@ -20,7 +20,7 @@ func TestLogContext_simple(t *testing.T) {
 
 func TestLogContext_fields(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(WithOutput(&buf), WithLevel(DebugLevel), WithNoStyles())
+	l := New(WithOutput(&buf), WithLevel(DebugLevel))
 	ctx := WithContext(context.Background(), l, "foo", "bar")
 	l = FromContext(ctx)
 	require.NotNil(t, l)
