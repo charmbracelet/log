@@ -53,7 +53,7 @@ type StandardLoggerOption struct {
 // StandardLoggerWriter is a io.Writer that can be used along with the standard
 // log library. The writer can infer log levels from message prefix. Expected
 // prefixes are DEBUG, INFO, WARN, ERROR, and ERR.
-func (l *logger) StandardLoggerWriter(opts ...StandardLoggerOption) io.Writer {
+func StandardLoggerWriter(l *logger, opts ...StandardLoggerOption) io.Writer {
 	nl := *l
 	// The caller stack is
 	// log.Printf() -> l.Output() -> l.out.Write(stdLogger.Write)
@@ -70,6 +70,6 @@ func (l *logger) StandardLoggerWriter(opts ...StandardLoggerOption) io.Writer {
 // StandardLogger returns a standard logger from Logger. The returned logger
 // can infer log levels from message prefix. Expected prefixes are DEBUG, INFO,
 // WARN, ERROR, and ERR.
-func (l *logger) StandardLogger(opts ...StandardLoggerOption) *log.Logger {
-	return log.New(l.StandardLoggerWriter(opts...), "", 0)
+func StandardLogger(l *logger, opts ...StandardLoggerOption) *log.Logger {
+	return log.New(StandardLoggerWriter(l, opts...), "", 0)
 }

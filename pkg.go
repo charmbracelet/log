@@ -2,7 +2,6 @@ package log
 
 import (
 	"io"
-	"log"
 	"os"
 )
 
@@ -125,9 +124,4 @@ func Fatal(msg interface{}, keyvals ...interface{}) {
 // Print logs a message with no level.
 func Print(msg interface{}, keyvals ...interface{}) {
 	defaultLogger.log(noLevel, msg, keyvals...)
-}
-
-// StandardLogger returns a standard logger from the default logger.
-func StandardLogger() *log.Logger {
-	return defaultLogger.StandardLogger()
 }

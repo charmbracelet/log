@@ -168,9 +168,11 @@ For this, you can use the standard log adapter which simply wraps the logger in
 a `*log.Logger` interface.
 
 ```go
-stdlog := log.New(WithPrefix("http")).StandardLogger(log.StandardLoggerOption{
+logger := log.New(WithPrefix("http"))
+stdlog := log.StandardLogger(logger, log.StandardLoggerOption{
     ForceLevel: log.ErrorLevel,
 })
+
 s := &http.Server{
     Addr:     ":8080",
     Handler:  handler,
@@ -185,7 +187,7 @@ standard log adapter will infer the log level from the log message prefix unless
 you provide `ForceLevel` option.
 
 ```go
-stdlog.SetOutput(log.StandardWriter())
+stdlog.SetOutput(log.StandardLoggerWriter(logger))
 stdlog.Printf("ERROR Failed to make bake request, %s", fmt.Errorf("temperature is to low"))
 // ERROR Failed to make bake request, temperature is to low
 stdlog.Printf("DEBUG Failed to make bake request, %s", fmt.Errorf("temperature is to low"))
