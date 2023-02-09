@@ -198,34 +198,6 @@ func TestTextLogger(t *testing.T) {
 	}
 }
 
-func TestTextOffLevel(t *testing.T) {
-	var buf bytes.Buffer
-	logger := New(WithOutput(&buf), WithTimeFunction(_zeroTime),
-		WithNoStyles(), WithLevel(OffLevel))
-	cases := []struct {
-		name     string
-		expected string
-		msg      string
-		kvs      []interface{}
-		f        func(msg interface{}, kvs ...interface{})
-	}{
-		{
-			name:     "simple message",
-			expected: "",
-			msg:      "error",
-			kvs:      nil,
-			f:        logger.Error,
-		},
-	}
-	for _, c := range cases {
-		buf.Reset()
-		t.Run(c.name, func(t *testing.T) {
-			c.f(c.msg, c.kvs...)
-			assert.Equal(t, c.expected, buf.String())
-		})
-	}
-}
-
 func TestTextHelper(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(WithOutput(&buf),

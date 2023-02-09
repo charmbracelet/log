@@ -14,10 +14,8 @@ const (
 	ErrorLevel
 	// FatalLevel is the fatal level.
 	FatalLevel
-	// noLevel is the no level.
+	// noLevel is used with log.Print.
 	noLevel
-	// OffLevel is the off level.
-	OffLevel
 )
 
 // String returns the string representation of the level.
@@ -33,8 +31,6 @@ func (l Level) String() string {
 		return "error"
 	case FatalLevel:
 		return "fatal"
-	case OffLevel:
-		return "off"
 	default:
 		return ""
 	}
