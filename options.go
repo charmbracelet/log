@@ -48,14 +48,6 @@ func WithNoStyles() LoggerOption {
 	}
 }
 
-// WithStyles returns a LoggerOption that sets the styles for the logger.
-func WithStyles(styles Styles) LoggerOption {
-	return func(l *logger) {
-		l.noStyles = false
-		l.styles = styles
-	}
-}
-
 // WithTimestamp returns a LoggerOption that enables timestamps for the logger.
 func WithTimestamp() LoggerOption {
 	return func(l *logger) {

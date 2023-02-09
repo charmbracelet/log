@@ -2,10 +2,14 @@ package log
 
 import (
 	"bytes"
+	"fmt"
 	"log"
+	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestStdLog(t *testing.T) {
@@ -39,7 +43,6 @@ func TestStdLog(t *testing.T) {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
 			c.logger.SetOutput(&buf)
-			c.logger.DisableStyles()
 			c.logger.SetTimeFunction(_zeroTime)
 			c.f(c.logger.StandardLogger())
 			assert.Equal(t, c.expected, buf.String())
@@ -49,7 +52,7 @@ func TestStdLog(t *testing.T) {
 
 func TestStdLog_forceLevel(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(WithOutput(&buf), WithNoStyles())
+	logger := New(WithOutput(&buf))
 	cases := []struct {
 		name     string
 		expected string
@@ -83,7 +86,9 @@ func TestStdLog_forceLevel(t *testing.T) {
 
 func TestStdLog_writer(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(WithOutput(&buf), WithCaller(), WithNoStyles())
+	logger := New(WithOutput(&buf), WithCaller())
+	_, file, line, ok := runtime.Caller(0)
+  require.True(t, ok)
 	cases := []struct {
 		name     string
 		expected string
@@ -96,12 +101,12 @@ func TestStdLog_writer(t *testing.T) {
 		},
 		{
 			name:     "info",
-			expected: "INFO <log/stdlog_test.go:112> coffee\n",
+      expected: fmt.Sprintf("INFO <log/%s:%d> coffee\n", filepath.Base(file), line+27),
 			level:    InfoLevel,
 		},
 		{
 			name:     "error",
-			expected: "ERROR <log/stdlog_test.go:112> coffee\n",
+      expected: fmt.Sprintf("ERROR <log/%s:%d> coffee\n", filepath.Base(file), line+27),
 			level:    ErrorLevel,
 		},
 	}

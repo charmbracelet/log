@@ -2,49 +2,30 @@ package log
 
 import "github.com/charmbracelet/lipgloss"
 
-// Styles is the styles for the logger.
-type Styles struct {
-	Timestamp  lipgloss.Style
-	Caller     lipgloss.Style
-	Prefix     lipgloss.Style
-	Message    lipgloss.Style
-	Key        lipgloss.Style
-	Value      lipgloss.Style
-	Separator  lipgloss.Style
-	DebugLevel lipgloss.Style
-	InfoLevel  lipgloss.Style
-	WarnLevel  lipgloss.Style
-	ErrorLevel lipgloss.Style
-	FatalLevel lipgloss.Style
-}
-
-// DefaultStyles returns the default styles for the logger.
-func DefaultStyles() Styles {
-	s := Styles{}
-
+var (
 	// TimestampStyle is the style for timestamps.
-	s.Timestamp = lipgloss.NewStyle()
+	TimestampStyle = lipgloss.NewStyle()
 
 	// CallerStyle is the style for caller.
-	s.Caller = lipgloss.NewStyle().Faint(true)
+	CallerStyle = lipgloss.NewStyle().Faint(true)
 
 	// PrefixStyle is the style for prefix.
-	s.Prefix = lipgloss.NewStyle().Bold(true).Faint(true)
+	PrefixStyle = lipgloss.NewStyle().Bold(true).Faint(true)
 
 	// MessageStyle is the style for messages.
-	s.Message = lipgloss.NewStyle()
+	MessageStyle = lipgloss.NewStyle()
 
 	// KeyStyle is the style for keys.
-	s.Key = lipgloss.NewStyle().Faint(true)
+	KeyStyle = lipgloss.NewStyle().Faint(true)
 
 	// ValueStyle is the style for values.
-	s.Value = lipgloss.NewStyle()
+	ValueStyle = lipgloss.NewStyle()
 
 	// SeparatorStyle is the style for separators.
-	s.Separator = lipgloss.NewStyle().Faint(true)
+	SeparatorStyle = lipgloss.NewStyle().Faint(true)
 
 	// DebugLevel is the style for debug level.
-	s.DebugLevel = lipgloss.NewStyle().
+	DebugLevelStyle = lipgloss.NewStyle().
 		SetString("DEBUG").
 		Bold(true).
 		MaxWidth(4).
@@ -54,7 +35,7 @@ func DefaultStyles() Styles {
 		})
 
 	// InfoLevel is the style for info level.
-	s.InfoLevel = lipgloss.NewStyle().
+	InfoLevelStyle = lipgloss.NewStyle().
 		SetString("INFO").
 		Bold(true).
 		MaxWidth(4).
@@ -64,7 +45,7 @@ func DefaultStyles() Styles {
 		})
 
 	// WarnLevel is the style for warn level.
-	s.WarnLevel = lipgloss.NewStyle().
+	WarnLevelStyle = lipgloss.NewStyle().
 		SetString("WARN").
 		Bold(true).
 		MaxWidth(4).
@@ -74,7 +55,7 @@ func DefaultStyles() Styles {
 		})
 
 	// ErrorLevel is the style for error level.
-	s.ErrorLevel = lipgloss.NewStyle().
+	ErrorLevelStyle = lipgloss.NewStyle().
 		SetString("ERROR").
 		Bold(true).
 		MaxWidth(4).
@@ -84,7 +65,7 @@ func DefaultStyles() Styles {
 		})
 
 	// FatalLevel is the style for error level.
-	s.FatalLevel = lipgloss.NewStyle().
+	FatalLevelStyle = lipgloss.NewStyle().
 		SetString("FATAL").
 		Bold(true).
 		MaxWidth(4).
@@ -92,23 +73,21 @@ func DefaultStyles() Styles {
 			Light: "133",
 			Dark:  "134",
 		})
+)
 
-	return s
-}
-
-// Level returns the style for the level.
-func (s Styles) Level(level Level) lipgloss.Style {
+// levelStyle is a helper function to get the style for a level.
+func levelStyle(level Level) lipgloss.Style {
 	switch level {
 	case DebugLevel:
-		return s.DebugLevel
+		return DebugLevelStyle
 	case InfoLevel:
-		return s.InfoLevel
+		return InfoLevelStyle
 	case WarnLevel:
-		return s.WarnLevel
+		return WarnLevelStyle
 	case ErrorLevel:
-		return s.ErrorLevel
+		return ErrorLevelStyle
 	case FatalLevel:
-		return s.FatalLevel
+		return FatalLevelStyle
 	default:
 		return lipgloss.NewStyle()
 	}

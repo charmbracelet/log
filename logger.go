@@ -35,11 +35,6 @@ type Logger interface {
 	// DisableCaller disables function and file caller.
 	DisableCaller()
 
-	// EnableStyles enables colored output and styles.
-	EnableStyles()
-	// DisableStyles disables colored output and styles.
-	DisableStyles()
-
 	// SetLevel sets the allowed level.
 	SetLevel(level Level)
 	// GetLevel returns the allowed level.

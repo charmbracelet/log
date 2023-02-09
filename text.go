@@ -137,14 +137,13 @@ func needsQuoting(str string) bool {
 }
 
 func (l *logger) textFormatter(keyvals ...interface{}) {
-	s := l.styles
 	for i := 0; i < len(keyvals); i += 2 {
 		switch keyvals[i] {
 		case tsKey:
 			if t, ok := keyvals[i+1].(time.Time); ok {
 				ts := t.Format(l.timeFormat)
 				if !l.noStyles {
-					ts = s.Timestamp.Render(ts)
+					ts = TimestampStyle.Render(ts)
 				}
 				l.b.WriteString(ts)
 				l.b.WriteByte(' ')
@@ -153,7 +152,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 			if level, ok := keyvals[i+1].(Level); ok {
 				lvl := strings.ToUpper(level.String())
 				if !l.noStyles {
-					lvl = s.Level(level).String()
+					lvl = levelStyle(level).String()
 				}
 				l.b.WriteString(lvl)
 				l.b.WriteByte(' ')
@@ -162,7 +161,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 			if caller, ok := keyvals[i+1].(string); ok {
 				caller = fmt.Sprintf("<%s>", caller)
 				if !l.noStyles {
-					caller = s.Caller.Render(caller)
+					caller = CallerStyle.Render(caller)
 				}
 				l.b.WriteString(caller)
 				l.b.WriteByte(' ')
@@ -170,7 +169,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 		case prefixKey:
 			if prefix, ok := keyvals[i+1].(string); ok {
 				if !l.noStyles {
-					prefix = s.Prefix.Render(prefix)
+					prefix = PrefixStyle.Render(prefix)
 				}
 				l.b.WriteString(prefix)
 				l.b.WriteByte(' ')
@@ -179,7 +178,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 			if msg := keyvals[i+1]; msg != nil {
 				m := fmt.Sprint(msg)
 				if !l.noStyles {
-					m = s.Message.Render(m)
+					m = MessageStyle.Render(m)
 				}
 				l.b.WriteString(m)
 			}
@@ -187,8 +186,8 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 			sep := separator
 			indentSep := indentSeparator
 			if !l.noStyles {
-				sep = s.Separator.Render(sep)
-				indentSep = s.Separator.Render(indentSep)
+				sep = SeparatorStyle.Render(sep)
+				indentSep = SeparatorStyle.Render(indentSep)
 			}
 			moreKeys := i < len(keyvals)-2
 			key := fmt.Sprint(keyvals[i])
@@ -201,8 +200,8 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				continue
 			}
 			if !l.noStyles {
-				key = s.Key.Render(key)
-				val = s.Value.Render(val)
+				key = KeyStyle.Render(key)
+				val = ValueStyle.Render(val)
 			}
 
 			// Values may contain multiple lines, and that format

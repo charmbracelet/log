@@ -41,8 +41,6 @@ type logger struct {
 	keyvals []interface{}
 
 	helpers sync.Map
-
-	styles Styles
 }
 
 // New returns a new logger. It uses os.Stderr as the default output.
@@ -51,7 +49,6 @@ func New(opts ...LoggerOption) Logger {
 		b:      bytes.Buffer{},
 		mu:     &sync.RWMutex{},
 		level:  InfoLevel,
-		styles: DefaultStyles(),
 	}
 
 	for _, opt := range opts {
@@ -70,7 +67,7 @@ func New(opts ...LoggerOption) Logger {
 		l.timeFormat = DefaultTimeFormat
 	}
 
-	if !isTerminal(l.w) {
+	if l.formatter == TextFormatter && !isTerminal(l.w) {
 		l.noStyles = true
 	}
 
