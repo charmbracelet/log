@@ -67,7 +67,8 @@ func New(opts ...LoggerOption) Logger {
 		l.timeFormat = DefaultTimeFormat
 	}
 
-	if l.formatter == TextFormatter && !isTerminal(l.w) {
+	if !isTerminal(l.w) {
+    // This only affect the TextFormatter
 		l.noStyles = true
 	}
 
@@ -203,47 +204,19 @@ func trimCallerPath(path string) string {
 	return path[idx+1:]
 }
 
-// EnableTimestamp enables printing the timestamp.
-func (l *logger) EnableTimestamp() {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	l.timestamp = true
+// SetReportTimestamp sets whether the timestamp should be reported.
+func (l *logger) SetReportTimestamp(report bool) {
+  l.mu.Lock()
+  defer l.mu.Unlock()
+  l.timestamp = report
 }
 
-// DisableTimestamp disables printing the timestamp.
-func (l *logger) DisableTimestamp() {
-	l.timestamp = false
-	l.mu.Lock()
-	defer l.mu.Unlock()
-}
-
-// EnableCaller enables printing the caller.
-func (l *logger) EnableCaller() {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	l.caller = true
-}
-
-// DisableCaller disables printing the caller.
-func (l *logger) DisableCaller() {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	l.caller = false
-}
-
-// EnableStyles enables colored output.
-func (l *logger) EnableStyles() {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	l.noStyles = false
-}
-
-// DisableStyles disables colored output.
-func (l *logger) DisableStyles() {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	l.noStyles = true
-}
+// SetReportCaller sets whether the caller location should be reported.
+func (l *logger) SetReportCaller(report bool) {
+  l.mu.Lock()
+  defer l.mu.Unlock()
+  l.caller = report
+} 
 
 // GetLevel returns the current level.
 func (l *logger) GetLevel() Level {

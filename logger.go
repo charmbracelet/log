@@ -24,16 +24,6 @@ func NowUTC() time.Time {
 
 // Logger is an interface for logging.
 type Logger interface {
-	// EnableTimestamp enables timestamps.
-	EnableTimestamp()
-	// DisableTimestamp disables timestamps.
-	DisableTimestamp()
-
-	// EnableCaller enables function and file caller.
-	EnableCaller()
-	// DisableCaller disables function and file caller.
-	DisableCaller()
-
 	// SetLevel sets the allowed level.
 	SetLevel(level Level)
 	// GetLevel returns the allowed level.
@@ -44,6 +34,10 @@ type Logger interface {
 	// GetPrefix returns the logger prefix.
 	GetPrefix() string
 
+  // SetReportTimestamp sets whether the logger should report the timestamp.
+  SetReportTimestamp(bool)
+  // SetReportCaller sets whether the logger should report the caller location.
+  SetReportCaller(bool)
 	// SetTimeFunction sets the time function used to get the time.
 	// The default is time.Now.
 	//
@@ -61,6 +55,7 @@ type Logger interface {
 	// and skips it for source location information.
 	// It's the equivalent of testing.TB.Helper().
 	Helper()
+
 	// With returns a new sub logger with the given key value pairs.
 	With(keyval ...interface{}) Logger
 

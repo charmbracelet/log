@@ -13,7 +13,6 @@ func TestGlobal(t *testing.T) {
 	var buf bytes.Buffer
 	SetOutput(&buf)
 	SetTimeFunction(_zeroTime)
-	DisableStyles()
 	cases := []struct {
 		name     string
 		expected string
@@ -57,7 +56,6 @@ func TestPrint(t *testing.T) {
 	SetOutput(&buf)
 	SetLevel(FatalLevel)
 	SetTimeFunction(_zeroTime)
-	DisableStyles()
 	Error("error")
 	Print("print")
 	assert.Equal(t, "0001/01/01 00:00:00 print\n", buf.String())

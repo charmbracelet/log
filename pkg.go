@@ -12,35 +12,15 @@ func Default() Logger {
 	return defaultLogger
 }
 
-// EnableTimestamp enables timestamps for the default logger.
-func EnableTimestamp() {
-	defaultLogger.EnableTimestamp()
+// SetReportTimestamp sets whether to report timestamp for the default logger.
+func SetReportTimestamp(report bool) {
+  defaultLogger.SetReportTimestamp(report)
 }
 
-// DisableTimestamp disables timestamps for the default logger.
-func DisableTimestamp() {
-	defaultLogger.DisableTimestamp()
-}
-
-// EnableCaller enables caller for the default logger.
-func EnableCaller() {
-	defaultLogger.EnableCaller()
-}
-
-// DisableCaller disables caller for the default logger.
-func DisableCaller() {
-	defaultLogger.DisableCaller()
-}
-
-// EnableStyles enables colored output for the default logger.
-func EnableStyles() {
-	defaultLogger.EnableStyles()
-}
-
-// DisableStyles disables colored output for the default logger.
-func DisableStyles() {
-	defaultLogger.DisableStyles()
-}
+// SetReportCaller sets whether to report caller location for the default logger.
+func SetReportCaller(report bool) {
+  defaultLogger.SetReportCaller(report)
+} 
 
 // SetLevel sets the level for the default logger.
 func SetLevel(level Level) {
