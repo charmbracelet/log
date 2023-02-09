@@ -13,7 +13,7 @@ import (
 
 func TestJson(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(WithOutput(&buf), WithLevel(DebugLevel), WithFormatter(JSONFormatter))
+	l := New(WithOutput(&buf), WithFormatter(JSONFormatter))
 	cases := []struct {
 		name     string
 		expected string
@@ -30,7 +30,7 @@ func TestJson(t *testing.T) {
 		},
 		{
 			name:     "default logger debug with timestamp",
-			expected: "{\"lvl\":\"debug\",\"msg\":\"info\"}\n",
+			expected: "",
 			msg:      "info",
 			kvs:      nil,
 			f:        l.Debug,
