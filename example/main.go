@@ -57,6 +57,6 @@ func main() {
 	time.Sleep(time.Second)
 	if temp > 500 {
 		log.Error("Oven is too hot", "temperature", temp)
-		log.Fatal("Cookies are burnt!")
+		log.Fatal("The kitchen is on fire 🔥")
 	}
 }
