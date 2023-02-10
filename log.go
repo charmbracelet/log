@@ -28,6 +28,7 @@ type logger struct {
 	b         bytes.Buffer
 	mu        *sync.RWMutex
 	isDiscard atomic.Bool
+	aLevel    atomic.Int32
 
 	level        Level
 	prefix       string
@@ -57,6 +58,7 @@ func New(opts ...LoggerOption) Logger {
 		opt(l)
 	}
 
+	l.aLevel.Store(int32(l.level))
 	l.isDiscard.Store(l.w == io.Discard)
 	if l.w == nil {
 		l.w = os.Stderr
@@ -83,14 +85,15 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		return
 	}
 
+	// check if the level is allowed
+	if l.aLevel.Load() > int32(level) {
+		return
+	}
+
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	defer l.b.Reset()
 
-	// check if the level is allowed
-	if l.level > level {
-		return
-	}
 	var kvs []interface{}
 	if l.timestamp {
 		kvs = append(kvs, tsKey, l.timeFunc())
@@ -232,6 +235,7 @@ func (l *logger) SetLevel(level Level) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.level = level
+	l.aLevel.Store(int32(level))
 }
 
 // GetPrefix returns the current prefix.
