@@ -26,50 +26,50 @@ var (
 
 	// DebugLevel is the style for debug level.
 	DebugLevelStyle = lipgloss.NewStyle().
-		SetString("DEBUG").
-		Bold(true).
-		MaxWidth(4).
-		Foreground(lipgloss.AdaptiveColor{
+			SetString("DEBUG").
+			Bold(true).
+			MaxWidth(4).
+			Foreground(lipgloss.AdaptiveColor{
 			Light: "63",
 			Dark:  "63",
 		})
 
 	// InfoLevel is the style for info level.
 	InfoLevelStyle = lipgloss.NewStyle().
-		SetString("INFO").
-		Bold(true).
-		MaxWidth(4).
-		Foreground(lipgloss.AdaptiveColor{
+			SetString("INFO").
+			Bold(true).
+			MaxWidth(4).
+			Foreground(lipgloss.AdaptiveColor{
 			Light: "39",
 			Dark:  "86",
 		})
 
 	// WarnLevel is the style for warn level.
 	WarnLevelStyle = lipgloss.NewStyle().
-		SetString("WARN").
-		Bold(true).
-		MaxWidth(4).
-		Foreground(lipgloss.AdaptiveColor{
+			SetString("WARN").
+			Bold(true).
+			MaxWidth(4).
+			Foreground(lipgloss.AdaptiveColor{
 			Light: "208",
 			Dark:  "192",
 		})
 
 	// ErrorLevel is the style for error level.
 	ErrorLevelStyle = lipgloss.NewStyle().
-		SetString("ERROR").
-		Bold(true).
-		MaxWidth(4).
-		Foreground(lipgloss.AdaptiveColor{
+			SetString("ERROR").
+			Bold(true).
+			MaxWidth(4).
+			Foreground(lipgloss.AdaptiveColor{
 			Light: "203",
 			Dark:  "204",
 		})
 
 	// FatalLevel is the style for error level.
 	FatalLevelStyle = lipgloss.NewStyle().
-		SetString("FATAL").
-		Bold(true).
-		MaxWidth(4).
-		Foreground(lipgloss.AdaptiveColor{
+			SetString("FATAL").
+			Bold(true).
+			MaxWidth(4).
+			Foreground(lipgloss.AdaptiveColor{
 			Light: "133",
 			Dark:  "134",
 		})

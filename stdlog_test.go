@@ -88,7 +88,7 @@ func TestStdLog_writer(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(WithOutput(&buf), WithCaller())
 	_, file, line, ok := runtime.Caller(0)
-  require.True(t, ok)
+	require.True(t, ok)
 	cases := []struct {
 		name     string
 		expected string
@@ -101,12 +101,12 @@ func TestStdLog_writer(t *testing.T) {
 		},
 		{
 			name:     "info",
-      expected: fmt.Sprintf("INFO <log/%s:%d> coffee\n", filepath.Base(file), line+27),
+			expected: fmt.Sprintf("INFO <log/%s:%d> coffee\n", filepath.Base(file), line+27),
 			level:    InfoLevel,
 		},
 		{
 			name:     "error",
-      expected: fmt.Sprintf("ERROR <log/%s:%d> coffee\n", filepath.Base(file), line+27),
+			expected: fmt.Sprintf("ERROR <log/%s:%d> coffee\n", filepath.Base(file), line+27),
 			level:    ErrorLevel,
 		},
 	}

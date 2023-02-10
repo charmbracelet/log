@@ -15,13 +15,13 @@ func Default() Logger {
 
 // SetReportTimestamp sets whether to report timestamp for the default logger.
 func SetReportTimestamp(report bool) {
-  defaultLogger.SetReportTimestamp(report)
+	defaultLogger.SetReportTimestamp(report)
 }
 
 // SetReportCaller sets whether to report caller location for the default logger.
 func SetReportCaller(report bool) {
-  defaultLogger.SetReportCaller(report)
-} 
+	defaultLogger.SetReportCaller(report)
+}
 
 // SetLevel sets the level for the default logger.
 func SetLevel(level Level) {

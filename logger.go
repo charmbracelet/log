@@ -35,10 +35,10 @@ type Logger interface {
 	// GetPrefix returns the logger prefix.
 	GetPrefix() string
 
-  // SetReportTimestamp sets whether the logger should report the timestamp.
-  SetReportTimestamp(bool)
-  // SetReportCaller sets whether the logger should report the caller location.
-  SetReportCaller(bool)
+	// SetReportTimestamp sets whether the logger should report the timestamp.
+	SetReportTimestamp(bool)
+	// SetReportCaller sets whether the logger should report the caller location.
+	SetReportCaller(bool)
 	// SetTimeFunction sets the time function used to get the time.
 	// The default is time.Now.
 	//
