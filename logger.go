@@ -2,6 +2,7 @@ package log
 
 import (
 	"io"
+	"log"
 	"time"
 )
 
@@ -71,4 +72,7 @@ type Logger interface {
 	Fatal(msg interface{}, keyval ...interface{})
 	// Print logs a message with no level.
 	Print(msg interface{}, keyval ...interface{})
+
+	// StandardLog returns a standard logger from this logger.
+	StandardLog(...StandardLogOption) *log.Logger
 }

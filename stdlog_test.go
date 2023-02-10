@@ -44,8 +44,7 @@ func TestStdLog(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			c.logger.SetOutput(&buf)
 			c.logger.SetTimeFunction(_zeroTime)
-      l := c.logger.(*logger)
-			c.f(StandardLogger(l))
+			c.f(c.logger.StandardLog())
 			assert.Equal(t, c.expected, buf.String())
 		})
 	}
@@ -53,7 +52,7 @@ func TestStdLog(t *testing.T) {
 
 func TestStdLog_forceLevel(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(WithOutput(&buf)).(*logger)
+	logger := New(WithOutput(&buf))
 	cases := []struct {
 		name     string
 		expected string
@@ -78,7 +77,7 @@ func TestStdLog_forceLevel(t *testing.T) {
 	for _, c := range cases {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
-			l := StandardLogger(logger, StandardLoggerOption{ForceLevel: c.level})
+			l := logger.StandardLog(StandardLogOption{ForceLevel: c.level})
 			l.Print("coffee")
 			assert.Equal(t, c.expected, buf.String())
 		})
@@ -87,7 +86,7 @@ func TestStdLog_forceLevel(t *testing.T) {
 
 func TestStdLog_writer(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(WithOutput(&buf), WithCaller()).(*logger)
+	logger := New(WithOutput(&buf), WithCaller())
 	_, file, line, ok := runtime.Caller(0)
   require.True(t, ok)
 	cases := []struct {
@@ -114,7 +113,7 @@ func TestStdLog_writer(t *testing.T) {
 	for _, c := range cases {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
-			l := log.New(StandardLoggerWriter(logger, StandardLoggerOption{ForceLevel: c.level}), "", 0)
+			l := log.New(logger.StandardLog(StandardLogOption{ForceLevel: c.level}).Writer(), "", 0)
 			l.Print("coffee")
 			assert.Equal(t, c.expected, buf.String())
 		})
