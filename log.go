@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -23,9 +24,10 @@ var _ Logger = &logger{}
 
 // logger is a logger that implements Logger.
 type logger struct {
-	w  io.Writer
-	b  bytes.Buffer
-	mu *sync.RWMutex
+	w         io.Writer
+	b         bytes.Buffer
+	mu        *sync.RWMutex
+	isDiscard atomic.Bool
 
 	level        Level
 	prefix       string
@@ -46,15 +48,16 @@ type logger struct {
 // New returns a new logger. It uses os.Stderr as the default output.
 func New(opts ...LoggerOption) Logger {
 	l := &logger{
-		b:      bytes.Buffer{},
-		mu:     &sync.RWMutex{},
-		level:  InfoLevel,
+		b:     bytes.Buffer{},
+		mu:    &sync.RWMutex{},
+		level: InfoLevel,
 	}
 
 	for _, opt := range opts {
 		opt(l)
 	}
 
+	l.isDiscard.Store(l.w == io.Discard)
 	if l.w == nil {
 		l.w = os.Stderr
 	}
@@ -68,7 +71,7 @@ func New(opts ...LoggerOption) Logger {
 	}
 
 	if !isTerminal(l.w) {
-    // This only affect the TextFormatter
+		// This only affect the TextFormatter
 		l.noStyles = true
 	}
 
@@ -76,19 +79,18 @@ func New(opts ...LoggerOption) Logger {
 }
 
 func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
+	if l.isDiscard.Load() {
+		return
+	}
+
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	defer l.b.Reset()
 
-	// skip logging if writer is discard
-	if l.w == io.Discard {
-		return
-	}
 	// check if the level is allowed
 	if l.level > level {
 		return
 	}
-
 	var kvs []interface{}
 	if l.timestamp {
 		kvs = append(kvs, tsKey, l.timeFunc())
@@ -206,17 +208,17 @@ func trimCallerPath(path string) string {
 
 // SetReportTimestamp sets whether the timestamp should be reported.
 func (l *logger) SetReportTimestamp(report bool) {
-  l.mu.Lock()
-  defer l.mu.Unlock()
-  l.timestamp = report
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.timestamp = report
 }
 
 // SetReportCaller sets whether the caller location should be reported.
 func (l *logger) SetReportCaller(report bool) {
-  l.mu.Lock()
-  defer l.mu.Unlock()
-  l.caller = report
-} 
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.caller = report
+}
 
 // GetLevel returns the current level.
 func (l *logger) GetLevel() Level {
@@ -265,6 +267,7 @@ func (l *logger) SetOutput(w io.Writer) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.w = w
+	l.isDiscard.Store(w == io.Discard)
 }
 
 // SetFormatter sets the formatter.
