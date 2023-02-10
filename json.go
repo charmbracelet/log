@@ -1,7 +1,6 @@
 package log
 
 import (
-	"encoding"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -45,14 +44,12 @@ func (l *logger) jsonFormatter(keyvals ...interface{}) {
 				key = fmt.Sprint(k)
 			}
 			switch v := keyvals[i+1].(type) {
-			// Prefer json.Marshaler & encoding.Marshaler over others.
-			case json.Marshaler, encoding.TextMarshaler:
 			case error:
 				val = v.Error()
 			case fmt.Stringer:
 				val = v.String()
 			default:
-				val = fmt.Sprintf("%+v", v)
+				val = v
 			}
 			m[key] = val
 		}
