@@ -59,8 +59,9 @@ if butter {
 
 ### Options
 
-You can customize the logger with options. Use `WithCaller()` to enable printing
-source location. `WithTimestamp()` prints the timestamp of each log.
+You can customize the logger with options. Use `log.WithCaller()` to enable
+printing source location. `log.WithTimestamp()` prints the timestamp of each
+log.
 
 ```go
 logger := log.New(log.WithTimestamp(), log.WithTimeFormat(time.Kitchen),
@@ -81,26 +82,14 @@ Available options are:
 
 For a list of available options, refer to [options.go](./options.go).
 
-Set the logger level and styles.
+Set the logger level and options.
 
 ```go
-var myCustomStyles log.Styles
-...
-logger.DisableTimestamp()
-logger.DisableCaller()
+logger.SetReportTimestamp(false)
+logger.SetReportCaller(false)
 logger.SetLevel(log.DebugLevel)
-logger.SetStyles(myCustomStyles)
 logger.Debug("Preparing batch 2...") // DEBUG baking 🍪: Preparing batch 2...
 ```
-
-Or if you prefer your logger with no styles at all.
-
-```go
-logger.DisableStyles()
-```
-
-> **_NOTE:_** this only affects the `TextFormatter`. `JSONFormatter` and
-> `LogfmtFormatter` won't use any styles.
 
 ### Sub-logger
 
@@ -151,7 +140,7 @@ function startOven(degree int) {
     log.Info("Starting oven", "degree", degree)
 }
 
-log.EnableCaller()
+log.SetReportCaller(true)
 startOven(400) // INFO <cookies/oven.go:123> Starting oven degree=400
 ```
 
@@ -168,7 +157,7 @@ For this, you can use the standard log adapter which simply wraps the logger in
 a `*log.Logger` interface.
 
 ```go
-stdlog := log.New(WithPrefix("http")).StandardLog(log.StandardLogOption{
+stdlog := log.New(log.WithPrefix("http")).StandardLog(log.StandardLogOption{
     ForceLevel: log.ErrorLevel,
 })
 s := &http.Server{
