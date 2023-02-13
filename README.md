@@ -31,7 +31,7 @@ log.Debug("cookie 🍪") // won't print anything
 log.Info("Hello World!") // 2023/01/04 10:04:06 INFO Hello World!
 ```
 
-All logging levels accept optional key/value pairs to be printed along with the
+All logging levels accept optional key/value pairs to be printed along with a
 message.
 
 ```go
@@ -79,6 +79,8 @@ Available options are:
 - `log.TextFormatter` (_default_)
 - `log.JSONFormatter`
 - `log.LogfmtFormatter`
+
+> **Note** styling only affects the `TextFormatter`.
 
 For a list of available options, refer to [options.go](./options.go).
 
