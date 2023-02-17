@@ -1,9 +1,13 @@
 # Log
 
-[![Latest Release](https://img.shields.io/github/release/charmbracelet/log.svg)](https://github.com/charmbracelet/log/releases)
-[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://pkg.go.dev/github.com/charmbracelet/log?tab=doc)
-[![Build Status](https://github.com/charmbracelet/log/workflows/build/badge.svg)](https://github.com/charmbracelet/log/actions)
-[![Go ReportCard](https://goreportcard.com/badge/charmbracelet/log)](https://goreportcard.com/report/charmbracelet/log)
+<p>
+  <img src="https://user-images.githubusercontent.com/25087/219742757-c8afe0d9-608a-4845-a555-ef59c0af9ebc.png#gh-light-mode-only" width="359" />
+  <img src="https://user-images.githubusercontent.com/25087/219743408-3d7bef51-1409-40c0-8159-acc6e52f078e.png#gh-dark-mode-only" width="359" />
+  <br>
+  <a href="https://github.com/charmbracelet/log/releases"><img src="https://img.shields.io/github/release/charmbracelet/log.svg" alt="Latest Release"></a>
+  <a href="https://pkg.go.dev/github.com/charmbracelet/log?tab=doc"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="Go Docs"></a>
+  <a href="https://github.com/charmbracelet/log/actions"><img src="https://github.com/charmbracelet/log/workflows/build/badge.svg" alt="Build Status"></a>
+</p>
 
 A minimal and colorful Go logging library. 🪵
 
