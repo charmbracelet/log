@@ -17,13 +17,13 @@ It provides a leveled structured human readable logger with a small API. Unlike
 [standard `log`][stdlog], the Charm logger provides customizable colorful human
 readable logging with batteries included.
 
-- Uses [lipgloss][lipgloss] to style and colorize the output.
-- Beautiful human readable format.
+- Uses [Lip Gloss][lipgloss] to style and colorize the output.
+- Colorful, human readable format.
 - Ability to customize the time stamp format.
 - Skips caller frames and marks function as helpers.
 - Leveled logging with the ability to turn off logging altogether.
 - Store and retrieve logger in and from context.
-- Standard log Adapter.
+- Standard log adapter.
 
 ## Usage
 
@@ -31,7 +31,7 @@ The Charm logger comes with a global package-wise logger with timestamps turned
 on and the logging level set to `info`.
 
 ```go
-log.Debug("cookie 🍪") // won't print anything
+log.Debug("cookie 🍪")   // won't print anything
 log.Info("Hello World!") // 2023/01/04 10:04:06 INFO Hello World!
 ```
 
