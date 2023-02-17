@@ -15,10 +15,10 @@ import (
 func TestStdLog(t *testing.T) {
 	var buf bytes.Buffer
 	cases := []struct {
-		name     string
-		expected string
 		logger   Logger
 		f        func(l *log.Logger)
+		name     string
+		expected string
 	}{
 		{
 			name:     "simple",
