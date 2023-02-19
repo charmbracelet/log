@@ -21,7 +21,8 @@ readable logging with batteries included.
 - Colorful, human readable format.
 - Ability to customize the time stamp format.
 - Skips caller frames and marks function as helpers.
-- Leveled logging with the ability to turn off logging altogether.
+- Leveled logging.
+- Text, JSON, and Logfmt formatters.
 - Store and retrieve logger in and from context.
 - Standard log adapter.
 
@@ -42,7 +43,7 @@ message.
 
 ```go
 err := fmt.Errorf("too much sugar")
-log.Error("failed to bake cookies", "err", err, "butter", "1 cup")
+log.Error("failed to bake cookies", "err", err)
 ```
 
 <img width="600" src="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" alt="Made with VHS">
@@ -174,8 +175,8 @@ s := &http.Server{
     Handler:  handler,
     ErrorLog: stdlog,
 }
-stdlog.Printf("Failed to make bake request, %s", fmt.Errorf("temperature is to low"))
-// ERROR http: Failed to make bake request, temperature is to low
+stdlog.Printf("Failed to make bake request, %s", fmt.Errorf("temperature is too low"))
+// ERROR http: Failed to make bake request, temperature is too low
 ```
 
 [lipgloss]: https://github.com/charmbracelet/lipgloss
