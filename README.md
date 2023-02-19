@@ -31,9 +31,11 @@ The Charm logger comes with a global package-wise logger with timestamps turned
 on and the logging level set to `info`.
 
 ```go
-log.Debug("cookie 🍪")   // won't print anything
-log.Info("Hello World!") // 2023/01/04 10:04:06 INFO Hello World!
+log.Debug("Cookie 🍪") // won't print anything
+log.Info("Hello World!")
 ```
+
+<img width="400" src="https://vhs.charm.sh/vhs-cKiS8OuRrF1VVVpscM9e3.gif" alt="Made with VHS">
 
 All logging levels accept optional key/value pairs to be printed along with a
 message.
@@ -41,13 +43,15 @@ message.
 ```go
 err := fmt.Errorf("too much sugar")
 log.Error("failed to bake cookies", "err", err, "butter", "1 cup")
-// 2023/01/04 10:04:06 ERROR failed to bake cookies err="too much sugar" butter="1 cup"
 ```
+
+<img width="600" src="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" alt="Made with VHS">
 
 You can use `log.Print()` to print messages without a level prefix.
 
 ```go
-log.Print("Baking 101") // 2023/01/04 10:04:06 Baking 101
+log.Print("Baking 101")
+// 2023/01/04 10:04:06 Baking 101
 ```
 
 ### New loggers
@@ -57,9 +61,11 @@ Use `New()` to create new loggers.
 ```go
 logger := log.New()
 if butter {
-    logger.Warn("chewy!", "butter", true) // WARN chewy! butter=true
+    logger.Warn("chewy!", "butter", true)
 }
 ```
+
+<img width="300" src="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif" alt="Made with VHS">
 
 ### Options
 
@@ -69,13 +75,13 @@ log.
 
 ```go
 logger := log.New(log.WithTimestamp(), log.WithTimeFormat(time.Kitchen),
-    log.WithCaller(), log.WithPrefix("baking 🍪"))
+    log.WithCaller(), log.WithPrefix("Baking 🍪 "))
 logger.Info("Starting oven!", "degree", 375)
-// 10:00AM INFO <cookies/oven.go:56> baking 🍪: Starting oven! degree=375
 time.Sleep(10 * time.Minute)
 logger.Info("Finished baking")
-// 10:10AM INFO <cookies/oven.go:60> baking 🍪: Finished baking
 ```
+
+<img width="700" src="https://vhs.charm.sh/vhs-483r6n6t37vTPG0w9TrFCY.gif" alt="Made with VHS">
 
 Use `log.SetFormatter()` or `log.WithFormatter()` to change the output format.
 Available options are:
@@ -94,7 +100,7 @@ Set the logger level and options.
 logger.SetReportTimestamp(false)
 logger.SetReportCaller(false)
 logger.SetLevel(log.DebugLevel)
-logger.Debug("Preparing batch 2...") // DEBUG baking 🍪: Preparing batch 2...
+logger.Debug("Preparing batch 2...")
 ```
 
 ### Sub-logger
@@ -104,8 +110,9 @@ Create sub-loggers with their specific fields.
 ```go
 batch2 := logger.With("batch", 2, "chocolateChips", true)
 batch2.Debug("Adding chocolate chips")
-// DEBUG <cookies/oven.go:68> baking 🍪: Adding chocolate chips batch=2 chocolateChips=true
 ```
+
+<img width="700" src="https://vhs.charm.sh/vhs-75gIsLW8dN7DOahsxsKG4v.gif" alt="Made with VHS">
 
 ### Format Messages
 
@@ -114,26 +121,20 @@ You can use `fmt.Sprintf()` to format messages.
 ```go
 for item := 1; i <= 100; i++ {
     log.Info(fmt.Sprintf("Baking %d/100...", item))
-    // INFO Baking 1/100...
-    // INFO Baking 2/100...
-    // INFO Baking 3/100...
-    // ...
-    // INFO Baking 100/100...
 }
 ```
+
+<img width="500" src="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif" alt="Made with VHS">
 
 Or arguments:
 
 ```go
 for temp := 375; temp <= 400; temp++ {
     log.Info("Increasing temperature", "degree", fmt.Sprintf("%d°F", temp))
-    // INFO Increasing temperature degree=375°F
-    // INFO Increasing temperature degree=376°F
-    // INFO Increasing temperature degree=377°F
-    // ...
-    // INFO Increasing temperature degree=400°F
 }
 ```
+
+<img width="700" src="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif" alt="Made with VHS">
 
 ### Helper Functions
 
@@ -149,6 +150,8 @@ function startOven(degree int) {
 log.SetReportCaller(true)
 startOven(400) // INFO <cookies/oven.go:123> Starting oven degree=400
 ```
+
+<img width="700" src="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif" alt="Made with VHS">
 
 This will use the _caller_ function (`startOven`) line number instead of the
 logging function (`log.Info`) to report the source location.
