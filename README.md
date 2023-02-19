@@ -91,7 +91,8 @@ Available options are:
 - `log.JSONFormatter`
 - `log.LogfmtFormatter`
 
-> **Note** styling only affects the `TextFormatter`.
+> **Note** styling only affects the `TextFormatter`. Styling is disabled if the
+> output is not a TTY.
 
 For a list of available options, refer to [options.go](./options.go).
 
