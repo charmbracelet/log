@@ -80,6 +80,42 @@ if butter {
 
 <img width="300" src="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif" alt="Made with VHS">
 
+### Levels
+
+Log offers multiple levels to filter your logs on. Available levels are:
+
+```go
+log.DebugLevel
+log.WarnLevel
+log.ErrorLevel
+log.FatalLevel
+```
+
+Use `log.SetLevel` or create a new logger with the `log.WithLevel` option to
+set the level.
+
+Use the corresponding function to log a message:
+
+```go
+err := errors.New("Baking error 101")
+log.Debug(err)
+log.Warn(err)
+log.Error(err)
+log.Fatal(err) // this calls os.Exit(1)
+log.Print(err) // prints regardless of log level
+```
+
+### Structured
+
+All the functions above take a message and key-value pairs of anything. The
+message can also be of type any.
+
+```go
+ingredients := []string{"flour", "butter", "sugar", "chocolate"}
+log.Debug("Available ingredients", "ingredients", ingredients)
+// DEBUG Available ingredients ingredients="[flour butter sugar chocolate]"
+```
+
 ### Options
 
 You can customize the logger with options. Use `log.WithCaller()` to enable
