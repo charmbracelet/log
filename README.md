@@ -28,11 +28,13 @@ readable logging with batteries included.
 
 ## Usage
 
-Use `go get` to download the dependency, and then `import` it in your Go files:
+Use `go get` to download the dependency.
 
 ```bash
 go get github.com/charmbracelet/log@latest
 ```
+
+Then, `import` it in your Go files:
 
 ```go
 import "github.com/charmbracelet/log"
