@@ -28,8 +28,18 @@ readable logging with batteries included.
 
 ## Usage
 
+Use `go get` to download the dependency, and then `import` it in your Go files:
+
+```bash
+go get github.com/charmbracelet/log@latest
+```
+
+```go
+import "github.com/charmbracelet/log"
+```
+
 The Charm logger comes with a global package-wise logger with timestamps turned
-on and the logging level set to `info`.
+on, and the logging level set to `info`.
 
 ```go
 log.Debug("Cookie 🍪") // won't print anything
@@ -164,7 +174,7 @@ Some Go libraries, especially the ones in the standard library, will only accept
 the [standard logger][stdlog] interface. For instance, the HTTP Server from
 `net/http` will only take a `*log.Logger` for its `ErrorLog` field.
 
-For this, you can use the standard log adapter which simply wraps the logger in
+For this, you can use the standard log adapter, which simply wraps the logger in
 a `*log.Logger` interface.
 
 ```go
