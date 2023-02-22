@@ -1,5 +1,6 @@
 *.txt
 *.gif
+.idea
 
 examples/batch2/batch2
 examples/chocolate-chips/chocolate-chips
