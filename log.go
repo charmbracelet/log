@@ -58,11 +58,12 @@ func New(opts ...LoggerOption) Logger {
 		opt(l)
 	}
 
-	l.aLevel.Store(int32(l.level))
-	l.isDiscard.Store(l.w == io.Discard)
 	if l.w == nil {
 		l.w = os.Stderr
 	}
+
+	l.SetOutput(l.w)
+	l.SetLevel(l.level)
 
 	if l.timeFunc == nil {
 		l.timeFunc = time.Now
@@ -70,11 +71,6 @@ func New(opts ...LoggerOption) Logger {
 
 	if l.timeFormat == "" {
 		l.timeFormat = DefaultTimeFormat
-	}
-
-	if !isTerminal(l.w) {
-		// This only affect the TextFormatter
-		l.noStyles = true
 	}
 
 	return l
@@ -272,6 +268,10 @@ func (l *logger) SetOutput(w io.Writer) {
 	defer l.mu.Unlock()
 	l.w = w
 	l.isDiscard.Store(w == io.Discard)
+	if !isTerminal(w) {
+		// This only affects the TextFormatter
+		l.noStyles = true
+	}
 }
 
 // SetFormatter sets the formatter.
