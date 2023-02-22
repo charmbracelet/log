@@ -1,5 +1,7 @@
 package log
 
+import "strings"
+
 // Level is a logging level.
 type Level int32
 
@@ -33,5 +35,23 @@ func (l Level) String() string {
 		return "fatal"
 	default:
 		return ""
+	}
+}
+
+// ParseLevel converts level in string to Level type. Default level is InfoLevel.
+func ParseLevel(level string) Level {
+	switch strings.ToLower(level) {
+	case DebugLevel.String():
+		return DebugLevel
+	case InfoLevel.String():
+		return InfoLevel
+	case WarnLevel.String():
+		return WarnLevel
+	case ErrorLevel.String():
+		return ErrorLevel
+	case FatalLevel.String():
+		return FatalLevel
+	default:
+		return InfoLevel
 	}
 }
