@@ -1,6 +1,9 @@
 package log
 
-import "io"
+import (
+	"io"
+	"strings"
+)
 
 // WithOutput returns a LoggerOption that sets the output for the logger. The
 // default is os.Stderr.
@@ -66,5 +69,25 @@ func WithFields(keyvals ...interface{}) LoggerOption {
 func WithFormatter(f Formatter) LoggerOption {
 	return func(l *logger) {
 		l.formatter = f
+	}
+}
+
+// WithLevelFromString sets level with given parameter.
+func WithLevelFromString(level string) LoggerOption {
+	return func(l *logger) {
+		switch strings.ToLower(level) {
+		case DebugLevel.String():
+			l.level = DebugLevel
+		case InfoLevel.String():
+			l.level = InfoLevel
+		case WarnLevel.String():
+			l.level = WarnLevel
+		case ErrorLevel.String():
+			l.level = ErrorLevel
+		case FatalLevel.String():
+			l.level = FatalLevel
+		default:
+			l.level = noLevel
+		}
 	}
 }

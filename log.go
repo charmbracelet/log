@@ -53,10 +53,6 @@ func New(opts ...LoggerOption) Logger {
 		mu:    &sync.RWMutex{},
 		level: InfoLevel,
 	}
-	level := readLevelFromEnv()
-	if level != noLevel {
-		l.level = level
-	}
 
 	for _, opt := range opts {
 		opt(l)
@@ -140,25 +136,6 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	}
 
 	_, _ = l.w.Write(l.b.Bytes())
-}
-
-// readLevelFromEnv reads log level from environment variables if exists.
-func readLevelFromEnv() Level {
-	level := os.Getenv("LOG_LEVEL")
-	switch strings.ToLower(level) {
-	case DebugLevel.String():
-		return DebugLevel
-	case InfoLevel.String():
-		return InfoLevel
-	case WarnLevel.String():
-		return WarnLevel
-	case ErrorLevel.String():
-		return ErrorLevel
-	case FatalLevel.String():
-		return FatalLevel
-	default:
-		return noLevel
-	}
 }
 
 // Helper marks the calling function as a helper
