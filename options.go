@@ -2,7 +2,6 @@ package log
 
 import (
 	"io"
-	"strings"
 )
 
 // WithOutput returns a LoggerOption that sets the output for the logger. The
@@ -75,19 +74,6 @@ func WithFormatter(f Formatter) LoggerOption {
 // WithLevelFromString sets level with given parameter.
 func WithLevelFromString(level string) LoggerOption {
 	return func(l *logger) {
-		switch strings.ToLower(level) {
-		case DebugLevel.String():
-			l.level = DebugLevel
-		case InfoLevel.String():
-			l.level = InfoLevel
-		case WarnLevel.String():
-			l.level = WarnLevel
-		case ErrorLevel.String():
-			l.level = ErrorLevel
-		case FatalLevel.String():
-			l.level = FatalLevel
-		default:
-			l.level = noLevel
-		}
+		l.level = ParseLevel(level)
 	}
 }
