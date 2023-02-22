@@ -130,7 +130,7 @@ time.Sleep(10 * time.Minute)
 logger.Info("Finished baking")
 ```
 
-<img width="700" src="https://vhs.charm.sh/vhs-483r6n6t37vTPG0w9TrFCY.gif" alt="Made with VHS">
+<img width="700" src="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif" alt="Made with VHS">
 
 Use `log.SetFormatter()` or `log.WithFormatter()` to change the output format.
 Available options are:
@@ -150,7 +150,6 @@ Set the logger level and options.
 logger.SetReportTimestamp(false)
 logger.SetReportCaller(false)
 logger.SetLevel(log.DebugLevel)
-logger.Debug("Preparing batch 2...")
 ```
 
 ### Sub-logger
@@ -159,10 +158,11 @@ Create sub-loggers with their specific fields.
 
 ```go
 batch2 := logger.With("batch", 2, "chocolateChips", true)
+batch2.Debug("Preparing batch 2...")
 batch2.Debug("Adding chocolate chips")
 ```
 
-<img width="700" src="https://vhs.charm.sh/vhs-75gIsLW8dN7DOahsxsKG4v.gif" alt="Made with VHS">
+<img width="700" src="https://vhs.charm.sh/vhs-650Sw3rnwplHzwdfYNUp8n.gif" alt="Made with VHS">
 
 ### Format Messages
 
