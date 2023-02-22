@@ -152,6 +152,25 @@ logger.SetReportCaller(false)
 logger.SetLevel(log.DebugLevel)
 ```
 
+### Styles
+
+You can customize the logger styles using [Lipgloss][lipgloss]. The styles are
+defined at a global level in [styles.go](./styles.go).
+
+```go
+// Override the default error level style.
+log.ErrorLevelStyle = lipgloss.NewStyle().
+    SetString("ERROR!!").
+    Padding(0, 1, 0, 1).
+    Background(lipgloss.Color("204")).
+    Foreground(lipgloss.Color("0"))
+// Add a custom style for key `err`
+log.KeyStyles["err"] = lipgloss.NewStyle().Foreground(lipgloss.Color("204"))
+log.Error("Whoops!", "err", "kitchen on fire")
+```
+
+<img width="400" src="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif" alt="Made with VHS">
+
 ### Sub-logger
 
 Create sub-loggers with their specific fields.
