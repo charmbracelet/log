@@ -2,7 +2,6 @@ package log
 
 import (
 	"bytes"
-	"os"
 	"strings"
 	"testing"
 
@@ -50,8 +49,7 @@ func TestSubLogger(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			if c.level != "" {
-				err := os.Setenv("LOG_LEVEL", c.level)
-				assert.Nil(t, err)
+				t.Setenv("LOG_LEVEL", c.level)
 			}
 			var buf bytes.Buffer
 			l := New(WithOutput(&buf))
@@ -64,6 +62,5 @@ func TestSubLogger(t *testing.T) {
 			l.With(c.fields...).Info(c.msg, c.kvs...)
 			assert.Equal(t, c.expected, buf.String())
 		})
-		os.Unsetenv("LOG_LEVEL")
 	}
 }
