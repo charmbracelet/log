@@ -200,7 +200,11 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				continue
 			}
 			if !l.noStyles {
-				key = KeyStyle.Render(key)
+				if keyStyle, ok := KeyStyles[key]; ok {
+					key = keyStyle.Render(key)
+				} else {
+					key = KeyStyle.Render(key)
+				}
 				val = ValueStyle.Render(val)
 			}
 
