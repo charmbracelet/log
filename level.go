@@ -5,7 +5,7 @@ type Level int32
 
 const (
 	// DebugLevel is the debug level.
-	DebugLevel Level = iota
+	DebugLevel Level = iota - 1
 	// InfoLevel is the info level.
 	InfoLevel
 	// WarnLevel is the warn level.
