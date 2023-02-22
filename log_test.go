@@ -61,7 +61,7 @@ func TestSubLogger(t *testing.T) {
 			var buf bytes.Buffer
 			l := New(WithOutput(&buf))
 			if c.level != "" {
-				l = New(WithOutput(&buf), WithLevelFromString(c.level))
+				l = New(WithOutput(&buf), WithLevel(ParseLevel(c.level)))
 				if c.isEnvVar {
 					l.With(c.fields...).Warn(c.msg, c.kvs...)
 				} else {

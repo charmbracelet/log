@@ -70,10 +70,3 @@ func WithFormatter(f Formatter) LoggerOption {
 		l.formatter = f
 	}
 }
-
-// WithLevelFromString sets level with given parameter.
-func WithLevelFromString(level string) LoggerOption {
-	return func(l *logger) {
-		l.level = ParseLevel(level)
-	}
-}
