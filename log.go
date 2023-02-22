@@ -107,7 +107,7 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	}
 
 	if l.prefix != "" {
-		kvs = append(kvs, prefixKey, l.prefix)
+		kvs = append(kvs, prefixKey, l.prefix+":")
 	}
 
 	if msg != nil {
