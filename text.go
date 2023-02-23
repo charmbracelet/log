@@ -205,6 +205,13 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				} else {
 					key = KeyStyle.Render(key)
 				}
+			}
+			if !strings.Contains(val, "\n") && !raw && needsQuoting(val) {
+				b := &bytes.Buffer{}
+				writeEscapedForOutput(b, val, true)
+				val = b.String()
+			}
+			if !l.noStyles {
 				val = ValueStyle.Render(val)
 			}
 
@@ -229,7 +236,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				l.b.WriteByte('"')
-				writeEscapedForOutput(&l.b, val, true)
+				l.b.WriteString(val)
 				l.b.WriteByte('"')
 			} else {
 				l.b.WriteByte(' ')
