@@ -11,7 +11,10 @@ func main() {
 	log.ErrorLevelStyle = lipgloss.NewStyle().
 		SetString("ERROR!!").
 		Padding(0, 1, 0, 1).
-		Background(lipgloss.Color("204")).
+		Background(lipgloss.AdaptiveColor{
+			Light: "203",
+			Dark:  "204",
+		}).
 		Foreground(lipgloss.Color("0"))
 	log.KeyStyles["err"] = lipgloss.NewStyle().Foreground(lipgloss.Color("204"))
 	logger := log.New()
