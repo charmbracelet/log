@@ -1,9 +1,9 @@
-Output demo.gif
+Output app.gif
 
 Set FontSize 24
 Set Width 1200
 Set Height 600
 
-Type "./log-example" Enter
+Type "./app" Enter
 
 Sleep 10s

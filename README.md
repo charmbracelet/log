@@ -11,7 +11,8 @@
 
 A minimal and colorful Go logging library. 🪵
 
-![Demo](./demo.gif)
+<img src="https://vhs.charm.sh/vhs-1wBImk2iSIuiiD7Ib9rufi.gif#gh-dark-mode-only" alt="Made with VHS" />
+<img src="https://vhs.charm.sh/vhs-2NvOYS29AauVRgRRPmquXx.gif#gh-light-mode-only" alt="Made with VHS" />
 
 It provides a leveled structured human readable logger with a small API. Unlike
 [standard `log`][stdlog], the Charm logger provides customizable colorful human
@@ -48,7 +49,8 @@ log.Debug("Cookie 🍪") // won't print anything
 log.Info("Hello World!")
 ```
 
-<img width="400" src="https://vhs.charm.sh/vhs-cKiS8OuRrF1VVVpscM9e3.gif" alt="Made with VHS">
+<img width="400" src="https://vhs.charm.sh/vhs-cKiS8OuRrF1VVVpscM9e3.gif#gh-dark-mode-only" alt="Made with VHS">
+<img width="400" src="https://vhs.charm.sh/vhs-4AeLaEuO3tDbECR1qe9Jvp.gif#gh-light-mode-only" alt="Made with VHS" />
 
 All logging levels accept optional key/value pairs to be printed along with a
 message.
@@ -58,7 +60,8 @@ err := fmt.Errorf("too much sugar")
 log.Error("failed to bake cookies", "err", err)
 ```
 
-<img width="600" src="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" alt="Made with VHS">
+<img width="600" src="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif#gh-dark-mode-only" alt="Made with VHS">
+<img width="600" src="https://vhs.charm.sh/vhs-7rk8wALXRDoFw8SLFwn9rW.gif#gh-light-mode-only" alt="Made with VHS">
 
 You can use `log.Print()` to print messages without a level prefix.
 
@@ -78,7 +81,8 @@ if butter {
 }
 ```
 
-<img width="300" src="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif" alt="Made with VHS">
+<img width="300" src="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif#gh-dark-mode-only" alt="Made with VHS">
+<img width="300" src="https://vhs.charm.sh/vhs-1nrhNSuFnQkxWD4RoMlE4O.gif#gh-light-mode-only" alt="Made with VHS">
 
 ### Levels
 
@@ -130,7 +134,8 @@ time.Sleep(10 * time.Minute)
 logger.Info("Finished baking")
 ```
 
-<img width="700" src="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif" alt="Made with VHS">
+<img width="700" src="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif#gh-dark-mode-only" alt="Made with VHS">
+<img width="700" src="https://vhs.charm.sh/vhs-2X8Esd8ZsHo4DVPVgR36yx.gif#gh-light-mode-only" alt="Made with VHS">
 
 Use `log.SetFormatter()` or `log.WithFormatter()` to change the output format.
 Available options are:
@@ -162,14 +167,18 @@ defined at a global level in [styles.go](./styles.go).
 log.ErrorLevelStyle = lipgloss.NewStyle().
     SetString("ERROR!!").
     Padding(0, 1, 0, 1).
-    Background(lipgloss.Color("204")).
+    Background(lipgloss.AdaptiveColor{
+        Light: "203",
+        Dark:  "204",
+    }).
     Foreground(lipgloss.Color("0"))
 // Add a custom style for key `err`
 log.KeyStyles["err"] = lipgloss.NewStyle().Foreground(lipgloss.Color("204"))
 log.Error("Whoops!", "err", "kitchen on fire")
 ```
 
-<img width="400" src="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif" alt="Made with VHS">
+<img width="400" src="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif#gh-dark-mode-only" alt="Made with VHS">
+<img width="400" src="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif#gh-light-mode-only" alt="Made with VHS">
 
 ### Sub-logger
 
@@ -181,7 +190,8 @@ batch2.Debug("Preparing batch 2...")
 batch2.Debug("Adding chocolate chips")
 ```
 
-<img width="700" src="https://vhs.charm.sh/vhs-650Sw3rnwplHzwdfYNUp8n.gif" alt="Made with VHS">
+<img width="700" src="https://vhs.charm.sh/vhs-650Sw3rnwplHzwdfYNUp8n.gif#gh-dark-mode-only" alt="Made with VHS">
+<img width="700" src="https://vhs.charm.sh/vhs-2fNaKD1190gCNyZ1BII8rQ.gif#gh-light-mode-only" alt="Made with VHS">
 
 ### Format Messages
 
@@ -193,7 +203,8 @@ for item := 1; i <= 100; i++ {
 }
 ```
 
-<img width="500" src="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif" alt="Made with VHS">
+<img width="500" src="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif#gh-dark-mode-only" alt="Made with VHS">
+<img width="500" src="https://vhs.charm.sh/vhs-4RHXd4JSucomcPqJGZTpKh.gif#gh-light-mode-only" alt="Made with VHS">
 
 Or arguments:
 
@@ -203,7 +214,8 @@ for temp := 375; temp <= 400; temp++ {
 }
 ```
 
-<img width="700" src="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif" alt="Made with VHS">
+<img width="700" src="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif#gh-dark-mode-only" alt="Made with VHS">
+<img width="700" src="https://vhs.charm.sh/vhs-4AvAnoA2S53QTOteX8krp4.gif#gh-light-mode-only" alt="Made with VHS">
 
 ### Helper Functions
 
@@ -220,7 +232,8 @@ log.SetReportCaller(true)
 startOven(400) // INFO <cookies/oven.go:123> Starting oven degree=400
 ```
 
-<img width="700" src="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif" alt="Made with VHS">
+<img width="700" src="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif#gh-dark-mode-only" alt="Made with VHS">
+<img width="700" src="https://vhs.charm.sh/vhs-6DPg0bVL4K4TkfoHkAn2ap.gif#gh-light-mode-only" alt="Made with VHS">
 
 This will use the _caller_ function (`startOven`) line number instead of the
 logging function (`log.Info`) to report the source location.
