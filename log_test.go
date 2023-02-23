@@ -39,7 +39,6 @@ func TestSubLogger(t *testing.T) {
 			kvs:      []interface{}{"foobar", "baz"},
 		},
 	}
-
 	for _, c := range cases {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
