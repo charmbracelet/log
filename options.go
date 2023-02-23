@@ -1,8 +1,6 @@
 package log
 
-import (
-	"io"
-)
+import "io"
 
 // WithOutput returns a LoggerOption that sets the output for the logger. The
 // default is os.Stderr.

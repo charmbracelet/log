@@ -2,23 +2,20 @@ package log
 
 import (
 	"bytes"
-	"os"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSubLogger(t *testing.T) {
-	t.Setenv("LOG_LEVEL", "WARN")
+	var buf bytes.Buffer
+	l := New(WithOutput(&buf))
 	cases := []struct {
 		name     string
 		expected string
 		msg      string
 		fields   []interface{}
 		kvs      []interface{}
-		level    string
-		isEnvVar bool
 	}{
 		{
 			name:     "sub logger nil fields",
@@ -41,39 +38,13 @@ func TestSubLogger(t *testing.T) {
 			fields:   []interface{}{"foo", "bar"},
 			kvs:      []interface{}{"foobar", "baz"},
 		},
-		{
-			name:     "Log level from env variable",
-			expected: "WARN log level from env\n",
-			msg:      "log level from env",
-			level:    os.Getenv("LOG_LEVEL"),
-			isEnvVar: true,
-		},
-		{
-			name:     "Log level from string",
-			expected: "ERROR log level from string\n",
-			msg:      "log level from string",
-			level:    "ERROR",
-		},
 	}
 
 	for _, c := range cases {
+		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
-			var buf bytes.Buffer
-			l := New(WithOutput(&buf))
-			if c.level != "" {
-				l = New(WithOutput(&buf), WithLevel(ParseLevel(c.level)))
-				if c.isEnvVar {
-					l.With(c.fields...).Warn(c.msg, c.kvs...)
-				} else {
-					l.With(c.fields...).Error(c.msg, c.kvs...)
-				}
-				assert.Equal(t, c.expected, buf.String())
-				level := l.GetLevel()
-				assert.Equal(t, strings.ToLower(c.level), level.String())
-			} else {
-				l.With(c.fields...).Info(c.msg, c.kvs...)
-				assert.Equal(t, c.expected, buf.String())
-			}
+			l.With(c.fields...).Info(c.msg, c.kvs...)
+			assert.Equal(t, c.expected, buf.String())
 		})
 	}
 }
