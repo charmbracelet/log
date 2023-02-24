@@ -1,7 +1,6 @@
 package log
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,10 +12,9 @@ func TestDefaultLevel(t *testing.T) {
 }
 func TestParseLevel(t *testing.T) {
 	testCases := []struct {
-		name        string
-		level       string
-		envVarLevel string
-		expLevel    Level
+		name     string
+		level    string
+		expLevel Level
 	}{
 		{
 			name:     "Parse debug",
@@ -49,11 +47,6 @@ func TestParseLevel(t *testing.T) {
 			expLevel: InfoLevel,
 		},
 		{
-			name:        "From os.EnvVar",
-			envVarLevel: "DEBUG",
-			expLevel:    DebugLevel,
-		},
-		{
 			name:     "Wrong level, set INFO",
 			level:    "WRONG_LEVEL",
 			expLevel: InfoLevel,
@@ -62,13 +55,7 @@ func TestParseLevel(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			var lvl Level
-			if tc.envVarLevel != "" {
-				t.Setenv("LOG_LEVEL", tc.envVarLevel)
-				lvl = ParseLevel(os.Getenv("LOG_LEVEL"))
-			} else {
-				lvl = ParseLevel(tc.level)
-			}
+			lvl := ParseLevel(tc.level)
 			assert.Equal(t, tc.expLevel, lvl)
 		})
 	}
