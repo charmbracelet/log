@@ -55,8 +55,7 @@ func TestParseLevel(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			lvl := ParseLevel(tc.level)
-			assert.Equal(t, tc.expLevel, lvl)
+			assert.Equal(t, tc.expLevel, ParseLevel(tc.level))
 		})
 	}
 }
