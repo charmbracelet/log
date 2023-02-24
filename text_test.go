@@ -252,7 +252,7 @@ func TestTextValueStyles(t *testing.T) {
 		{
 			name: "message with keyvals",
 			expected: fmt.Sprintf(
-				"%s info %s%s\"%s\" %s%s\"%s\"\n",
+				"%s info %s%s%s %s%s%s\n",
 				InfoLevelStyle.Render("INFO"),
 				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("val1"),
 				KeyStyle.Render("key2"), SeparatorStyle.Render("="), ValueStyle.Render("val2"),
@@ -264,7 +264,7 @@ func TestTextValueStyles(t *testing.T) {
 		{
 			name: "message with keyvals",
 			expected: fmt.Sprintf(
-				"%s info %s%s\"%s\" %s%s\"%s\"\n",
+				"%s info %s%s%s %s%s%s\n",
 				InfoLevelStyle.Render("INFO"),
 				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("true"),
 				KeyStyle.Render("key2"), SeparatorStyle.Render("="), ValueStyle.Render("false"),
@@ -274,9 +274,22 @@ func TestTextValueStyles(t *testing.T) {
 			f:   logger.Info,
 		},
 		{
+			name: "error message with multiline",
+			expected: fmt.Sprintf(
+				"%s info\n  %s%s\n%s%s\n%s%s\n",
+				ErrorLevelStyle.Render("ERRO"),
+				KeyStyle.Render("key1"), SeparatorStyle.Render("="),
+				SeparatorStyle.Render("  │ "), ValueStyle.Render("val1"),
+				SeparatorStyle.Render("  │ "), ValueStyle.Render("val2"),
+			),
+			msg: "info",
+			kvs: []interface{}{"key1", "val1\nval2"},
+			f:   logger.Error,
+		},
+		{
 			name: "struct field",
 			expected: fmt.Sprintf(
-				"%s info %s%s\"%s\"\n",
+				"%s info %s%s%s\n",
 				InfoLevelStyle.Render("INFO"),
 				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("{foo:bar}"),
 			),

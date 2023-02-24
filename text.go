@@ -16,14 +16,14 @@ const (
 	indentSeparator = "  │ "
 )
 
-func writeIndent(w io.Writer, str string, indent string, newline bool) {
+func (l *logger) writeIndent(w io.Writer, str string, indent string, newline bool) {
 	// kindly borrowed from hclog
 	for {
 		nl := strings.IndexByte(str, '\n')
 		if nl == -1 {
 			if str != "" {
 				_, _ = w.Write([]byte(indent))
-				writeEscapedForOutput(w, str, false)
+				l.writeEscapedForOutput(w, str, false)
 				if newline {
 					_, _ = w.Write([]byte{'\n'})
 				}
@@ -32,7 +32,7 @@ func writeIndent(w io.Writer, str string, indent string, newline bool) {
 		}
 
 		_, _ = w.Write([]byte(indent))
-		writeEscapedForOutput(w, str[:nl], false)
+		l.writeEscapedForOutput(w, str[:nl], false)
 		_, _ = w.Write([]byte{'\n'})
 		str = str[nl+1:]
 	}
@@ -58,9 +58,12 @@ var bufPool = sync.Pool{
 	},
 }
 
-func writeEscapedForOutput(w io.Writer, str string, escapeQuotes bool) {
+func (l *logger) writeEscapedForOutput(w io.Writer, str string, escapeQuotes bool) {
 	// kindly borrowed from hclog
 	if !needsEscaping(str) {
+		if !l.noStyles {
+			str = ValueStyle.Render(str)
+		}
 		_, _ = w.Write([]byte(str))
 		return
 	}
@@ -115,7 +118,12 @@ func writeEscapedForOutput(w io.Writer, str string, escapeQuotes bool) {
 		}
 	}
 
-	_, _ = w.Write(bb.Bytes())
+	s := bb.String()
+	if !l.noStyles {
+		s = ValueStyle.Render(s)
+	}
+
+	_, _ = w.Write([]byte(s))
 }
 
 // isNormal indicates if the rune is one allowed to exist as an unquoted
@@ -206,14 +214,6 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 					key = KeyStyle.Render(key)
 				}
 			}
-			if !strings.Contains(val, "\n") && !raw && needsQuoting(val) {
-				b := &bytes.Buffer{}
-				writeEscapedForOutput(b, val, true)
-				val = b.String()
-			}
-			if !l.noStyles {
-				val = ValueStyle.Render(val)
-			}
 
 			// Values may contain multiple lines, and that format
 			// is preserved, with each line prefixed with a "  | "
@@ -226,7 +226,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString("\n  ")
 				l.b.WriteString(key)
 				l.b.WriteString(sep + "\n")
-				writeIndent(&l.b, val, indentSep, moreKeys)
+				l.writeIndent(&l.b, val, indentSep, moreKeys)
 				// If there are more keyvals, separate them with a space.
 				if moreKeys {
 					l.b.WriteByte(' ')
@@ -236,9 +236,12 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				l.b.WriteByte('"')
-				l.b.WriteString(val)
+				l.writeEscapedForOutput(&l.b, val, true)
 				l.b.WriteByte('"')
 			} else {
+				if !l.noStyles {
+					val = ValueStyle.Render(val)
+				}
 				l.b.WriteByte(' ')
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
