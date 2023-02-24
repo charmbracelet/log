@@ -15,9 +15,10 @@
 A minimal and colorful Go logging library. 🪵
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://vhs.charm.sh/vhs-1wBImk2iSIuiiD7Ib9rufi.gif#gh-dark-mode-only" >
-    <source media="(prefers-color-scheme: light)" srcset="https://vhs.charm.sh/vhs-2NvOYS29AauVRgRRPmquXx.gif#gh-light-mode-only" >
-    <img src="https://vhs.charm.sh/vhs-2NvOYS29AauVRgRRPmquXx.gif" alt="Made with VHS" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://vhs.charm.sh/vhs-1wBImk2iSIuiiD7Ib9rufi.gif">
+    <source media="(prefers-color-scheme: light)" srcset="https://vhs.charm.sh/vhs-1wBImk2iSIuiiD7Ib9rufi.gif">
+    <!-- <source media="(prefers-color-scheme: light)" srcset="https://vhs.charm.sh/vhs-2NvOYS29AauVRgRRPmquXx.gif"> -->
+    <img src="https://vhs.charm.sh/vhs-1wBImk2iSIuiiD7Ib9rufi.gif" alt="Made with VHS" />
 </picture>
 
 It provides a leveled structured human readable logger with a small API. Unlike
@@ -57,7 +58,8 @@ log.Info("Hello World!")
 
 <picture>
     <source media="(prefers-color-scheme: dark)" width="400" srcset="https://vhs.charm.sh/vhs-cKiS8OuRrF1VVVpscM9e3.gif">
-    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4AeLaEuO3tDbECR1qe9Jvp.gif">
+    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-cKiS8OuRrF1VVVpscM9e3.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4AeLaEuO3tDbECR1qe9Jvp.gif"> -->
     <img width="400" src="https://vhs.charm.sh/vhs-4AeLaEuO3tDbECR1qe9Jvp.gif" alt="Made with VHS" />
 </picture>
 
@@ -71,7 +73,8 @@ log.Error("failed to bake cookies", "err", err)
 
 <picture>
     <source media="(prefers-color-scheme: dark)" width="600" srcset="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" >
-    <source media="(prefers-color-scheme: light)" width="600" srcset="https://vhs.charm.sh/vhs-7rk8wALXRDoFw8SLFwn9rW.gif">
+    <source media="(prefers-color-scheme: light)" width="600" srcset="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" >
+    <!-- <source media="(prefers-color-scheme: light)" width="600" srcset="https://vhs.charm.sh/vhs-7rk8wALXRDoFw8SLFwn9rW.gif"> -->
     <img width="600" src="https://vhs.charm.sh/vhs-7rk8wALXRDoFw8SLFwn9rW.gif" alt="Made with VHS">
 </picture>
 
@@ -95,7 +98,8 @@ if butter {
 
 <picture>
     <source media="(prefers-color-scheme: dark)" width="300" srcset="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif">
-    <source media="(prefers-color-scheme: light)" width="300" srcset="https://vhs.charm.sh/vhs-1nrhNSuFnQkxWD4RoMlE4O.gif">
+    <source media="(prefers-color-scheme: light)" width="300" srcset="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="300" srcset="https://vhs.charm.sh/vhs-1nrhNSuFnQkxWD4RoMlE4O.gif"> -->
     <img width="300" src="https://vhs.charm.sh/vhs-1nrhNSuFnQkxWD4RoMlE4O.gif">
 </picture>
 
@@ -151,7 +155,8 @@ logger.Info("Finished baking")
 
 <picture>
     <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
-    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-2X8Esd8ZsHo4DVPVgR36yx.gif">
+    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-2X8Esd8ZsHo4DVPVgR36yx.gif"> -->
     <img width="700" src="https://vhs.charm.sh/vhs-2X8Esd8ZsHo4DVPVgR36yx.gif">
 </picture>
 
@@ -197,7 +202,8 @@ log.Error("Whoops!", "err", "kitchen on fire")
 
 <picture>
     <source media="(prefers-color-scheme: dark)" width="400" srcset="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif">
-    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif">
+    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif"> -->
     <img width="400" src="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif">
 </picture>
 
@@ -213,7 +219,8 @@ batch2.Debug("Adding chocolate chips")
 
 <picture>
     <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-650Sw3rnwplHzwdfYNUp8n.gif">
-    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-2fNaKD1190gCNyZ1BII8rQ.gif">
+    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-650Sw3rnwplHzwdfYNUp8n.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-2fNaKD1190gCNyZ1BII8rQ.gif"> -->
     <img width="700" src="https://vhs.charm.sh/vhs-2fNaKD1190gCNyZ1BII8rQ.gif">
 </picture>
 
@@ -229,7 +236,8 @@ for item := 1; i <= 100; i++ {
 
 <picture>
     <source media="(prefers-color-scheme: dark)" width="500" srcset="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif">
-    <source media="(prefers-color-scheme: light)" width="500" srcset="https://vhs.charm.sh/vhs-4RHXd4JSucomcPqJGZTpKh.gif">
+    <source media="(prefers-color-scheme: light)" width="500" srcset="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="500" srcset="https://vhs.charm.sh/vhs-4RHXd4JSucomcPqJGZTpKh.gif"> -->
     <img width="500" src="https://vhs.charm.sh/vhs-4RHXd4JSucomcPqJGZTpKh.gif">
 </picture>
 
@@ -243,7 +251,8 @@ for temp := 375; temp <= 400; temp++ {
 
 <picture>
     <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif">
-    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-4AvAnoA2S53QTOteX8krp4.gif">
+    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-4AvAnoA2S53QTOteX8krp4.gif"> -->
     <img width="700" src="https://vhs.charm.sh/vhs-4AvAnoA2S53QTOteX8krp4.gif">
 </picture>
 
@@ -264,7 +273,8 @@ startOven(400) // INFO <cookies/oven.go:123> Starting oven degree=400
 
 <picture>
     <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif">
-    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6DPg0bVL4K4TkfoHkAn2ap.gif">
+    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6DPg0bVL4K4TkfoHkAn2ap.gif"> -->
     <img width="700" src="https://vhs.charm.sh/vhs-6DPg0bVL4K4TkfoHkAn2ap.gif">
 </picture>
 
