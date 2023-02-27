@@ -10,25 +10,25 @@ func (l *logger) jsonFormatter(keyvals ...interface{}) {
 	m := make(map[string]interface{}, len(keyvals)/2)
 	for i := 0; i < len(keyvals); i += 2 {
 		switch keyvals[i] {
-		case tsKey:
+		case TimestampKey:
 			if t, ok := keyvals[i+1].(time.Time); ok {
-				m[tsKey] = t.Format(l.timeFormat)
+				m[TimestampKey] = t.Format(l.timeFormat)
 			}
-		case lvlKey:
+		case LevelKey:
 			if level, ok := keyvals[i+1].(Level); ok {
-				m[lvlKey] = level.String()
+				m[LevelKey] = level.String()
 			}
-		case callerKey:
+		case CallerKey:
 			if caller, ok := keyvals[i+1].(string); ok {
-				m[callerKey] = caller
+				m[CallerKey] = caller
 			}
-		case prefixKey:
+		case PrefixKey:
 			if prefix, ok := keyvals[i+1].(string); ok {
-				m[prefixKey] = prefix
+				m[PrefixKey] = prefix
 			}
-		case msgKey:
+		case MessageKey:
 			if msg := keyvals[i+1]; msg != nil {
-				m[msgKey] = fmt.Sprint(msg)
+				m[MessageKey] = fmt.Sprint(msg)
 			}
 		default:
 			var (

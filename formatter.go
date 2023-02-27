@@ -13,10 +13,15 @@ const (
 	LogfmtFormatter
 )
 
-const (
-	tsKey     = "ts"
-	msgKey    = "msg"
-	lvlKey    = "lvl"
-	callerKey = "caller"
-	prefixKey = "prefix"
+var (
+	// TimestampKey is the key for the timestamp.
+	TimestampKey = "ts"
+	// MessageKey is the key for the message.
+	MessageKey = "msg"
+	// LevelKey is the key for the level.
+	LevelKey = "lvl"
+	// CallerKey is the key for the caller.
+	CallerKey = "caller"
+	// PrefixKey is the key for the prefix.
+	PrefixKey = "prefix"
 )
