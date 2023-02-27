@@ -237,6 +237,7 @@ func TestTextValueStyles(t *testing.T) {
 	oldValueStyle := ValueStyle
 	defer func() { ValueStyle = oldValueStyle }()
 	ValueStyle = lipgloss.NewStyle().Bold(true)
+	ValueStyles["key3"] = ValueStyle.Copy().Underline(true)
 	cases := []struct {
 		name     string
 		expected string
@@ -302,7 +303,7 @@ func TestTextValueStyles(t *testing.T) {
 				ErrorLevelStyle,
 				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render("val1"),
 				KeyStyle.Render("key2"), SeparatorStyle.Render(separator), ValueStyle.Render("val2"),
-				KeyStyle.Render("key3"), SeparatorStyle.Render(separator), ValueStyle.Render(`"missing value"`),
+				KeyStyle.Render("key3"), SeparatorStyle.Render(separator), ValueStyles["key3"].Render(`"missing value"`),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", "val1", "key2", "val2", "key3"},
