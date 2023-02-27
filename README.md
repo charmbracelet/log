@@ -218,10 +218,9 @@ batch2.Debug("Adding chocolate chips")
 ```
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-650Sw3rnwplHzwdfYNUp8n.gif">
-    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-650Sw3rnwplHzwdfYNUp8n.gif">
-    <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-2fNaKD1190gCNyZ1BII8rQ.gif"> -->
-    <img width="700" src="https://vhs.charm.sh/vhs-2fNaKD1190gCNyZ1BII8rQ.gif">
+    <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-1JgP5ZRL0oXVspeg50CczR.gif">
+    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-1JgP5ZRL0oXVspeg50CczR.gif">
+    <img width="700" src="https://vhs.charm.sh/vhs-1JgP5ZRL0oXVspeg50CczR.gif">
 </picture>
 
 ### Format Messages
