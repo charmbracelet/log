@@ -76,6 +76,9 @@ var (
 
 	// KeyStyles overrides styles for specific keys.
 	KeyStyles = map[string]lipgloss.Style{}
+
+	// ValueStyles overrides value styles for specific keys.
+	ValueStyles = map[string]lipgloss.Style{}
 )
 
 // levelStyle is a helper function to get the style for a level.

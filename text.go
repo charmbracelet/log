@@ -15,7 +15,7 @@ const (
 	indentSeparator = "  │ "
 )
 
-func (l *logger) writeIndent(w io.Writer, str string, indent string, newline bool) {
+func (l *logger) writeIndent(w io.Writer, str string, indent string, newline bool, key string) {
 	// kindly borrowed from hclog
 	for {
 		nl := strings.IndexByte(str, '\n')
@@ -24,7 +24,11 @@ func (l *logger) writeIndent(w io.Writer, str string, indent string, newline boo
 				_, _ = w.Write([]byte(indent))
 				val := escapeStringForOutput(str, false)
 				if !l.noStyles {
-					val = ValueStyle.Render(val)
+					if valueStyle, ok := ValueStyles[key]; ok {
+						val = valueStyle.Render(val)
+					} else {
+						val = ValueStyle.Render(val)
+					}
 				}
 				_, _ = w.Write([]byte(val))
 				if newline {
@@ -205,6 +209,11 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 			if key == "" {
 				continue
 			}
+			actualKey := key
+			valueStyle := ValueStyle
+			if vs, ok := ValueStyles[actualKey]; ok {
+				valueStyle = vs
+			}
 			if !l.noStyles {
 				if keyStyle, ok := KeyStyles[key]; ok {
 					key = keyStyle.Render(key)
@@ -224,7 +233,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString("\n  ")
 				l.b.WriteString(key)
 				l.b.WriteString(sep + "\n")
-				l.writeIndent(&l.b, val, indentSep, moreKeys)
+				l.writeIndent(&l.b, val, indentSep, moreKeys, actualKey)
 				// If there are more keyvals, separate them with a space.
 				if moreKeys {
 					l.b.WriteByte(' ')
@@ -234,7 +243,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				if !l.noStyles {
-					l.b.WriteString(ValueStyle.Render(fmt.Sprintf(`"%s"`,
+					l.b.WriteString(valueStyle.Render(fmt.Sprintf(`"%s"`,
 						escapeStringForOutput(val, true))))
 				} else {
 					l.b.WriteString(fmt.Sprintf(`"%s"`,
@@ -242,7 +251,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				}
 			} else {
 				if !l.noStyles {
-					val = ValueStyle.Render(val)
+					val = valueStyle.Render(val)
 				}
 				l.b.WriteByte(' ')
 				l.b.WriteString(key)
