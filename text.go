@@ -1,7 +1,6 @@
 package log
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -23,7 +22,11 @@ func (l *logger) writeIndent(w io.Writer, str string, indent string, newline boo
 		if nl == -1 {
 			if str != "" {
 				_, _ = w.Write([]byte(indent))
-				l.writeEscapedForOutput(w, str, false)
+				val := escapeStringForOutput(str, false)
+				if !l.noStyles {
+					val = ValueStyle.Render(val)
+				}
+				_, _ = w.Write([]byte(val))
 				if newline {
 					_, _ = w.Write([]byte{'\n'})
 				}
@@ -32,7 +35,11 @@ func (l *logger) writeIndent(w io.Writer, str string, indent string, newline boo
 		}
 
 		_, _ = w.Write([]byte(indent))
-		l.writeEscapedForOutput(w, str[:nl], false)
+		val := escapeStringForOutput(str[:nl], false)
+		if !l.noStyles {
+			val = ValueStyle.Render(val)
+		}
+		_, _ = w.Write([]byte(val))
 		_, _ = w.Write([]byte{'\n'})
 		str = str[nl+1:]
 	}
@@ -54,21 +61,17 @@ const (
 
 var bufPool = sync.Pool{
 	New: func() interface{} {
-		return new(bytes.Buffer)
+		return new(strings.Builder)
 	},
 }
 
-func (l *logger) writeEscapedForOutput(w io.Writer, str string, escapeQuotes bool) {
+func escapeStringForOutput(str string, escapeQuotes bool) string {
 	// kindly borrowed from hclog
 	if !needsEscaping(str) {
-		if !l.noStyles {
-			str = ValueStyle.Render(str)
-		}
-		_, _ = w.Write([]byte(str))
-		return
+		return str
 	}
 
-	bb := bufPool.Get().(*bytes.Buffer)
+	bb := bufPool.Get().(*strings.Builder)
 	bb.Reset()
 
 	defer bufPool.Put(bb)
@@ -118,12 +121,7 @@ func (l *logger) writeEscapedForOutput(w io.Writer, str string, escapeQuotes boo
 		}
 	}
 
-	s := bb.String()
-	if !l.noStyles {
-		s = ValueStyle.Render(s)
-	}
-
-	_, _ = w.Write([]byte(s))
+	return bb.String()
 }
 
 // isNormal indicates if the rune is one allowed to exist as an unquoted
@@ -235,9 +233,13 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteByte(' ')
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
-				l.b.WriteByte('"')
-				l.writeEscapedForOutput(&l.b, val, true)
-				l.b.WriteByte('"')
+				if !l.noStyles {
+					l.b.WriteString(ValueStyle.Render(fmt.Sprintf(`"%s"`,
+						escapeStringForOutput(val, true))))
+				} else {
+					l.b.WriteString(fmt.Sprintf(`"%s"`,
+						escapeStringForOutput(val, true)))
+				}
 			} else {
 				if !l.noStyles {
 					val = ValueStyle.Render(val)

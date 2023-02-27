@@ -234,6 +234,8 @@ func TestTextValueStyles(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(WithOutput(&buf)).(*logger)
 	logger.noStyles = false
+	oldValueStyle := ValueStyle
+	defer func() { ValueStyle = oldValueStyle }()
 	ValueStyle = lipgloss.NewStyle().Bold(true)
 	cases := []struct {
 		name     string
@@ -244,7 +246,7 @@ func TestTextValueStyles(t *testing.T) {
 	}{
 		{
 			name:     "simple message",
-			expected: fmt.Sprintf("%s info\n", InfoLevelStyle.Render("INFO")),
+			expected: fmt.Sprintf("%s info\n", InfoLevelStyle),
 			msg:      "info",
 			kvs:      nil,
 			f:        logger.Info,
@@ -260,9 +262,9 @@ func TestTextValueStyles(t *testing.T) {
 			name: "message with keyvals",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s %s%s%s\n",
-				InfoLevelStyle.Render("INFO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("val1"),
-				KeyStyle.Render("key2"), SeparatorStyle.Render("="), ValueStyle.Render("val2"),
+				InfoLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render("val1"),
+				KeyStyle.Render("key2"), SeparatorStyle.Render(separator), ValueStyle.Render("val2"),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", "val1", "key2", "val2"},
@@ -272,10 +274,10 @@ func TestTextValueStyles(t *testing.T) {
 			name: "error message with multiline",
 			expected: fmt.Sprintf(
 				"%s info\n  %s%s\n%s%s\n%s%s\n",
-				ErrorLevelStyle.Render("ERRO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="),
-				SeparatorStyle.Render("  │ "), ValueStyle.Render("val1"),
-				SeparatorStyle.Render("  │ "), ValueStyle.Render("val2"),
+				ErrorLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator),
+				SeparatorStyle.Render(indentSeparator), ValueStyle.Render("val1"),
+				SeparatorStyle.Render(indentSeparator), ValueStyle.Render("val2"),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", "val1\nval2"},
@@ -285,9 +287,9 @@ func TestTextValueStyles(t *testing.T) {
 			name: "error message with keyvals",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s %s%s%s\n",
-				ErrorLevelStyle.Render("ERRO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("val1"),
-				KeyStyle.Render("key2"), SeparatorStyle.Render("="), ValueStyle.Render("val2"),
+				ErrorLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render("val1"),
+				KeyStyle.Render("key2"), SeparatorStyle.Render(separator), ValueStyle.Render("val2"),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", "val1", "key2", "val2"},
@@ -296,11 +298,11 @@ func TestTextValueStyles(t *testing.T) {
 		{
 			name: "odd number of keyvals",
 			expected: fmt.Sprintf(
-				"%s info %s%s%s %s%s%s %s%s\"%s\"\n",
-				ErrorLevelStyle.Render("ERRO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("val1"),
-				KeyStyle.Render("key2"), SeparatorStyle.Render("="), ValueStyle.Render("val2"),
-				KeyStyle.Render("key3"), SeparatorStyle.Render("="), ValueStyle.Render("missing value"),
+				"%s info %s%s%s %s%s%s %s%s%s\n",
+				ErrorLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render("val1"),
+				KeyStyle.Render("key2"), SeparatorStyle.Render(separator), ValueStyle.Render("val2"),
+				KeyStyle.Render("key3"), SeparatorStyle.Render(separator), ValueStyle.Render(`"missing value"`),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", "val1", "key2", "val2", "key3"},
@@ -309,9 +311,9 @@ func TestTextValueStyles(t *testing.T) {
 		{
 			name: "error field",
 			expected: fmt.Sprintf(
-				"%s info %s%s\"%s\"\n",
-				ErrorLevelStyle.Render("ERRO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("error value"),
+				"%s info %s%s%s\n",
+				ErrorLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render(`"error value"`),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", errors.New("error value")},
@@ -321,8 +323,8 @@ func TestTextValueStyles(t *testing.T) {
 			name: "struct field",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s\n",
-				InfoLevelStyle.Render("INFO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("{foo:bar}"),
+				InfoLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render("{foo:bar}"),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", struct{ foo string }{foo: "bar"}},
@@ -331,9 +333,9 @@ func TestTextValueStyles(t *testing.T) {
 		{
 			name: "struct field quoted",
 			expected: fmt.Sprintf(
-				"%s info %s%s\"%s\"\n",
-				InfoLevelStyle.Render("INFO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("{foo:bar baz}"),
+				"%s info %s%s%s\n",
+				InfoLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render(`"{foo:bar baz}"`),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", struct{ foo string }{foo: "bar baz"}},
@@ -342,9 +344,9 @@ func TestTextValueStyles(t *testing.T) {
 		{
 			name: "slice of strings",
 			expected: fmt.Sprintf(
-				"%s info %s%s\"%s\"\n",
-				ErrorLevelStyle.Render("ERRO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("[foo bar]"),
+				"%s info %s%s%s\n",
+				ErrorLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render(`"[foo bar]"`),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", []string{"foo", "bar"}},
@@ -353,9 +355,9 @@ func TestTextValueStyles(t *testing.T) {
 		{
 			name: "slice of structs",
 			expected: fmt.Sprintf(
-				"%s info %s%s\"%s\"\n",
-				ErrorLevelStyle.Render("ERRO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("[{foo:bar} {foo:baz}]"),
+				"%s info %s%s%s\n",
+				ErrorLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render(`"[{foo:bar} {foo:baz}]"`),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", []struct{ foo string }{{foo: "bar"}, {foo: "baz"}}},
@@ -364,9 +366,9 @@ func TestTextValueStyles(t *testing.T) {
 		{
 			name: "slice of errors",
 			expected: fmt.Sprintf(
-				"%s info %s%s\"%s\"\n",
-				ErrorLevelStyle.Render("ERRO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("[error value1 error value2]"),
+				"%s info %s%s%s\n",
+				ErrorLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render(`"[error value1 error value2]"`),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", []error{errors.New("error value1"), errors.New("error value2")}},
@@ -375,9 +377,9 @@ func TestTextValueStyles(t *testing.T) {
 		{
 			name: "map of strings",
 			expected: fmt.Sprintf(
-				"%s info %s%s\"%s\"\n",
-				ErrorLevelStyle.Render("ERRO"),
-				KeyStyle.Render("key1"), SeparatorStyle.Render("="), ValueStyle.Render("map[baz:qux foo:bar]"),
+				"%s info %s%s%s\n",
+				ErrorLevelStyle,
+				KeyStyle.Render("key1"), SeparatorStyle.Render(separator), ValueStyle.Render(`"map[baz:qux foo:bar]"`),
 			),
 			msg: "info",
 			kvs: []interface{}{"key1", map[string]string{"foo": "bar", "baz": "qux"}},
