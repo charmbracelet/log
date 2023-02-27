@@ -13,7 +13,7 @@ func (l *logger) logfmtFormatter(keyvals ...interface{}) {
 
 	for i := 0; i < len(keyvals); i += 2 {
 		switch keyvals[i] {
-		case tsKey:
+		case TimestampKey:
 			if t, ok := keyvals[i+1].(time.Time); ok {
 				keyvals[i+1] = t.Format(l.timeFormat)
 			}

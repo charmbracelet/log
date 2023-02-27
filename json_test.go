@@ -161,3 +161,16 @@ func TestJsonCaller(t *testing.T) {
 		})
 	}
 }
+
+func TestJsonCustomKey(t *testing.T) {
+	var buf bytes.Buffer
+	oldTsKey := TimestampKey
+	defer func() {
+		TimestampKey = oldTsKey
+	}()
+	TimestampKey = "time"
+	logger := New(WithOutput(&buf), WithTimestamp(),
+		WithTimeFunction(_zeroTime), WithFormatter(JSONFormatter))
+	logger.Info("info")
+	require.Equal(t, "{\"lvl\":\"info\",\"msg\":\"info\",\"time\":\"0001/01/01 00:00:00\"}\n", buf.String())
+}

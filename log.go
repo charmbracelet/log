@@ -92,27 +92,27 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 
 	var kvs []interface{}
 	if l.timestamp {
-		kvs = append(kvs, tsKey, l.timeFunc())
+		kvs = append(kvs, TimestampKey, l.timeFunc())
 	}
 
 	if level != noLevel {
-		kvs = append(kvs, lvlKey, level)
+		kvs = append(kvs, LevelKey, level)
 	}
 
 	if l.caller {
 		// Call stack is log.Error -> log.log (2)
 		file, line, _ := l.fillLoc(l.callerOffset + 2)
 		caller := fmt.Sprintf("%s:%d", trimCallerPath(file), line)
-		kvs = append(kvs, callerKey, caller)
+		kvs = append(kvs, CallerKey, caller)
 	}
 
 	if l.prefix != "" {
-		kvs = append(kvs, prefixKey, l.prefix+":")
+		kvs = append(kvs, PrefixKey, l.prefix+":")
 	}
 
 	if msg != nil {
 		m := fmt.Sprint(msg)
-		kvs = append(kvs, msgKey, m)
+		kvs = append(kvs, MessageKey, m)
 	}
 
 	// append logger fields

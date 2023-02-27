@@ -145,7 +145,7 @@ func needsQuoting(str string) bool {
 func (l *logger) textFormatter(keyvals ...interface{}) {
 	for i := 0; i < len(keyvals); i += 2 {
 		switch keyvals[i] {
-		case tsKey:
+		case TimestampKey:
 			if t, ok := keyvals[i+1].(time.Time); ok {
 				ts := t.Format(l.timeFormat)
 				if !l.noStyles {
@@ -154,7 +154,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(ts)
 				l.b.WriteByte(' ')
 			}
-		case lvlKey:
+		case LevelKey:
 			if level, ok := keyvals[i+1].(Level); ok {
 				lvl := strings.ToUpper(level.String())
 				if !l.noStyles {
@@ -163,7 +163,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(lvl)
 				l.b.WriteByte(' ')
 			}
-		case callerKey:
+		case CallerKey:
 			if caller, ok := keyvals[i+1].(string); ok {
 				caller = fmt.Sprintf("<%s>", caller)
 				if !l.noStyles {
@@ -172,7 +172,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(caller)
 				l.b.WriteByte(' ')
 			}
-		case prefixKey:
+		case PrefixKey:
 			if prefix, ok := keyvals[i+1].(string); ok {
 				if !l.noStyles {
 					prefix = PrefixStyle.Render(prefix)
@@ -180,7 +180,7 @@ func (l *logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(prefix)
 				l.b.WriteByte(' ')
 			}
-		case msgKey:
+		case MessageKey:
 			if msg := keyvals[i+1]; msg != nil {
 				m := fmt.Sprint(msg)
 				if !l.noStyles {
