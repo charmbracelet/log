@@ -47,3 +47,31 @@ func TestSubLogger(t *testing.T) {
 		})
 	}
 }
+
+func TestWrongLevel(t *testing.T) {
+	var buf bytes.Buffer
+	cases := []struct {
+		name     string
+		expected string
+		level    Level
+	}{
+		{
+			name:     "wrong level",
+			expected: "",
+			level:    Level(999),
+		},
+		{
+			name:     "wrong level negative",
+			expected: "INFO info\n",
+			level:    Level(-999),
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			buf.Reset()
+			l := New(WithOutput(&buf), WithLevel(c.level))
+			l.Info("info")
+			assert.Equal(t, c.expected, buf.String())
+		})
+	}
+}

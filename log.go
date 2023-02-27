@@ -30,9 +30,8 @@ type logger struct {
 	mu *sync.RWMutex
 
 	isDiscard uint32
-	aLevel    int32
 
-	level        Level
+	level        int32
 	prefix       string
 	timeFunc     TimeFunction
 	timeFormat   string
@@ -53,7 +52,7 @@ func New(opts ...LoggerOption) Logger {
 	l := &logger{
 		b:     bytes.Buffer{},
 		mu:    &sync.RWMutex{},
-		level: InfoLevel,
+		level: int32(InfoLevel),
 	}
 
 	for _, opt := range opts {
@@ -65,7 +64,7 @@ func New(opts ...LoggerOption) Logger {
 	}
 
 	l.SetOutput(l.w)
-	l.SetLevel(l.level)
+	l.SetLevel(Level(l.level))
 
 	if l.timeFunc == nil {
 		l.timeFunc = time.Now
@@ -84,7 +83,7 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	}
 
 	// check if the level is allowed
-	if atomic.LoadInt32(&l.aLevel) > int32(level) {
+	if atomic.LoadInt32(&l.level) > int32(level) {
 		return
 	}
 
@@ -225,15 +224,14 @@ func (l *logger) SetReportCaller(report bool) {
 func (l *logger) GetLevel() Level {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
-	return l.level
+	return Level(l.level)
 }
 
 // SetLevel sets the current level.
 func (l *logger) SetLevel(level Level) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	l.level = level
-	atomic.StoreInt32(&l.aLevel, int32(level))
+	atomic.StoreInt32(&l.level, int32(level))
 }
 
 // GetPrefix returns the current prefix.
