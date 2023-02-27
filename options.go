@@ -30,7 +30,7 @@ func WithTimeFormat(format string) LoggerOption {
 // default is InfoLevel.
 func WithLevel(level Level) LoggerOption {
 	return func(l *logger) {
-		l.level = level
+		l.level = int32(level)
 	}
 }
 
