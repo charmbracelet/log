@@ -202,10 +202,10 @@ log.Error("Whoops!", "err", "kitchen on fire")
 ```
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" width="400" srcset="https://vhs.charm.sh/vhs-63lBglJXwK7NNcqoDEDneY.gif">
-    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-63lBglJXwK7NNcqoDEDneY.gif">
+    <source media="(prefers-color-scheme: dark)" width="400" srcset="https://vhs.charm.sh/vhs-4LXsGvzyH4RdjJaTF4a9MG.gif">
+    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4LXsGvzyH4RdjJaTF4a9MG.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif"> -->
-    <img width="400" src="https://vhs.charm.sh/vhs-63lBglJXwK7NNcqoDEDneY.gif">
+    <img width="400" src="https://vhs.charm.sh/vhs-4LXsGvzyH4RdjJaTF4a9MG.gif">
 </picture>
 
 ### Sub-logger

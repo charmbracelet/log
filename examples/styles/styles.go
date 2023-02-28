@@ -17,6 +17,7 @@ func main() {
 		}).
 		Foreground(lipgloss.Color("0"))
 	log.KeyStyles["err"] = lipgloss.NewStyle().Foreground(lipgloss.Color("204"))
+	log.ValueStyles["err"] = lipgloss.NewStyle().Bold(true)
 	logger := log.New()
 	logger.Error("Whoops!", "err", "kitchen on fire")
 	time.Sleep(3 * time.Second)
