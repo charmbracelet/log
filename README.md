@@ -75,7 +75,7 @@ log.Error("failed to bake cookies", "err", err)
     <source media="(prefers-color-scheme: dark)" width="600" srcset="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" >
     <source media="(prefers-color-scheme: light)" width="600" srcset="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" >
     <!-- <source media="(prefers-color-scheme: light)" width="600" srcset="https://vhs.charm.sh/vhs-7rk8wALXRDoFw8SLFwn9rW.gif"> -->
-    <img width="600" src="https://vhs.charm.sh/vhs-7rk8wALXRDoFw8SLFwn9rW.gif" alt="Made with VHS">
+    <img width="600" src="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" alt="Made with VHS">
 </picture>
 
 You can use `log.Print()` to print messages without a level prefix.
@@ -100,7 +100,7 @@ if butter {
     <source media="(prefers-color-scheme: dark)" width="300" srcset="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif">
     <source media="(prefers-color-scheme: light)" width="300" srcset="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="300" srcset="https://vhs.charm.sh/vhs-1nrhNSuFnQkxWD4RoMlE4O.gif"> -->
-    <img width="300" src="https://vhs.charm.sh/vhs-1nrhNSuFnQkxWD4RoMlE4O.gif">
+    <img width="300" src="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif">
 </picture>
 
 ### Levels
@@ -157,7 +157,7 @@ logger.Info("Finished baking")
     <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
     <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-2X8Esd8ZsHo4DVPVgR36yx.gif"> -->
-    <img width="700" src="https://vhs.charm.sh/vhs-2X8Esd8ZsHo4DVPVgR36yx.gif">
+    <img width="700" src="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
 </picture>
 
 Use `log.SetFormatter()` or `log.WithFormatter()` to change the output format.
@@ -197,14 +197,15 @@ log.ErrorLevelStyle = lipgloss.NewStyle().
     Foreground(lipgloss.Color("0"))
 // Add a custom style for key `err`
 log.KeyStyles["err"] = lipgloss.NewStyle().Foreground(lipgloss.Color("204"))
+log.ValueStyles["err"] = lipgloss.NewStyle().Bold(true)
 log.Error("Whoops!", "err", "kitchen on fire")
 ```
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" width="400" srcset="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif">
-    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif">
+    <source media="(prefers-color-scheme: dark)" width="400" srcset="https://vhs.charm.sh/vhs-63lBglJXwK7NNcqoDEDneY.gif">
+    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-63lBglJXwK7NNcqoDEDneY.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif"> -->
-    <img width="400" src="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif">
+    <img width="400" src="https://vhs.charm.sh/vhs-63lBglJXwK7NNcqoDEDneY.gif">
 </picture>
 
 ### Sub-logger
@@ -237,7 +238,7 @@ for item := 1; i <= 100; i++ {
     <source media="(prefers-color-scheme: dark)" width="500" srcset="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif">
     <source media="(prefers-color-scheme: light)" width="500" srcset="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="500" srcset="https://vhs.charm.sh/vhs-4RHXd4JSucomcPqJGZTpKh.gif"> -->
-    <img width="500" src="https://vhs.charm.sh/vhs-4RHXd4JSucomcPqJGZTpKh.gif">
+    <img width="500" src="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif">
 </picture>
 
 Or arguments:
@@ -252,7 +253,7 @@ for temp := 375; temp <= 400; temp++ {
     <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif">
     <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-4AvAnoA2S53QTOteX8krp4.gif"> -->
-    <img width="700" src="https://vhs.charm.sh/vhs-4AvAnoA2S53QTOteX8krp4.gif">
+    <img width="700" src="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif">
 </picture>
 
 ### Helper Functions
@@ -274,7 +275,7 @@ startOven(400) // INFO <cookies/oven.go:123> Starting oven degree=400
     <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif">
     <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6DPg0bVL4K4TkfoHkAn2ap.gif"> -->
-    <img width="700" src="https://vhs.charm.sh/vhs-6DPg0bVL4K4TkfoHkAn2ap.gif">
+    <img width="700" src="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif">
 </picture>
 
 This will use the _caller_ function (`startOven`) line number instead of the
