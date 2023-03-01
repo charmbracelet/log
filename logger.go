@@ -27,13 +27,13 @@ func NowUTC() time.Time {
 type CallerFormat uint8
 
 const (
+	// CallerLong is the long format of the caller location.
+	// The long format is the full path of the file and the line number.
+	CallerLong CallerFormat = 0
 	// CallerShort is the short format of the caller location.
 	// The short format is the file name and one level of directory, and the
 	// line number.
-	CallerShort CallerFormat = iota
-	// CallerLong is the long format of the caller location.
-	// The long format is the full path of the file and the line number.
-	CallerLong
+	CallerShort CallerFormat = 2
 )
 
 // Logger is an interface for logging.

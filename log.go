@@ -51,9 +51,10 @@ type logger struct {
 // New returns a new logger. It uses os.Stderr as the default output.
 func New(opts ...LoggerOption) Logger {
 	l := &logger{
-		b:     bytes.Buffer{},
-		mu:    &sync.RWMutex{},
-		level: int32(InfoLevel),
+		b:            bytes.Buffer{},
+		mu:           &sync.RWMutex{},
+		level:        int32(InfoLevel),
+		callerFormat: CallerShort,
 	}
 
 	for _, opt := range opts {
@@ -104,10 +105,7 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	if l.caller {
 		// Call stack is log.Error -> log.log (2)
 		file, line, _ := l.fillLoc(l.callerOffset + 2)
-		if l.callerFormat == CallerShort {
-			file = trimCallerPath(file)
-		}
-		caller := fmt.Sprintf("%s:%d", file, line)
+		caller := fmt.Sprintf("%s:%d", trimCallerPath(file, int(l.callerFormat)), line)
 		kvs = append(kvs, CallerKey, caller)
 	}
 
@@ -181,8 +179,8 @@ func location(skip int) (file string, line int, fn string) {
 	return file, line, f.Name()
 }
 
-// Cleanup a path by returning the last 2 segments of the path only.
-func trimCallerPath(path string) string {
+// Cleanup a path by returning the last n segments of the path only.
+func trimCallerPath(path string, trim int) string {
 	// lovely borrowed from zap
 	// nb. To make sure we trim the path correctly on Windows too, we
 	// counter-intuitively need to use '/' and *not* os.PathSeparator here,
@@ -195,16 +193,22 @@ func trimCallerPath(path string) string {
 	//
 	// for discussion on the issue on Go side.
 
+	if trim <= 0 {
+		return path
+	}
+
 	// Find the last separator.
 	idx := strings.LastIndexByte(path, '/')
 	if idx == -1 {
 		return path
 	}
 
-	// Find the penultimate separator.
-	idx = strings.LastIndexByte(path[:idx], '/')
-	if idx == -1 {
-		return path
+	for i := 0; i < trim-1; i++ {
+		// Find the penultimate separator.
+		idx = strings.LastIndexByte(path[:idx], '/')
+		if idx == -1 {
+			return path
+		}
 	}
 
 	return path[idx+1:]
