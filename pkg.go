@@ -2,6 +2,7 @@ package log
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -148,6 +149,37 @@ func Fatal(msg interface{}, keyvals ...interface{}) {
 // Print logs a message with no level.
 func Print(msg interface{}, keyvals ...interface{}) {
 	defaultLogger.log(noLevel, msg, keyvals...)
+}
+
+// Debugf logs a debug message with formatting.
+func Debugf(format string, args ...interface{}) {
+	defaultLogger.log(DebugLevel, fmt.Sprintf(format, args...))
+}
+
+// Infof logs an info message with formatting.
+func Infof(format string, args ...interface{}) {
+	defaultLogger.log(InfoLevel, fmt.Sprintf(format, args...))
+}
+
+// Warnf logs a warning message with formatting.
+func Warnf(format string, args ...interface{}) {
+	defaultLogger.log(WarnLevel, fmt.Sprintf(format, args...))
+}
+
+// Errorf logs an error message with formatting.
+func Errorf(format string, args ...interface{}) {
+	defaultLogger.log(ErrorLevel, fmt.Sprintf(format, args...))
+}
+
+// Fatalf logs a fatal message with formatting and exit.
+func Fatalf(format string, args ...interface{}) {
+	defaultLogger.log(FatalLevel, fmt.Sprintf(format, args...))
+	os.Exit(1)
+}
+
+// Printf logs a message with formatting and no level.
+func Printf(format string, args ...interface{}) {
+	defaultLogger.log(noLevel, fmt.Sprintf(format, args...))
 }
 
 // StandardLog returns a standard logger from the default logger.
