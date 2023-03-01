@@ -79,7 +79,8 @@ func TestWrongLevel(t *testing.T) {
 
 func TestLogFormatter(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(WithOutput(&buf), WithLevel(DebugLevel))
+	l := New(&buf)
+	l.SetLevel(DebugLevel)
 	cases := []struct {
 		name     string
 		format   string
@@ -99,7 +100,7 @@ func TestLogFormatter(t *testing.T) {
 			format:   "%s %s",
 			args:     []interface{}{"foo", "bar"},
 			fun:      l.Debugf,
-			expected: "DEBUG foo bar\n",
+			expected: "DEBU foo bar\n",
 		},
 		{
 			name:     "warn format",
@@ -113,7 +114,7 @@ func TestLogFormatter(t *testing.T) {
 			format:   "%s %s",
 			args:     []interface{}{"foo", "bar"},
 			fun:      l.Errorf,
-			expected: "ERROR foo bar\n",
+			expected: "ERRO foo bar\n",
 		},
 	}
 	for _, c := range cases {
