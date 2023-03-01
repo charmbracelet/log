@@ -2,8 +2,10 @@ package log
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -49,6 +51,20 @@ func TestGlobal(t *testing.T) {
 			assert.Equal(t, c.expected, buf.String())
 		})
 	}
+}
+
+func TestFullCallerSource(t *testing.T) {
+	var buf bytes.Buffer
+	SetOutput(&buf)
+	SetCallerFormat(CallerLong)
+	SetReportCaller(true)
+	SetReportTimestamp(false)
+	_, file, line, _ := runtime.Caller(0)
+	Error("error")
+	assert.Equal(t, fmt.Sprintf("ERROR <%s:%d> error\n", file, line+1), buf.String())
+	SetReportTimestamp(true)
+	SetReportCaller(false)
+	SetCallerFormat(CallerShort)
 }
 
 func TestPrint(t *testing.T) {

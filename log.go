@@ -36,6 +36,7 @@ type logger struct {
 	timeFunc     TimeFunction
 	timeFormat   string
 	callerOffset int
+	callerFormat CallerFormat
 	formatter    Formatter
 
 	caller    bool
@@ -103,7 +104,10 @@ func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	if l.caller {
 		// Call stack is log.Error -> log.log (2)
 		file, line, _ := l.fillLoc(l.callerOffset + 2)
-		caller := fmt.Sprintf("%s:%d", trimCallerPath(file), line)
+		if l.callerFormat == CallerShort {
+			file = trimCallerPath(file)
+		}
+		caller := fmt.Sprintf("%s:%d", file, line)
 		kvs = append(kvs, CallerKey, caller)
 	}
 
@@ -218,6 +222,13 @@ func (l *logger) SetReportCaller(report bool) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.caller = report
+}
+
+// SetCallerFormat sets the caller format.
+func (l *logger) SetCallerFormat(format CallerFormat) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.callerFormat = format
 }
 
 // GetLevel returns the current level.

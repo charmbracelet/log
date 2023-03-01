@@ -23,6 +23,19 @@ func NowUTC() time.Time {
 	return time.Now().UTC()
 }
 
+// CallerFormat is the format of the caller location.
+type CallerFormat uint8
+
+const (
+	// CallerShort is the short format of the caller location.
+	// The short format is the file name and one level of directory, and the
+	// line number.
+	CallerShort CallerFormat = iota
+	// CallerLong is the long format of the caller location.
+	// The long format is the full path of the file and the line number.
+	CallerLong
+)
+
 // Logger is an interface for logging.
 type Logger interface {
 	// SetLevel sets the allowed level.
@@ -39,6 +52,9 @@ type Logger interface {
 	SetReportTimestamp(bool)
 	// SetReportCaller sets whether the logger should report the caller location.
 	SetReportCaller(bool)
+	// SetCallerFormat sets the caller format. The default is CallerShort.
+	// This is only used when SetReportCaller is true.
+	SetCallerFormat(format CallerFormat)
 	// SetTimeFunction sets the time function used to get the time.
 	// The default is time.Now.
 	//

@@ -23,6 +23,11 @@ func SetReportCaller(report bool) {
 	defaultLogger.SetReportCaller(report)
 }
 
+// SetCallerFormat sets the caller format. The default is CallerShort.
+func SetCallerFormat(format CallerFormat) {
+	defaultLogger.SetCallerFormat(format)
+}
+
 // SetLevel sets the level for the default logger.
 func SetLevel(level Level) {
 	defaultLogger.SetLevel(level)

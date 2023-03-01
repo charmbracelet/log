@@ -55,6 +55,14 @@ func WithCaller() LoggerOption {
 	}
 }
 
+// WithCallerFormat returns a LoggerOption that sets the caller format for the
+// logger.
+func WithCallerFormat(format CallerFormat) LoggerOption {
+	return func(l *logger) {
+		l.callerFormat = format
+	}
+}
+
 // WithFields returns a LoggerOption that sets the fields for the logger.
 func WithFields(keyvals ...interface{}) LoggerOption {
 	return func(l *logger) {
