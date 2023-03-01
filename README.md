@@ -130,6 +130,20 @@ log.Fatal(err) // this calls os.Exit(1)
 log.Print(err) // prints regardless of log level
 ```
 
+Or use the formatter variant:
+
+```go
+format := "%s %d"
+log.Debugf(format, "chocolate", 10)
+log.Warnf(format, "adding more", 5)
+log.Errorf(format, "increasing temp", 420)
+log.Fatalf(format, "too hot!", 500) // this calls os.Exit(1)
+log.Printf(format, "baking cookies") // prints regardless of log level
+
+// Use these in conjunction with `With(...)` to add more context
+log.With("err", err).Errorf("unable to start %s", "oven")
+```
+
 ### Structured
 
 All the functions above take a message and key-value pairs of anything. The
