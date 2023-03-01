@@ -294,3 +294,34 @@ func (l *Logger) Fatal(msg interface{}, keyvals ...interface{}) {
 func (l *Logger) Print(msg interface{}, keyvals ...interface{}) {
 	l.log(noLevel, msg, keyvals...)
 }
+
+// Debugf prints a debug message with formatting.
+func (l *logger) Debugf(format string, args ...interface{}) {
+	l.log(DebugLevel, fmt.Sprintf(format, args...))
+}
+
+// Infof prints an info message with formatting.
+func (l *logger) Infof(format string, args ...interface{}) {
+	l.log(InfoLevel, fmt.Sprintf(format, args...))
+}
+
+// Warnf prints a warning message with formatting.
+func (l *logger) Warnf(format string, args ...interface{}) {
+	l.log(WarnLevel, fmt.Sprintf(format, args...))
+}
+
+// Errorf prints an error message with formatting.
+func (l *logger) Errorf(format string, args ...interface{}) {
+	l.log(ErrorLevel, fmt.Sprintf(format, args...))
+}
+
+// Fatalf prints a fatal message with formatting and exits.
+func (l *logger) Fatalf(format string, args ...interface{}) {
+	l.log(FatalLevel, fmt.Sprintf(format, args...))
+	os.Exit(1)
+}
+
+// Printf prints a message with no level and formatting.
+func (l *logger) Printf(format string, args ...interface{}) {
+	l.log(noLevel, fmt.Sprintf(format, args...))
+}

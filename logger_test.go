@@ -76,3 +76,51 @@ func TestWrongLevel(t *testing.T) {
 		})
 	}
 }
+
+func TestLogFormatter(t *testing.T) {
+	var buf bytes.Buffer
+	l := New(WithOutput(&buf), WithLevel(DebugLevel))
+	cases := []struct {
+		name     string
+		format   string
+		args     []interface{}
+		fun      func(string, ...interface{})
+		expected string
+	}{
+		{
+			name:     "info format",
+			format:   "%s %s",
+			args:     []interface{}{"foo", "bar"},
+			fun:      l.Infof,
+			expected: "INFO foo bar\n",
+		},
+		{
+			name:     "debug format",
+			format:   "%s %s",
+			args:     []interface{}{"foo", "bar"},
+			fun:      l.Debugf,
+			expected: "DEBUG foo bar\n",
+		},
+		{
+			name:     "warn format",
+			format:   "%s %s",
+			args:     []interface{}{"foo", "bar"},
+			fun:      l.Warnf,
+			expected: "WARN foo bar\n",
+		},
+		{
+			name:     "error format",
+			format:   "%s %s",
+			args:     []interface{}{"foo", "bar"},
+			fun:      l.Errorf,
+			expected: "ERROR foo bar\n",
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			buf.Reset()
+			c.fun(c.format, "foo", "bar")
+			assert.Equal(t, c.expected, buf.String())
+		})
+	}
+}
