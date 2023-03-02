@@ -15,7 +15,7 @@ const (
 	indentSeparator = "  │ "
 )
 
-func (l *logger) writeIndent(w io.Writer, str string, indent string, newline bool, key string) {
+func (l *Logger) writeIndent(w io.Writer, str string, indent string, newline bool, key string) {
 	// kindly borrowed from hclog
 	for {
 		nl := strings.IndexByte(str, '\n')
@@ -146,7 +146,7 @@ func needsQuoting(str string) bool {
 	return false
 }
 
-func (l *logger) textFormatter(keyvals ...interface{}) {
+func (l *Logger) textFormatter(keyvals ...interface{}) {
 	for i := 0; i < len(keyvals); i += 2 {
 		switch keyvals[i] {
 		case TimestampKey:

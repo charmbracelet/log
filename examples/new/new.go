@@ -1,8 +1,12 @@
 package main
 
-import "github.com/charmbracelet/log"
+import (
+	"os"
+
+	"github.com/charmbracelet/log"
+)
 
 func main() {
-	logger := log.New()
+	logger := log.New(os.Stderr)
 	logger.Warn("chewy!", "butter", true)
 }

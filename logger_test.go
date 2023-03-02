@@ -9,7 +9,7 @@ import (
 
 func TestSubLogger(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(WithOutput(&buf))
+	l := New(&buf)
 	cases := []struct {
 		name     string
 		expected string
@@ -69,7 +69,8 @@ func TestWrongLevel(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			buf.Reset()
-			l := New(WithOutput(&buf), WithLevel(c.level))
+			l := New(&buf)
+			l.SetLevel(c.level)
 			l.Info("info")
 			assert.Equal(t, c.expected, buf.String())
 		})

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func (l *logger) jsonFormatter(keyvals ...interface{}) {
+func (l *Logger) jsonFormatter(keyvals ...interface{}) {
 	m := make(map[string]interface{}, len(keyvals)/2)
 	for i := 0; i < len(keyvals); i += 2 {
 		switch keyvals[i] {

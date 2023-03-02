@@ -1,70 +1,42 @@
 package log
 
-import "io"
+import (
+	"time"
+)
 
-// WithOutput returns a LoggerOption that sets the output for the logger. The
-// default is os.Stderr.
-func WithOutput(w io.Writer) LoggerOption {
-	return func(l *logger) {
-		l.w = w
-	}
+// DefaultTimeFormat is the default time format.
+const DefaultTimeFormat = "2006/01/02 15:04:05"
+
+// TimeFunction is a function that returns a time.Time.
+type TimeFunction = func() time.Time
+
+// NowUTC is a convenient function that returns the
+// current time in UTC timezone.
+//
+// This is to be used as a time function.
+// For example:
+//
+//	log.SetTimeFunction(log.NowUTC)
+func NowUTC() time.Time {
+	return time.Now().UTC()
 }
 
-// WithTimeFunction returns a LoggerOption that sets the time function for the
-// logger. The default is time.Now.
-func WithTimeFunction(f TimeFunction) LoggerOption {
-	return func(l *logger) {
-		l.timeFunc = f
-	}
-}
-
-// WithTimeFormat returns a LoggerOption that sets the time format for the
-// logger. The default is "2006/01/02 15:04:05".
-func WithTimeFormat(format string) LoggerOption {
-	return func(l *logger) {
-		l.timeFormat = format
-	}
-}
-
-// WithLevel returns a LoggerOption that sets the level for the logger. The
-// default is InfoLevel.
-func WithLevel(level Level) LoggerOption {
-	return func(l *logger) {
-		l.level = int32(level)
-	}
-}
-
-// WithPrefix returns a LoggerOption that sets the prefix for the logger.
-func WithPrefix(prefix string) LoggerOption {
-	return func(l *logger) {
-		l.prefix = prefix
-	}
-}
-
-// WithTimestamp returns a LoggerOption that enables timestamps for the logger.
-func WithTimestamp() LoggerOption {
-	return func(l *logger) {
-		l.timestamp = true
-	}
-}
-
-// WithCaller returns a LoggerOption that enables caller for the logger.
-func WithCaller() LoggerOption {
-	return func(l *logger) {
-		l.caller = true
-	}
-}
-
-// WithFields returns a LoggerOption that sets the fields for the logger.
-func WithFields(keyvals ...interface{}) LoggerOption {
-	return func(l *logger) {
-		l.keyvals = keyvals
-	}
-}
-
-// WithFormatter returns a LoggerOption that sets the formatter for the logger.
-func WithFormatter(f Formatter) LoggerOption {
-	return func(l *logger) {
-		l.formatter = f
-	}
+// Options is the options for the logger.
+type Options struct {
+	// TimeFunction is the time function for the logger. The default is time.Now.
+	TimeFunction TimeFunction
+	// TimeFormat is the time format for the logger. The default is "2006/01/02 15:04:05".
+	TimeFormat string
+	// Level is the level for the logger. The default is InfoLevel.
+	Level Level
+	// Prefix is the prefix for the logger. The default is no prefix.
+	Prefix string
+	// ReportTimestamp is whether the logger should report the timestamp. The default is false.
+	ReportTimestamp bool
+	// ReportCaller is whether the logger should report the caller location. The default is false.
+	ReportCaller bool
+	// Fields is the fields for the logger. The default is no fields.
+	Fields []interface{}
+	// Formatter is the formatter for the logger. The default is TextFormatter.
+	Formatter Formatter
 }
