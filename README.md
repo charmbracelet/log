@@ -109,6 +109,7 @@ Log offers multiple levels to filter your logs on. Available levels are:
 
 ```go
 log.DebugLevel
+log.InfoLevel
 log.WarnLevel
 log.ErrorLevel
 log.FatalLevel
@@ -122,6 +123,7 @@ Use the corresponding function to log a message:
 ```go
 err := errors.New("Baking error 101")
 log.Debug(err)
+log.Info(err)
 log.Warn(err)
 log.Error(err)
 log.Fatal(err) // this calls os.Exit(1)
