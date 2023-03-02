@@ -3,11 +3,12 @@ package log
 import (
 	"log"
 	"strings"
+	"sync"
 )
 
 type stdLogWriter struct {
-	l   *logger
-	opt *StandardLogOption
+	l   *Logger
+	opt *StandardLogOptions
 }
 
 func (l *stdLogWriter) Write(p []byte) (n int, err error) {
@@ -44,16 +45,18 @@ func (l *stdLogWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-// StandardLogOption can be used to configure the standard log adapter.
-type StandardLogOption struct {
+// StandardLogOptions can be used to configure the standard log adapter.
+type StandardLogOptions struct {
 	ForceLevel Level
 }
 
 // StandardLog returns a standard logger from Logger. The returned logger
 // can infer log levels from message prefix. Expected prefixes are DEBUG, INFO,
 // WARN, ERROR, and ERR.
-func (l *logger) StandardLog(opts ...StandardLogOption) *log.Logger {
+func (l *Logger) StandardLog(opts ...StandardLogOptions) *log.Logger {
 	nl := *l
+	nl.mu = &sync.RWMutex{}
+	nl.helpers = &sync.Map{}
 	// The caller stack is
 	// log.Printf() -> l.Output() -> l.out.Write(stdLogger.Write)
 	nl.callerOffset += 3

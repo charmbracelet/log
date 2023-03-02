@@ -1,16 +1,59 @@
 package log
 
 import (
+	"bytes"
 	"io"
 	"log"
 	"os"
+	"sync"
+	"time"
 )
 
-var defaultLogger = New(WithTimestamp()).(*logger)
+var defaultLogger = NewWithOptions(os.Stderr, Options{ReportTimestamp: true})
 
 // Default returns the default logger. The default logger comes with timestamp enabled.
-func Default() Logger {
+func Default() *Logger {
 	return defaultLogger
+}
+
+// SetDefault sets the default global logger.
+func SetDefault(logger *Logger) {
+	defaultLogger = logger
+}
+
+// New returns a new logger with the default options.
+func New(w io.Writer) *Logger {
+	return NewWithOptions(w, Options{})
+}
+
+// NewWithOptions returns a new logger using the provided options.
+func NewWithOptions(w io.Writer, o Options) *Logger {
+	l := &Logger{
+		b:               bytes.Buffer{},
+		mu:              &sync.RWMutex{},
+		helpers:         &sync.Map{},
+		level:           int32(o.Level),
+		reportTimestamp: o.ReportTimestamp,
+		reportCaller:    o.ReportCaller,
+		prefix:          o.Prefix,
+		timeFunc:        o.TimeFunction,
+		timeFormat:      o.TimeFormat,
+		formatter:       o.Formatter,
+		fields:          o.Fields,
+	}
+
+	l.SetOutput(w)
+	l.SetLevel(Level(l.level))
+
+	if l.timeFunc == nil {
+		l.timeFunc = time.Now
+	}
+
+	if l.timeFormat == "" {
+		l.timeFormat = DefaultTimeFormat
+	}
+
+	return l
 }
 
 // SetReportTimestamp sets whether to report timestamp for the default logger.
@@ -64,7 +107,7 @@ func GetPrefix() string {
 }
 
 // With returns a new logger with the given keyvals.
-func With(keyvals ...interface{}) Logger {
+func With(keyvals ...interface{}) *Logger {
 	return defaultLogger.With(keyvals...)
 }
 
@@ -108,6 +151,6 @@ func Print(msg interface{}, keyvals ...interface{}) {
 }
 
 // StandardLog returns a standard logger from the default logger.
-func StandardLog(opts ...StandardLogOption) *log.Logger {
+func StandardLog(opts ...StandardLogOptions) *log.Logger {
 	return defaultLogger.StandardLog(opts...)
 }

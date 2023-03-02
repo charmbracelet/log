@@ -1,15 +1,13 @@
 package main
 
 import (
-	"time"
-
 	"github.com/charmbracelet/log"
 )
 
 func main() {
-	logger := log.New(log.WithTimestamp(), log.WithTimeFormat(time.Kitchen),
-		log.WithCaller(), log.WithPrefix("Baking 🍪 "))
+	logger := log.Default().With()
 
+	logger.SetPrefix("Baking 🍪 ")
 	logger.SetReportTimestamp(false)
 	logger.SetReportCaller(false)
 	logger.SetLevel(log.DebugLevel)

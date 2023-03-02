@@ -14,8 +14,8 @@ import (
 
 func TestStdLog(t *testing.T) {
 	var buf bytes.Buffer
+	l := New(&buf)
 	cases := []struct {
-		logger   Logger
 		f        func(l *log.Logger)
 		name     string
 		expected string
@@ -23,28 +23,25 @@ func TestStdLog(t *testing.T) {
 		{
 			name:     "simple",
 			expected: "INFO info\n",
-			logger:   New(),
 			f:        func(l *log.Logger) { l.Print("info") },
 		},
 		{
 			name:     "without level",
 			expected: "INFO coffee\n",
-			logger:   New(),
 			f:        func(l *log.Logger) { l.Print("coffee") },
 		},
 		{
 			name:     "error level",
 			expected: "ERROR coffee\n",
-			logger:   New(),
 			f:        func(l *log.Logger) { l.Print("ERROR coffee") },
 		},
 	}
 	for _, c := range cases {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
-			c.logger.SetOutput(&buf)
-			c.logger.SetTimeFunction(_zeroTime)
-			c.f(c.logger.StandardLog())
+			l.SetOutput(&buf)
+			l.SetTimeFunction(_zeroTime)
+			c.f(l.StandardLog())
 			assert.Equal(t, c.expected, buf.String())
 		})
 	}
@@ -52,7 +49,7 @@ func TestStdLog(t *testing.T) {
 
 func TestStdLog_forceLevel(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(WithOutput(&buf))
+	logger := New(&buf)
 	cases := []struct {
 		name     string
 		expected string
@@ -77,7 +74,7 @@ func TestStdLog_forceLevel(t *testing.T) {
 	for _, c := range cases {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
-			l := logger.StandardLog(StandardLogOption{ForceLevel: c.level})
+			l := logger.StandardLog(StandardLogOptions{ForceLevel: c.level})
 			l.Print("coffee")
 			assert.Equal(t, c.expected, buf.String())
 		})
@@ -86,7 +83,8 @@ func TestStdLog_forceLevel(t *testing.T) {
 
 func TestStdLog_writer(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(WithOutput(&buf), WithCaller())
+	logger := New(&buf)
+	logger.SetReportCaller(true)
 	_, file, line, ok := runtime.Caller(0)
 	require.True(t, ok)
 	cases := []struct {
@@ -113,7 +111,7 @@ func TestStdLog_writer(t *testing.T) {
 	for _, c := range cases {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
-			l := log.New(logger.StandardLog(StandardLogOption{ForceLevel: c.level}).Writer(), "", 0)
+			l := log.New(logger.StandardLog(StandardLogOptions{ForceLevel: c.level}).Writer(), "", 0)
 			l.Print("coffee")
 			assert.Equal(t, c.expected, buf.String())
 		})
