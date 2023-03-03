@@ -90,7 +90,7 @@ log.Print("Baking 101")
 Use `New()` to create new loggers.
 
 ```go
-logger := log.New()
+logger := log.New(os.Stderr)
 if butter {
     logger.Warn("chewy!", "butter", true)
 }
@@ -115,8 +115,8 @@ log.ErrorLevel
 log.FatalLevel
 ```
 
-Use `log.SetLevel` or create a new logger with the `log.WithLevel` option to
-set the level.
+Use `log.SetLevel()` to set the log level. You can also create a new logger with
+a specific log level using `log.Options{Level: }`.
 
 Use the corresponding function to log a message:
 
@@ -143,13 +143,16 @@ log.Debug("Available ingredients", "ingredients", ingredients)
 
 ### Options
 
-You can customize the logger with options. Use `log.WithCaller()` to enable
-printing source location. `log.WithTimestamp()` prints the timestamp of each
-log.
+You can customize the logger with options. Use `log.NewWithOptions()` and
+`log.Options{}` to customize your new logger.
 
 ```go
-logger := log.New(log.WithTimestamp(), log.WithTimeFormat(time.Kitchen),
-    log.WithCaller(), log.WithPrefix("Baking 🍪 "))
+logger := log.NewWithOptions(os.Stderr, log.Options{
+    ReportCaller: true,
+    ReportTimestamp: true,
+    TimeFormat: time.Kitchen,
+    Prefix: "Baking 🍪 "
+})
 logger.Info("Starting oven!", "degree", 375)
 time.Sleep(10 * time.Minute)
 logger.Info("Finished baking")
@@ -162,8 +165,17 @@ logger.Info("Finished baking")
     <img width="700" src="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
 </picture>
 
-Use `log.SetFormatter()` or `log.WithFormatter()` to change the output format.
-Available options are:
+You can also use logger setters to customize the logger.
+
+```go
+logger := log.New(os.Stderr)
+logger.SetReportTimestamp(false)
+logger.SetReportCaller(false)
+logger.SetLevel(log.DebugLevel)
+```
+
+Use `log.SetFormatter()` or `log.Options{Formatter: }` to change the output
+format. Available options are:
 
 - `log.TextFormatter` (_default_)
 - `log.JSONFormatter`
@@ -173,14 +185,6 @@ Available options are:
 > output is not a TTY.
 
 For a list of available options, refer to [options.go](./options.go).
-
-Set the logger level and options.
-
-```go
-logger.SetReportTimestamp(false)
-logger.SetReportCaller(false)
-logger.SetLevel(log.DebugLevel)
-```
 
 ### Styles
 
@@ -293,7 +297,8 @@ For this, you can use the standard log adapter, which simply wraps the logger in
 a `*log.Logger` interface.
 
 ```go
-stdlog := log.New(log.WithPrefix("http")).StandardLog(log.StandardLogOption{
+logger := log.NewWithOptions(os.Stderr, log.Options{Prefix: "http"})
+stdlog := logger.StandardLog(log.StandardLogOptions{
     ForceLevel: log.ErrorLevel,
 })
 s := &http.Server{
