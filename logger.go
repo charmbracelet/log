@@ -10,6 +10,8 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+
+	"github.com/charmbracelet/lipgloss"
 )
 
 var (
@@ -25,6 +27,7 @@ type Logger struct {
 	w  io.Writer
 	b  bytes.Buffer
 	mu *sync.RWMutex
+	re *lipgloss.Renderer
 
 	isDiscard uint32
 
@@ -35,7 +38,6 @@ type Logger struct {
 	callerOffset int
 	formatter    Formatter
 
-	noStyles        bool
 	reportCaller    bool
 	reportTimestamp bool
 
@@ -242,10 +244,7 @@ func (l *Logger) SetOutput(w io.Writer) {
 		isDiscard = 1
 	}
 	atomic.StoreUint32(&l.isDiscard, isDiscard)
-	if !isTerminal(w) {
-		// This only affects the TextFormatter
-		l.noStyles = true
-	}
+	l.re = lipgloss.NewRenderer(w)
 }
 
 // SetFormatter sets the formatter.

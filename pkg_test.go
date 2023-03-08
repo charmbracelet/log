@@ -36,7 +36,7 @@ func TestGlobal(t *testing.T) {
 		},
 		{
 			name:     "default logger error with timestamp",
-			expected: "0001/01/01 00:00:00 ERROR info\n",
+			expected: "0001/01/01 00:00:00 ERRO info\n",
 			msg:      "info",
 			kvs:      nil,
 			f:        Error,

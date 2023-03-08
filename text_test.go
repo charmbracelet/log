@@ -122,70 +122,70 @@ func TestTextLogger(t *testing.T) {
 		},
 		{
 			name:     "error message with keyvals",
-			expected: "ERROR info key1=val1 key2=val2\n",
+			expected: "ERRO info key1=val1 key2=val2\n",
 			msg:      "info",
 			kvs:      []interface{}{"key1", "val1", "key2", "val2"},
 			f:        logger.Error,
 		},
 		{
 			name:     "error message with multiline",
-			expected: "ERROR info\n  key1=\n  │ val1\n  │ val2\n",
+			expected: "ERRO info\n  key1=\n  │ val1\n  │ val2\n",
 			msg:      "info",
 			kvs:      []interface{}{"key1", "val1\nval2"},
 			f:        logger.Error,
 		},
 		{
 			name:     "odd number of keyvals",
-			expected: "ERROR info key1=val1 key2=val2 key3=\"missing value\"\n",
+			expected: "ERRO info key1=val1 key2=val2 key3=\"missing value\"\n",
 			msg:      "info",
 			kvs:      []interface{}{"key1", "val1", "key2", "val2", "key3"},
 			f:        logger.Error,
 		},
 		{
 			name:     "error field",
-			expected: "ERROR info key1=\"error value\"\n",
+			expected: "ERRO info key1=\"error value\"\n",
 			msg:      "info",
 			kvs:      []interface{}{"key1", errors.New("error value")},
 			f:        logger.Error,
 		},
 		{
 			name:     "struct field",
-			expected: "ERROR info key1={foo:bar}\n",
+			expected: "ERRO info key1={foo:bar}\n",
 			msg:      "info",
 			kvs:      []interface{}{"key1", struct{ foo string }{foo: "bar"}},
 			f:        logger.Error,
 		},
 		{
 			name:     "struct field quoted",
-			expected: "ERROR info key1=\"{foo:bar baz}\"\n",
+			expected: "ERRO info key1=\"{foo:bar baz}\"\n",
 			msg:      "info",
 			kvs:      []interface{}{"key1", struct{ foo string }{foo: "bar baz"}},
 			f:        logger.Error,
 		},
 		{
 			name:     "slice of strings",
-			expected: "ERROR info key1=\"[foo bar]\"\n",
+			expected: "ERRO info key1=\"[foo bar]\"\n",
 			msg:      "info",
 			kvs:      []interface{}{"key1", []string{"foo", "bar"}},
 			f:        logger.Error,
 		},
 		{
 			name:     "slice of structs",
-			expected: "ERROR info key1=\"[{foo:bar} {foo:baz}]\"\n",
+			expected: "ERRO info key1=\"[{foo:bar} {foo:baz}]\"\n",
 			msg:      "info",
 			kvs:      []interface{}{"key1", []struct{ foo string }{{foo: "bar"}, {foo: "baz"}}},
 			f:        logger.Error,
 		},
 		{
 			name:     "slice of errors",
-			expected: "ERROR info key1=\"[error value1 error value2]\"\n",
+			expected: "ERRO info key1=\"[error value1 error value2]\"\n",
 			msg:      "info",
 			kvs:      []interface{}{"key1", []error{errors.New("error value1"), errors.New("error value2")}},
 			f:        logger.Error,
 		},
 		{
 			name:     "map of strings",
-			expected: "ERROR info key1=\"map[baz:qux foo:bar]\"\n",
+			expected: "ERRO info key1=\"map[baz:qux foo:bar]\"\n",
 			msg:      "info",
 			kvs:      []interface{}{"key1", map[string]string{"foo": "bar", "baz": "qux"}},
 			f:        logger.Error,
@@ -235,7 +235,6 @@ func TestTextFatal(t *testing.T) {
 func TestTextValueStyles(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)
-	logger.noStyles = false
 	oldValueStyle := ValueStyle
 	defer func() { ValueStyle = oldValueStyle }()
 	ValueStyle = lipgloss.NewStyle().Bold(true)

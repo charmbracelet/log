@@ -1,6 +1,10 @@
 package log
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"strings"
+
+	"github.com/charmbracelet/lipgloss"
+)
 
 var (
 	// TimestampStyle is the style for timestamps.
@@ -26,7 +30,7 @@ var (
 
 	// DebugLevel is the style for debug level.
 	DebugLevelStyle = lipgloss.NewStyle().
-			SetString("DEBUG").
+			SetString(strings.ToUpper(DebugLevel.String())).
 			Bold(true).
 			MaxWidth(4).
 			Foreground(lipgloss.AdaptiveColor{
@@ -36,7 +40,7 @@ var (
 
 	// InfoLevel is the style for info level.
 	InfoLevelStyle = lipgloss.NewStyle().
-			SetString("INFO").
+			SetString(strings.ToUpper(InfoLevel.String())).
 			Bold(true).
 			MaxWidth(4).
 			Foreground(lipgloss.AdaptiveColor{
@@ -46,7 +50,7 @@ var (
 
 	// WarnLevel is the style for warn level.
 	WarnLevelStyle = lipgloss.NewStyle().
-			SetString("WARN").
+			SetString(strings.ToUpper(WarnLevel.String())).
 			Bold(true).
 			MaxWidth(4).
 			Foreground(lipgloss.AdaptiveColor{
@@ -56,7 +60,7 @@ var (
 
 	// ErrorLevel is the style for error level.
 	ErrorLevelStyle = lipgloss.NewStyle().
-			SetString("ERROR").
+			SetString(strings.ToUpper(ErrorLevel.String())).
 			Bold(true).
 			MaxWidth(4).
 			Foreground(lipgloss.AdaptiveColor{
@@ -66,7 +70,7 @@ var (
 
 	// FatalLevel is the style for error level.
 	FatalLevelStyle = lipgloss.NewStyle().
-			SetString("FATAL").
+			SetString(strings.ToUpper(FatalLevel.String())).
 			Bold(true).
 			MaxWidth(4).
 			Foreground(lipgloss.AdaptiveColor{
