@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -21,6 +22,20 @@ func NowUTC() time.Time {
 	return time.Now().UTC()
 }
 
+// CallerFormatter is the caller formatter.
+type CallerFormatter func(string, int, string) string
+
+// ShortCallerFormatter is a caller formatter that returns the last 2 levels of the path
+// and line number.
+func ShortCallerFormatter(file string, line int, funcName string) string {
+	return fmt.Sprintf("%s:%d", trimCallerPath(file, 2), line)
+}
+
+// LongCallerFormatter is a caller formatter that returns the full path and line number.
+func LongCallerFormatter(file string, line int, funcName string) string {
+	return fmt.Sprintf("%s:%d", file, line)
+}
+
 // Options is the options for the logger.
 type Options struct {
 	// TimeFunction is the time function for the logger. The default is time.Now.
@@ -35,6 +50,8 @@ type Options struct {
 	ReportTimestamp bool
 	// ReportCaller is whether the logger should report the caller location. The default is false.
 	ReportCaller bool
+	// CallerFormatter is the caller format for the logger. The default is CallerShort.
+	CallerFormatter CallerFormatter
 	// Fields is the fields for the logger. The default is no fields.
 	Fields []interface{}
 	// Formatter is the formatter for the logger. The default is TextFormatter.
