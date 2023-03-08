@@ -27,5 +27,5 @@ func TestLogContext_fields(t *testing.T) {
 	l = FromContext(ctx)
 	require.NotNil(t, l)
 	l.Debug("test")
-	require.Equal(t, "DEBUG test foo=bar\n", buf.String())
+	require.Equal(t, "DEBU test foo=bar\n", buf.String())
 }
