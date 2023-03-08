@@ -125,3 +125,29 @@ func TestLogFormatter(t *testing.T) {
 		})
 	}
 }
+
+func TestLogWithPrefix(t *testing.T) {
+	var buf bytes.Buffer
+	cases := []struct {
+		name     string
+		expected string
+		prefix   string
+		msg      string
+	}{
+		{
+			name:     "with prefix",
+			expected: "INFO prefix: info\n",
+			prefix:   "prefix",
+			msg:      "info",
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			buf.Reset()
+			l := New(&buf)
+			l.SetPrefix(c.prefix)
+			l.Info(c.msg)
+			assert.Equal(t, c.expected, buf.String())
+		})
+	}
+}
