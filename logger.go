@@ -31,12 +31,13 @@ type Logger struct {
 
 	isDiscard uint32
 
-	level        int32
-	prefix       string
-	timeFunc     TimeFunction
-	timeFormat   string
-	callerOffset int
-	formatter    Formatter
+	level           int32
+	prefix          string
+	timeFunc        TimeFunction
+	timeFormat      string
+	callerOffset    int
+	callerFormatter CallerFormatter
+	formatter       Formatter
 
 	reportCaller    bool
 	reportTimestamp bool
@@ -71,8 +72,8 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 
 	if l.reportCaller {
 		// Call stack is log.Error -> log.log (2)
-		file, line, _ := l.fillLoc(l.callerOffset + 2)
-		caller := fmt.Sprintf("%s:%d", trimCallerPath(file), line)
+		file, line, fn := l.fillLoc(l.callerOffset + 2)
+		caller := l.callerFormatter(file, line, fn)
 		kvs = append(kvs, CallerKey, caller)
 	}
 
@@ -146,8 +147,8 @@ func location(skip int) (file string, line int, fn string) {
 	return file, line, f.Name()
 }
 
-// Cleanup a path by returning the last 2 segments of the path only.
-func trimCallerPath(path string) string {
+// Cleanup a path by returning the last n segments of the path only.
+func trimCallerPath(path string, n int) string {
 	// lovely borrowed from zap
 	// nb. To make sure we trim the path correctly on Windows too, we
 	// counter-intuitively need to use '/' and *not* os.PathSeparator here,
@@ -160,16 +161,23 @@ func trimCallerPath(path string) string {
 	//
 	// for discussion on the issue on Go side.
 
+	// Return the full path if n is 0.
+	if n <= 0 {
+		return path
+	}
+
 	// Find the last separator.
 	idx := strings.LastIndexByte(path, '/')
 	if idx == -1 {
 		return path
 	}
 
-	// Find the penultimate separator.
-	idx = strings.LastIndexByte(path[:idx], '/')
-	if idx == -1 {
-		return path
+	for i := 0; i < n-1; i++ {
+		// Find the penultimate separator.
+		idx = strings.LastIndexByte(path[:idx], '/')
+		if idx == -1 {
+			return path
+		}
 	}
 
 	return path[idx+1:]
@@ -252,6 +260,13 @@ func (l *Logger) SetFormatter(f Formatter) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.formatter = f
+}
+
+// SetCallerFormatter sets the caller formatter.
+func (l *Logger) SetCallerFormatter(f CallerFormatter) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.callerFormatter = f
 }
 
 // With returns a new logger with the given keyvals added.
