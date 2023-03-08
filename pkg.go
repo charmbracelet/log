@@ -112,6 +112,11 @@ func With(keyvals ...interface{}) *Logger {
 	return defaultLogger.With(keyvals...)
 }
 
+// WithPrefix returns a new logger with the given prefix.
+func WithPrefix(prefix string) *Logger {
+	return defaultLogger.WithPrefix(prefix)
+}
+
 // Helper marks the calling function as a helper
 // and skips it for source location information.
 // It's the equivalent of testing.TB.Helper().

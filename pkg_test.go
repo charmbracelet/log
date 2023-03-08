@@ -203,3 +203,8 @@ func TestFormatter(t *testing.T) {
 	Info("info")
 	assert.Equal(t, "{\"lvl\":\"info\",\"msg\":\"info\"}\n", buf.String())
 }
+
+func TestWithPrefix(t *testing.T) {
+	l := WithPrefix("test")
+	assert.Equal(t, "test", l.prefix)
+}
