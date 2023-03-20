@@ -10,6 +10,8 @@
     <a href="https://github.com/charmbracelet/log/releases"><img src="https://img.shields.io/github/release/charmbracelet/log.svg" alt="Latest Release"></a>
     <a href="https://pkg.go.dev/github.com/charmbracelet/log?tab=doc"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="Go Docs"></a>
     <a href="https://github.com/charmbracelet/log/actions"><img src="https://github.com/charmbracelet/log/workflows/build/badge.svg" alt="Build Status"></a>
+    <a href="https://codecov.io/gh/charmbracelet/log"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/charmbracelet/log/main.svg"></a>
+    <a href="https://goreportcard.com/report/github.com/charmbracelet/log"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/charmbracelet/log"></a>
 </p>
 
 A minimal and colorful Go logging library. 🪵
