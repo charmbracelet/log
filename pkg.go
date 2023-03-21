@@ -10,7 +10,13 @@ import (
 	"time"
 )
 
-var defaultLogger = NewWithOptions(os.Stderr, Options{ReportTimestamp: true})
+var (
+	// registry is a map of all registered lipgloss renderers.
+	registry = sync.Map{}
+
+	// defaultLogger is the default global logger instance.
+	defaultLogger = NewWithOptions(os.Stderr, Options{ReportTimestamp: true})
+)
 
 // Default returns the default logger. The default logger comes with timestamp enabled.
 func Default() *Logger {
