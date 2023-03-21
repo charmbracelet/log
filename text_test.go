@@ -19,7 +19,7 @@ import (
 )
 
 func _zeroTime() time.Time {
-	return time.Time{}
+	return time.Time{}.AddDate(1, 0, 0)
 }
 
 func TestTextCaller(t *testing.T) {

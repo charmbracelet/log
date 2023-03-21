@@ -2,17 +2,19 @@ package log
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
+	"golang.org/x/exp/slog"
 )
 
 var (
@@ -48,6 +50,53 @@ type Logger struct {
 	helpers *sync.Map
 }
 
+// Enabled reports whether the logger is enabled for the given level.
+//
+// Implements slog.Handler.
+func (l *Logger) Enabled(_ context.Context, level slog.Level) bool {
+	return atomic.LoadInt32(&l.level) <= int32(fromSlogLevel[level])
+}
+
+// Handle handles the Record. It will only be called if Enabled returns true.
+//
+// Implements slog.Handler.
+func (l *Logger) Handle(_ context.Context, record slog.Record) error {
+	fields := make([]interface{}, 0, record.NumAttrs()*2)
+	record.Attrs(func(a slog.Attr) bool {
+		fields = append(fields, a.Key, a.Value.String())
+		return true
+	})
+	// Get the caller frame using the record's PC.
+	frames := runtime.CallersFrames([]uintptr{record.PC})
+	frame, _ := frames.Next()
+	l.handle(fromSlogLevel[record.Level], record.Time, []runtime.Frame{frame}, record.Message, fields...)
+	return nil
+}
+
+// WithAttrs returns a new Handler with the given attributes added.
+//
+// Implements slog.Handler.
+func (l *Logger) WithAttrs(attrs []slog.Attr) slog.Handler {
+	fields := make([]interface{}, 0, len(attrs)*2)
+	for _, attr := range attrs {
+		fields = append(fields, attr.Key, attr.Value)
+	}
+	return l.With(fields...)
+}
+
+// WithGroup returns a new Handler with the given group name prepended to the
+// current group name or prefix.
+//
+// Implements slog.Handler.
+func (l *Logger) WithGroup(name string) slog.Handler {
+	if l.prefix != "" {
+		name = l.prefix + "." + name
+	}
+	return l.WithPrefix(name)
+}
+
+var _ slog.Handler = (*Logger)(nil)
+
 func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	if atomic.LoadUint32(&l.isDiscard) != 0 {
 		return
@@ -58,20 +107,40 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		return
 	}
 
+	var frame runtime.Frame
+	if l.reportCaller {
+		// Skip log.log, the caller, and any offset added.
+		frames := l.frames(l.callerOffset + 2)
+		for {
+			f, more := frames.Next()
+			_, helper := l.helpers.Load(f.Function)
+			if !helper || !more {
+				// Found a frame that wasn't a helper function.
+				// Or we ran out of frames to check.
+				frame = f
+				break
+			}
+		}
+	}
+	l.handle(level, l.timeFunc(), []runtime.Frame{frame}, msg, keyvals...)
+}
+
+func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg interface{}, keyvals ...interface{}) {
 	var kvs []interface{}
-	if l.reportTimestamp {
-		kvs = append(kvs, TimestampKey, l.timeFunc())
+	if l.reportTimestamp && !ts.IsZero() {
+		kvs = append(kvs, TimestampKey, ts)
 	}
 
 	if level != noLevel {
 		kvs = append(kvs, LevelKey, level)
 	}
 
-	if l.reportCaller {
-		// Call stack is log.Error -> log.log (2)
-		file, line, fn := l.fillLoc(l.callerOffset + 2)
-		caller := l.callerFormatter(file, line, fn)
-		kvs = append(kvs, CallerKey, caller)
+	if l.reportCaller && len(frames) > 0 && frames[0].PC != 0 {
+		file, line, fn := l.location(frames)
+		if file != "" {
+			caller := l.callerFormatter(file, line, fn)
+			kvs = append(kvs, CallerKey, caller)
+		}
 	}
 
 	if l.prefix != "" {
@@ -119,34 +188,32 @@ func (l *Logger) Helper() {
 }
 
 func (l *Logger) helper(skip int) {
-	_, _, fn := location(skip + 1)
-	l.helpers.LoadOrStore(fn, struct{}{})
+	var pcs [1]uintptr
+	// Skip runtime.Callers, and l.helper
+	n := runtime.Callers(skip+2, pcs[:])
+	frames := runtime.CallersFrames(pcs[:n])
+	frame, _ := frames.Next()
+	l.helpers.LoadOrStore(frame.Function, struct{}{})
 }
 
-func (l *Logger) fillLoc(skip int) (file string, line int, fn string) {
+// frames returns the runtime.Frames for the caller.
+func (l *Logger) frames(skip int) *runtime.Frames {
 	// Copied from testing.T
 	const maxStackLen = 50
 	var pc [maxStackLen]uintptr
 
-	// Skip two extra frames to account for this function
-	// and runtime.Callers itself.
+	// Skip runtime.Callers, and l.frame
 	n := runtime.Callers(skip+2, pc[:])
 	frames := runtime.CallersFrames(pc[:n])
-	for {
-		frame, more := frames.Next()
-		_, helper := l.helpers.Load(frame.Function)
-		if !helper || !more {
-			// Found a frame that wasn't a helper function.
-			// Or we ran out of frames to check.
-			return frame.File, frame.Line, frame.Function
-		}
-	}
+	return frames
 }
 
-func location(skip int) (file string, line int, fn string) {
-	pc, file, line, _ := runtime.Caller(skip + 1)
-	f := runtime.FuncForPC(pc)
-	return file, line, f.Name()
+func (l *Logger) location(frames []runtime.Frame) (file string, line int, fn string) {
+	if len(frames) == 0 {
+		return "", 0, ""
+	}
+	f := frames[0]
+	return f.File, f.Line, f.Function
 }
 
 // Cleanup a path by returning the last n segments of the path only.
@@ -250,7 +317,7 @@ func (l *Logger) SetOutput(w io.Writer) {
 	}
 	l.w = w
 	var isDiscard uint32
-	if w == ioutil.Discard {
+	if w == io.Discard {
 		isDiscard = 1
 	}
 	atomic.StoreUint32(&l.isDiscard, isDiscard)

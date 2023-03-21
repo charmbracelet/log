@@ -177,5 +177,5 @@ func TestJsonCustomKey(t *testing.T) {
 	logger.SetFormatter(JSONFormatter)
 	logger.SetReportTimestamp(true)
 	logger.Info("info")
-	require.Equal(t, "{\"lvl\":\"info\",\"msg\":\"info\",\"time\":\"0001/01/01 00:00:00\"}\n", buf.String())
+	require.Equal(t, "{\"lvl\":\"info\",\"msg\":\"info\",\"time\":\"0002/01/01 00:00:00\"}\n", buf.String())
 }

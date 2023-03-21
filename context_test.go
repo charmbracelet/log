@@ -3,7 +3,7 @@ package log
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -14,7 +14,7 @@ func TestLogContext_empty(t *testing.T) {
 }
 
 func TestLogContext_simple(t *testing.T) {
-	l := New(ioutil.Discard)
+	l := New(io.Discard)
 	ctx := WithContext(context.Background(), l)
 	require.Equal(t, l, FromContext(ctx))
 }
