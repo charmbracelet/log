@@ -254,12 +254,12 @@ func (l *Logger) SetOutput(w io.Writer) {
 	}
 	atomic.StoreUint32(&l.isDiscard, isDiscard)
 	// Reuse cached renderers
-	v, ok := registry.Load(w)
-	if !ok {
-		v = lipgloss.NewRenderer(w, termenv.WithColorCache(true))
-		registry.Store(w, v)
+	if v, ok := registry.Load(w); ok {
+		l.re = v.(*lipgloss.Renderer)
+	} else {
+		l.re = lipgloss.NewRenderer(w, termenv.WithColorCache(true))
+		registry.Store(w, l.re)
 	}
-	l.re = v.(*lipgloss.Renderer)
 }
 
 // SetFormatter sets the formatter.
