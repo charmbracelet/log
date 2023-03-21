@@ -124,22 +124,37 @@ func escapeStringForOutput(str string, escapeQuotes bool) string {
 	return bb.String()
 }
 
-// isNormal indicates if the rune is one allowed to exist as an unquoted
-// string value. This is a subset of ASCII, `-` through `~`.
-func isNormal(r rune) bool {
-	return '-' <= r && r <= '~'
-}
-
-// needsQuoting returns false if all the runes in string are normal, according
-// to isNormal.
-func needsQuoting(str string) bool {
-	for _, r := range str {
-		if !isNormal(r) {
+func needsQuoting(s string) bool {
+	for i := 0; i < len(s); {
+		b := s[i]
+		if b < utf8.RuneSelf {
+			if needsQuotingSet[b] {
+				return true
+			}
+			i++
+			continue
+		}
+		r, size := utf8.DecodeRuneInString(s[i:])
+		if r == utf8.RuneError || unicode.IsSpace(r) || !unicode.IsPrint(r) {
 			return true
 		}
+		i += size
 	}
-
 	return false
+}
+
+var needsQuotingSet = [utf8.RuneSelf]bool{
+	'"': true,
+	'=': true,
+}
+
+func init() {
+	for i := 0; i < utf8.RuneSelf; i++ {
+		r := rune(i)
+		if unicode.IsSpace(r) || !unicode.IsPrint(r) {
+			needsQuotingSet[i] = true
+		}
+	}
 }
 
 func (l *Logger) textFormatter(keyvals ...interface{}) {
