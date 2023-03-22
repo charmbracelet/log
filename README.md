@@ -235,6 +235,9 @@ log.Error("Whoops!", "err", "kitchen on fire")
 Create sub-loggers with their specific fields.
 
 ```go
+logger := log.NewWithOptions(os.Stderr, log.Options{
+    Prefix: "Baking 🍪 "
+})
 batch2 := logger.With("batch", 2, "chocolateChips", true)
 batch2.Debug("Preparing batch 2...")
 batch2.Debug("Adding chocolate chips")
