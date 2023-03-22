@@ -12,6 +12,7 @@ import (
 	"sync/atomic"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/termenv"
 )
 
 var (
@@ -252,7 +253,13 @@ func (l *Logger) SetOutput(w io.Writer) {
 		isDiscard = 1
 	}
 	atomic.StoreUint32(&l.isDiscard, isDiscard)
-	l.re = lipgloss.NewRenderer(w)
+	// Reuse cached renderers
+	if v, ok := registry.Load(w); ok {
+		l.re = v.(*lipgloss.Renderer)
+	} else {
+		l.re = lipgloss.NewRenderer(w, termenv.WithColorCache(true))
+		registry.Store(w, l.re)
+	}
 }
 
 // SetFormatter sets the formatter.
