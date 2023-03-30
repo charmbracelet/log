@@ -48,6 +48,7 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 		formatter:       o.Formatter,
 		fields:          o.Fields,
 		callerFormatter: o.CallerFormatter,
+		callerOffset:    o.CallerOffset,
 	}
 
 	l.SetOutput(w)
@@ -111,6 +112,11 @@ func SetFormatter(f Formatter) {
 // SetCallerFormatter sets the caller formatter for the default logger.
 func SetCallerFormatter(f CallerFormatter) {
 	defaultLogger.SetCallerFormatter(f)
+}
+
+// SetCallerOffset sets the caller offset for the default logger.
+func SetCallerOffset(offset int) {
+	defaultLogger.SetCallerOffset(offset)
 }
 
 // SetPrefix sets the prefix for the default logger.
