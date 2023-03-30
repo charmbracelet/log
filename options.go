@@ -52,8 +52,11 @@ type Options struct {
 	ReportCaller bool
 	// CallerFormatter is the caller format for the logger. The default is CallerShort.
 	CallerFormatter CallerFormatter
+	// CallerOffset is the caller format for the logger. The default is 0.
+	CallerOffset int
 	// Fields is the fields for the logger. The default is no fields.
 	Fields []interface{}
 	// Formatter is the formatter for the logger. The default is TextFormatter.
 	Formatter Formatter
+	
 }

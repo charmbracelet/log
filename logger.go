@@ -276,6 +276,13 @@ func (l *Logger) SetCallerFormatter(f CallerFormatter) {
 	l.callerFormatter = f
 }
 
+// SetCallerOffset sets the caller offset.
+func (l *Logger) SetCallerOffset(offset int) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.callerOffset = offset
+}
+
 // With returns a new logger with the given keyvals added.
 func (l *Logger) With(keyvals ...interface{}) *Logger {
 	sl := *l
