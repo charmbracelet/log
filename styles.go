@@ -32,7 +32,7 @@ var (
 	DebugLevelStyle = lipgloss.NewStyle().
 			SetString(strings.ToUpper(DebugLevel.String())).
 			Bold(true).
-			MaxWidth(4).
+			MaxWidth(5).
 			Foreground(lipgloss.AdaptiveColor{
 			Light: "63",
 			Dark:  "63",
@@ -62,7 +62,7 @@ var (
 	ErrorLevelStyle = lipgloss.NewStyle().
 			SetString(strings.ToUpper(ErrorLevel.String())).
 			Bold(true).
-			MaxWidth(4).
+			MaxWidth(5).
 			Foreground(lipgloss.AdaptiveColor{
 			Light: "203",
 			Dark:  "204",
@@ -72,7 +72,7 @@ var (
 	FatalLevelStyle = lipgloss.NewStyle().
 			SetString(strings.ToUpper(FatalLevel.String())).
 			Bold(true).
-			MaxWidth(4).
+			MaxWidth(5).
 			Foreground(lipgloss.AdaptiveColor{
 			Light: "133",
 			Dark:  "134",
