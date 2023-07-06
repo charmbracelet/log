@@ -58,5 +58,6 @@ type Options struct {
 	Fields []interface{}
 	// Formatter is the formatter for the logger. The default is TextFormatter.
 	Formatter Formatter
-	
+	// ForceColors is whether the logger should force colors. The default is false.
+	ForceColors bool
 }

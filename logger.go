@@ -45,6 +45,8 @@ type Logger struct {
 
 	fields []interface{}
 
+	forceColors bool
+
 	helpers *sync.Map
 }
 
@@ -257,9 +259,23 @@ func (l *Logger) SetOutput(w io.Writer) {
 	if v, ok := registry.Load(w); ok {
 		l.re = v.(*lipgloss.Renderer)
 	} else {
-		l.re = lipgloss.NewRenderer(w, termenv.WithColorCache(true))
+		opts := []termenv.OutputOption{termenv.WithColorCache(true)}
+		if l.forceColors {
+			opts = append(opts, termenv.WithUnsafe())
+		}
+		l.re = lipgloss.NewRenderer(w, opts...)
 		registry.Store(w, l.re)
 	}
+}
+
+// SetForceColor sets whether to force color, can be unsafe
+// if the output is not a terminal this output may be garbled.
+// This is useful for testing and when sending log events over
+// a channel to another process that will handle the output.
+func (l *Logger) SetForceColors(force bool) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.forceColors = force
 }
 
 // SetFormatter sets the formatter.

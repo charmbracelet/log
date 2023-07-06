@@ -49,6 +49,7 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 		fields:          o.Fields,
 		callerFormatter: o.CallerFormatter,
 		callerOffset:    o.CallerOffset,
+		forceColors:     o.ForceColors,
 	}
 
 	l.SetOutput(w)
@@ -127,6 +128,10 @@ func SetPrefix(prefix string) {
 // GetPrefix returns the prefix for the default logger.
 func GetPrefix() string {
 	return defaultLogger.GetPrefix()
+}
+
+func SetForceColors(force bool) {
+	defaultLogger.SetForceColors(force)
 }
 
 // With returns a new logger with the given keyvals.
