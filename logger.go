@@ -285,9 +285,7 @@ func (l *Logger) SetCallerOffset(offset int) {
 
 // With returns a new logger with the given keyvals added.
 func (l *Logger) With(keyvals ...interface{}) *Logger {
-	l.mu.Lock()
 	sl := *l
-	l.mu.Unlock()
 	sl.b = bytes.Buffer{}
 	sl.mu = &sync.RWMutex{}
 	sl.helpers = &sync.Map{}
