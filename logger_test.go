@@ -2,6 +2,7 @@ package log
 
 import (
 	"bytes"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -148,6 +149,37 @@ func TestLogWithPrefix(t *testing.T) {
 			l.SetPrefix(c.prefix)
 			l.Info(c.msg)
 			assert.Equal(t, c.expected, buf.String())
+		})
+	}
+}
+
+func TestLogWithRaceCondition(t *testing.T) {
+	var buf bytes.Buffer
+	cases := []struct {
+		name string
+	}{
+		{
+			name: "must be run with -race",
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			buf.Reset()
+			l := New(&buf)
+
+			var done sync.WaitGroup
+			done.Add(2)
+
+			go func() {
+				l.With("arg1", "val1", "arg2", "val2")
+				done.Done()
+			}()
+
+			go func() {
+				l.Info("kinda long log message")
+				done.Done()
+			}()
+			done.Wait()
 		})
 	}
 }
