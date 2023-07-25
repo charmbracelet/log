@@ -167,7 +167,7 @@ func (l *Logger) textFormatter(keyvals ...interface{}) {
 			}
 		case PrefixKey:
 			if prefix, ok := keyvals[i+1].(string); ok {
-				prefix = PrefixStyle.Renderer(l.re).Render(prefix)
+				prefix = PrefixStyle.Renderer(l.re).Render(prefix + ":")
 				l.b.WriteString(prefix)
 				l.b.WriteByte(' ')
 			}
