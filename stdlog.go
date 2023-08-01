@@ -3,7 +3,6 @@ package log
 import (
 	"log"
 	"strings"
-	"sync"
 )
 
 type stdLogWriter struct {
@@ -54,14 +53,12 @@ type StandardLogOptions struct {
 // can infer log levels from message prefix. Expected prefixes are DEBUG, INFO,
 // WARN, ERROR, and ERR.
 func (l *Logger) StandardLog(opts ...StandardLogOptions) *log.Logger {
-	nl := *l
-	nl.mu = &sync.RWMutex{}
-	nl.helpers = &sync.Map{}
+	nl := l.With()
 	// The caller stack is
 	// log.Printf() -> l.Output() -> l.out.Write(stdLogger.Write)
 	nl.callerOffset += 3
 	sl := &stdLogWriter{
-		l: &nl,
+		l: nl,
 	}
 	if len(opts) > 0 {
 		sl.opt = &opts[0]
