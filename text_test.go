@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/termenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -394,5 +396,19 @@ func TestTextValueStyles(t *testing.T) {
 			c.f(c.msg, c.kvs...)
 			assert.Equal(t, c.expected, buf.String())
 		})
+	}
+}
+
+func TestColorProfile(t *testing.T) {
+	cases := []termenv.Profile{
+		termenv.Ascii,
+		termenv.ANSI,
+		termenv.ANSI256,
+		termenv.TrueColor,
+	}
+	l := New(io.Discard)
+	for _, p := range cases {
+		l.SetColorProfile(p)
+		assert.Equal(t, p, l.re.ColorProfile())
 	}
 }

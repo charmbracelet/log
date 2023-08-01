@@ -8,6 +8,8 @@ import (
 	"os"
 	"sync"
 	"time"
+
+	"github.com/muesli/termenv"
 )
 
 var (
@@ -122,6 +124,12 @@ func SetCallerOffset(offset int) {
 // SetPrefix sets the prefix for the default logger.
 func SetPrefix(prefix string) {
 	defaultLogger.SetPrefix(prefix)
+}
+
+// SetColorProfile force sets the underlying Lip Gloss renderer color profile
+// for the TextFormatter.
+func SetColorProfile(profile termenv.Profile) {
+	defaultLogger.SetColorProfile(profile)
 }
 
 // GetPrefix returns the prefix for the default logger.

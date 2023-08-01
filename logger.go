@@ -282,6 +282,12 @@ func (l *Logger) SetCallerOffset(offset int) {
 	l.callerOffset = offset
 }
 
+// SetColorProfile force sets the underlying Lip Gloss renderer color profile
+// for the TextFormatter.
+func (l *Logger) SetColorProfile(profile termenv.Profile) {
+	l.re.SetColorProfile(profile)
+}
+
 // With returns a new logger with the given keyvals added.
 func (l *Logger) With(keyvals ...interface{}) *Logger {
 	l.mu.Lock()
