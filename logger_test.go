@@ -2,8 +2,10 @@ package log
 
 import (
 	"bytes"
+	"io"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -180,6 +182,39 @@ func TestLogWithRaceCondition(t *testing.T) {
 				done.Done()
 			}()
 			done.Wait()
+		})
+	}
+}
+
+func TestRace(t *testing.T) {
+	t.Parallel()
+
+	w := io.Discard
+	l := New(w)
+	for i := 0; i < 100; i++ {
+		t.Run("race", func(t *testing.T) {
+			t.Parallel()
+			s := l.StandardLog()
+			l.Info("foo")
+			l.GetLevel()
+			l.Print("foo")
+
+			s.Print("foo")
+			s.Writer().Write([]byte("bar"))
+			s.Output(1, "baz")
+
+			l.SetOutput(w)
+			l.Debug("foo")
+			l.SetLevel(InfoLevel)
+			l.GetPrefix()
+
+			o := l.With("foo", "bar")
+			o.Print("foo")
+			o.SetTimeFormat(time.Kitchen)
+			o.Debug("foo")
+			o.SetOutput(w)
+			o.Error("foo")
+			o.SetFormatter(JSONFormatter)
 		})
 	}
 }
