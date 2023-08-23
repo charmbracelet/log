@@ -25,6 +25,7 @@ linters:
     - gosec
     - ifshort
     - misspell
+    - nolintlint
     - prealloc
     - revive
     - rowserrcheck
