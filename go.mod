@@ -1,13 +1,12 @@
 module github.com/charmbracelet/log
 
-go 1.17
+go 1.21
 
 require (
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/muesli/termenv v0.15.1
 	github.com/stretchr/testify v1.8.2
-	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
 )
 
 require (

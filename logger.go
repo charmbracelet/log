@@ -13,9 +13,10 @@ import (
 	"sync/atomic"
 	"time"
 
+	"log/slog"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
-	"golang.org/x/exp/slog"
 )
 
 var (
@@ -63,8 +64,9 @@ func (l *Logger) Enabled(_ context.Context, level slog.Level) bool {
 // Implements slog.Handler.
 func (l *Logger) Handle(_ context.Context, record slog.Record) error {
 	fields := make([]interface{}, 0, record.NumAttrs()*2)
-	record.Attrs(func(a slog.Attr) {
+	record.Attrs(func(a slog.Attr) bool {
 		fields = append(fields, a.Key, a.Value.String())
+		return true
 	})
 	// Get the caller frame using the record's PC.
 	frames := runtime.CallersFrames([]uintptr{record.PC})

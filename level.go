@@ -3,7 +3,7 @@ package log
 import (
 	"strings"
 
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 // Level is a logging level.
