@@ -27,12 +27,12 @@ type CallerFormatter func(string, int, string) string
 
 // ShortCallerFormatter is a caller formatter that returns the last 2 levels of the path
 // and line number.
-func ShortCallerFormatter(file string, line int, funcName string) string {
+func ShortCallerFormatter(file string, line int, _ string) string {
 	return fmt.Sprintf("%s:%d", trimCallerPath(file, 2), line)
 }
 
 // LongCallerFormatter is a caller formatter that returns the full path and line number.
-func LongCallerFormatter(file string, line int, funcName string) string {
+func LongCallerFormatter(file string, line int, _ string) string {
 	return fmt.Sprintf("%s:%d", file, line)
 }
 
@@ -58,5 +58,4 @@ type Options struct {
 	Fields []interface{}
 	// Formatter is the formatter for the logger. The default is TextFormatter.
 	Formatter Formatter
-	
 }

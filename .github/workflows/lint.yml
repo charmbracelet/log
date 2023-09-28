@@ -16,6 +16,4 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           # Optional: golangci-lint command line arguments.
-          args: --issues-exit-code=0
-          # Optional: show only new issues if it's a pull request. The default value is `false`.
-          only-new-issues: true
+          args: --issues-exit-code=1
