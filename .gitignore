@@ -11,3 +11,7 @@ examples/new/new
 examples/options/options
 examples/oven/oven
 examples/temperature/temperature
+
+.vscode
+.history
+go.work
