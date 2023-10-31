@@ -1,6 +1,7 @@
 package log
 
 import (
+	"math"
 	"strings"
 )
 
@@ -9,17 +10,17 @@ type Level int32
 
 const (
 	// DebugLevel is the debug level.
-	DebugLevel Level = iota - 1
+	DebugLevel Level = -4
 	// InfoLevel is the info level.
-	InfoLevel
+	InfoLevel Level = 0
 	// WarnLevel is the warn level.
-	WarnLevel
+	WarnLevel Level = 4
 	// ErrorLevel is the error level.
-	ErrorLevel
+	ErrorLevel Level = 8
 	// FatalLevel is the fatal level.
-	FatalLevel
+	FatalLevel Level = 12
 	// noLevel is used with log.Print.
-	noLevel
+	noLevel Level = math.MaxInt32
 )
 
 // String returns the string representation of the level.
