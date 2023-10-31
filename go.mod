@@ -1,6 +1,6 @@
 module github.com/charmbracelet/log
 
-go 1.20
+go 1.19
 
 require (
 	github.com/charmbracelet/lipgloss v0.9.1
