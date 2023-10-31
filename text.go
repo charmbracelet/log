@@ -144,11 +144,11 @@ func needsQuoting(str string) bool {
 
 func (l *Logger) textFormatter(keyvals ...interface{}) {
 	lenKeyvals := len(keyvals)
-	firstElementOfLastKeyvalPair := lenKeyvals - 2
 
 	for i := 0; i < lenKeyvals; i += 2 {
 		firstKey := i == 0
-		moreKeys := i < firstElementOfLastKeyvalPair
+		moreKeys := i < lenKeyvals-2
+
 		switch keyvals[i] {
 		case TimestampKey:
 			if t, ok := keyvals[i+1].(time.Time); ok {
