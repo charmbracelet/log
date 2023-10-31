@@ -79,8 +79,9 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	}
 
 	if msg != nil {
-		m := fmt.Sprint(msg)
-		kvs = append(kvs, MessageKey, m)
+		if m := fmt.Sprint(msg); m != "" {
+			kvs = append(kvs, MessageKey, m)
+		}
 	}
 
 	// append logger fields
@@ -88,6 +89,7 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	if len(l.fields)%2 != 0 {
 		kvs = append(kvs, ErrMissingValue)
 	}
+
 	// append the rest
 	kvs = append(kvs, keyvals...)
 	if len(keyvals)%2 != 0 {
