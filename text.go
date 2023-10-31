@@ -75,7 +75,6 @@ func escapeStringForOutput(str string, escapeQuotes bool) string {
 	bb.Reset()
 
 	defer bufPool.Put(bb)
-
 	for _, r := range str {
 		if escapeQuotes && r == '"' {
 			bb.WriteString(`\"`)
@@ -142,6 +141,12 @@ func needsQuoting(str string) bool {
 	return false
 }
 
+func writeSpace(w io.Writer, first bool) {
+	if !first {
+		w.Write([]byte{' '}) //nolint: errcheck
+	}
+}
+
 func (l *Logger) textFormatter(keyvals ...interface{}) {
 	lenKeyvals := len(keyvals)
 
@@ -154,43 +159,33 @@ func (l *Logger) textFormatter(keyvals ...interface{}) {
 			if t, ok := keyvals[i+1].(time.Time); ok {
 				ts := t.Format(l.timeFormat)
 				ts = TimestampStyle.Renderer(l.re).Render(ts)
-				if !firstKey {
-					l.b.WriteByte(' ')
-				}
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(ts)
 			}
 		case LevelKey:
 			if level, ok := keyvals[i+1].(Level); ok {
 				lvl := levelStyle(level).Renderer(l.re).String()
-				if !firstKey {
-					l.b.WriteByte(' ')
-				}
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(lvl)
 			}
 		case CallerKey:
 			if caller, ok := keyvals[i+1].(string); ok {
 				caller = fmt.Sprintf("<%s>", caller)
 				caller = CallerStyle.Renderer(l.re).Render(caller)
-				if !firstKey {
-					l.b.WriteByte(' ')
-				}
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(caller)
 			}
 		case PrefixKey:
 			if prefix, ok := keyvals[i+1].(string); ok {
 				prefix = PrefixStyle.Renderer(l.re).Render(prefix + ":")
-				if !firstKey {
-					l.b.WriteByte(' ')
-				}
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(prefix)
 			}
 		case MessageKey:
 			if msg := keyvals[i+1]; msg != nil {
 				m := fmt.Sprint(msg)
 				m = MessageStyle.Renderer(l.re).Render(m)
-				if !firstKey {
-					l.b.WriteByte(' ')
-				}
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(m)
 			}
 		default:
@@ -231,18 +226,14 @@ func (l *Logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(sep + "\n")
 				l.writeIndent(&l.b, val, indentSep, moreKeys, actualKey)
 			} else if !raw && needsQuoting(val) {
-				if !firstKey {
-					l.b.WriteByte(' ')
-				}
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				l.b.WriteString(valueStyle.Renderer(l.re).Render(fmt.Sprintf(`"%s"`,
 					escapeStringForOutput(val, true))))
 			} else {
 				val = valueStyle.Renderer(l.re).Render(val)
-				if !firstKey {
-					l.b.WriteByte(' ')
-				}
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				l.b.WriteString(val)
