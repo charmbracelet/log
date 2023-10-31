@@ -2,8 +2,6 @@ package log
 
 import (
 	"strings"
-
-	"golang.org/x/exp/slog"
 )
 
 // Level is a logging level.
@@ -58,22 +56,4 @@ func ParseLevel(level string) Level {
 	default:
 		return InfoLevel
 	}
-}
-
-// fromSlogLevel converts slog.Level to log.Level.
-var fromSlogLevel = map[slog.Level]Level{
-	slog.LevelDebug: DebugLevel,
-	slog.LevelInfo:  InfoLevel,
-	slog.LevelWarn:  WarnLevel,
-	slog.LevelError: ErrorLevel,
-	slog.Level(12):  FatalLevel,
-}
-
-// toSlogLevel converts log.Level to slog.Level.
-var toSlogLevel = map[Level]slog.Level{
-	DebugLevel: slog.LevelDebug,
-	InfoLevel:  slog.LevelInfo,
-	WarnLevel:  slog.LevelWarn,
-	ErrorLevel: slog.LevelError,
-	FatalLevel: slog.Level(12),
 }
