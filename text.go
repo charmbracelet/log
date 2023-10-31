@@ -143,38 +143,54 @@ func needsQuoting(str string) bool {
 }
 
 func (l *Logger) textFormatter(keyvals ...interface{}) {
-	for i := 0; i < len(keyvals); i += 2 {
+	lenKeyvals := len(keyvals)
+
+	for i := 0; i < lenKeyvals; i += 2 {
+		firstKey := i == 0
+		moreKeys := i < lenKeyvals-2
+
 		switch keyvals[i] {
 		case TimestampKey:
 			if t, ok := keyvals[i+1].(time.Time); ok {
 				ts := t.Format(l.timeFormat)
 				ts = TimestampStyle.Renderer(l.re).Render(ts)
+				if !firstKey {
+					l.b.WriteByte(' ')
+				}
 				l.b.WriteString(ts)
-				l.b.WriteByte(' ')
 			}
 		case LevelKey:
 			if level, ok := keyvals[i+1].(Level); ok {
 				lvl := levelStyle(level).Renderer(l.re).String()
+				if !firstKey {
+					l.b.WriteByte(' ')
+				}
 				l.b.WriteString(lvl)
-				l.b.WriteByte(' ')
 			}
 		case CallerKey:
 			if caller, ok := keyvals[i+1].(string); ok {
 				caller = fmt.Sprintf("<%s>", caller)
 				caller = CallerStyle.Renderer(l.re).Render(caller)
+				if !firstKey {
+					l.b.WriteByte(' ')
+				}
 				l.b.WriteString(caller)
-				l.b.WriteByte(' ')
 			}
 		case PrefixKey:
 			if prefix, ok := keyvals[i+1].(string); ok {
 				prefix = PrefixStyle.Renderer(l.re).Render(prefix + ":")
+				if !firstKey {
+					l.b.WriteByte(' ')
+				}
 				l.b.WriteString(prefix)
-				l.b.WriteByte(' ')
 			}
 		case MessageKey:
 			if msg := keyvals[i+1]; msg != nil {
 				m := fmt.Sprint(msg)
 				m = MessageStyle.Renderer(l.re).Render(m)
+				if !firstKey {
+					l.b.WriteByte(' ')
+				}
 				l.b.WriteString(m)
 			}
 		default:
@@ -182,7 +198,6 @@ func (l *Logger) textFormatter(keyvals ...interface{}) {
 			indentSep := indentSeparator
 			sep = SeparatorStyle.Renderer(l.re).Render(sep)
 			indentSep = SeparatorStyle.Renderer(l.re).Render(indentSep)
-			moreKeys := i < len(keyvals)-2
 			key := fmt.Sprint(keyvals[i])
 			val := fmt.Sprintf("%+v", keyvals[i+1])
 			raw := val == ""
@@ -215,19 +230,19 @@ func (l *Logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(key)
 				l.b.WriteString(sep + "\n")
 				l.writeIndent(&l.b, val, indentSep, moreKeys, actualKey)
-				// If there are more keyvals, separate them with a space.
-				if moreKeys {
+			} else if !raw && needsQuoting(val) {
+				if !firstKey {
 					l.b.WriteByte(' ')
 				}
-			} else if !raw && needsQuoting(val) {
-				l.b.WriteByte(' ')
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				l.b.WriteString(valueStyle.Renderer(l.re).Render(fmt.Sprintf(`"%s"`,
 					escapeStringForOutput(val, true))))
 			} else {
 				val = valueStyle.Renderer(l.re).Render(val)
-				l.b.WriteByte(' ')
+				if !firstKey {
+					l.b.WriteByte(' ')
+				}
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				l.b.WriteString(val)
