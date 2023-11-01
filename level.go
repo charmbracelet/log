@@ -1,6 +1,7 @@
 package log
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -43,6 +44,7 @@ func (l Level) String() string {
 
 // ErrInvalidLevel is an error returned when parsing an invalid level string.
 var ErrInvalidLevel = errors.New("invalid level")
+
 // ParseLevel converts level in string to Level type. Default level is InfoLevel.
 func ParseLevel(level string) (Level, error) {
 	switch strings.ToLower(level) {
