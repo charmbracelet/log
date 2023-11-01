@@ -1,7 +1,6 @@
 package log
 
 import (
-	"errors"
 	"fmt"
 	"testing"
 
@@ -54,13 +53,13 @@ func TestParseLevel(t *testing.T) {
 			name:   "Default",
 			input:  "",
 			result: InfoLevel,
-			error:  fmt.Errorf("%w: %q", errors.New("invalid level"), ""),
+			error:  fmt.Errorf("%w: %q", ErrInvalidLevel, ""),
 		},
 		{
 			name:   "Wrong level, set INFO",
 			input:  "WRONG_LEVEL",
 			result: InfoLevel,
-			error:  fmt.Errorf("%w: %q", errors.New("invalid level"), "WRONG_LEVEL"),
+			error:  fmt.Errorf("%w: %q", ErrInvalidLevel, "WRONG_LEVEL"),
 		},
 	}
 
