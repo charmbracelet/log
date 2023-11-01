@@ -11,16 +11,12 @@ func TestDefaultLevel(t *testing.T) {
 	assert.Equal(t, InfoLevel, level)
 }
 
-type parseLevelResult struct {
-	level Level
-	err   error
-}
-
 func TestParseLevel(t *testing.T) {
 	testCases := []struct {
 		name   string
 		input  string
-		result parseLevelResult
+		result Level
+		error error
 	}{
 		{
 			name:   "Parse debug",

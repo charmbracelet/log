@@ -41,10 +41,8 @@ func (l Level) String() string {
 	}
 }
 
-func parseLevelError(level string) error {
-	return fmt.Errorf("invalid level %s", strings.ToLower(level))
-}
-
+// ErrInvalidLevel is an error returned when parsing an invalid level string.
+var ErrInvalidLevel = errors.New("invalid level")
 // ParseLevel converts level in string to Level type. Default level is InfoLevel.
 func ParseLevel(level string) (Level, error) {
 	switch strings.ToLower(level) {
@@ -59,6 +57,6 @@ func ParseLevel(level string) (Level, error) {
 	case FatalLevel.String():
 		return FatalLevel, nil
 	default:
-		return InfoLevel, parseLevelError(level)
+		return InfoLevel, fmt.Errorf("%w: %q", ErrInvalidLevel, level)
 	}
 }
