@@ -237,6 +237,8 @@ func TestTextFatal(t *testing.T) {
 func TestTextValueStyles(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)
+	logger.SetColorProfile(termenv.TrueColor)
+
 	oldValueStyle := ValueStyle
 	defer func() { ValueStyle = oldValueStyle }()
 	ValueStyle = lipgloss.NewStyle().Bold(true)
