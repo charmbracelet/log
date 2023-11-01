@@ -41,6 +41,13 @@ func TestSubLogger(t *testing.T) {
 			fields:   []interface{}{"foo", "bar"},
 			kvs:      []interface{}{"foobar", "baz"},
 		},
+		{
+			name:     "emoji",
+			expected: "INFO 👍 🐱\n",
+			msg:      "👍 🐱",
+			fields:   nil,
+			kvs:      nil,
+		},
 	}
 	for _, c := range cases {
 		buf.Reset()
