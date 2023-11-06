@@ -203,7 +203,7 @@ func TestFormatter(t *testing.T) {
 	SetReportTimestamp(false)
 	SetFormatter(JSONFormatter)
 	Info("info")
-	assert.Equal(t, "{\"lvl\":\"info\",\"msg\":\"info\"}\n", buf.String())
+	assert.Equal(t, "{\"level\":\"info\",\"msg\":\"info\"}\n", buf.String())
 }
 
 func TestWithPrefix(t *testing.T) {
