@@ -6,99 +6,92 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var (
-	// TimestampStyle is the style for timestamps.
-	TimestampStyle = lipgloss.NewStyle()
+// Styles defines the styles for the text logger.
+type Styles struct {
+	// Timestamp is the style for timestamps.
+	Timestamp lipgloss.Style
 
-	// CallerStyle is the style for caller.
-	CallerStyle = lipgloss.NewStyle().Faint(true)
+	// Caller is the style for source caller.
+	Caller lipgloss.Style
 
-	// PrefixStyle is the style for prefix.
-	PrefixStyle = lipgloss.NewStyle().Bold(true).Faint(true)
+	// Prefix is the style for prefix.
+	Prefix lipgloss.Style
 
-	// MessageStyle is the style for messages.
-	MessageStyle = lipgloss.NewStyle()
+	// Message is the style for messages.
+	Message lipgloss.Style
 
-	// KeyStyle is the style for keys.
-	KeyStyle = lipgloss.NewStyle().Faint(true)
+	// Key is the style for keys.
+	Key lipgloss.Style
 
-	// ValueStyle is the style for values.
-	ValueStyle = lipgloss.NewStyle()
+	// Value is the style for values.
+	Value lipgloss.Style
 
-	// SeparatorStyle is the style for separators.
-	SeparatorStyle = lipgloss.NewStyle().Faint(true)
+	// Separator is the style for separators.
+	Separator lipgloss.Style
 
-	// DebugLevel is the style for debug level.
-	DebugLevelStyle = lipgloss.NewStyle().
-			SetString(strings.ToUpper(DebugLevel.String())).
-			Bold(true).
-			MaxWidth(4).
-			Foreground(lipgloss.AdaptiveColor{
-			Light: "63",
-			Dark:  "63",
-		})
+	// Levels are the styles for each level.
+	Levels map[Level]lipgloss.Style
 
-	// InfoLevel is the style for info level.
-	InfoLevelStyle = lipgloss.NewStyle().
-			SetString(strings.ToUpper(InfoLevel.String())).
-			Bold(true).
-			MaxWidth(4).
-			Foreground(lipgloss.AdaptiveColor{
-			Light: "39",
-			Dark:  "86",
-		})
+	// Keys overrides styles for specific keys.
+	Keys map[string]lipgloss.Style
 
-	// WarnLevel is the style for warn level.
-	WarnLevelStyle = lipgloss.NewStyle().
-			SetString(strings.ToUpper(WarnLevel.String())).
-			Bold(true).
-			MaxWidth(4).
-			Foreground(lipgloss.AdaptiveColor{
-			Light: "208",
-			Dark:  "192",
-		})
+	// Values overrides value styles for specific keys.
+	Values map[string]lipgloss.Style
+}
 
-	// ErrorLevel is the style for error level.
-	ErrorLevelStyle = lipgloss.NewStyle().
-			SetString(strings.ToUpper(ErrorLevel.String())).
-			Bold(true).
-			MaxWidth(4).
-			Foreground(lipgloss.AdaptiveColor{
-			Light: "203",
-			Dark:  "204",
-		})
-
-	// FatalLevel is the style for error level.
-	FatalLevelStyle = lipgloss.NewStyle().
-			SetString(strings.ToUpper(FatalLevel.String())).
-			Bold(true).
-			MaxWidth(4).
-			Foreground(lipgloss.AdaptiveColor{
-			Light: "133",
-			Dark:  "134",
-		})
-
-	// KeyStyles overrides styles for specific keys.
-	KeyStyles = map[string]lipgloss.Style{}
-
-	// ValueStyles overrides value styles for specific keys.
-	ValueStyles = map[string]lipgloss.Style{}
-)
-
-// levelStyle is a helper function to get the style for a level.
-func levelStyle(level Level) lipgloss.Style {
-	switch level {
-	case DebugLevel:
-		return DebugLevelStyle
-	case InfoLevel:
-		return InfoLevelStyle
-	case WarnLevel:
-		return WarnLevelStyle
-	case ErrorLevel:
-		return ErrorLevelStyle
-	case FatalLevel:
-		return FatalLevelStyle
-	default:
-		return lipgloss.NewStyle()
+// DefaultStyles returns the default styles.
+func DefaultStyles() *Styles {
+	return &Styles{
+		Timestamp: lipgloss.NewStyle(),
+		Caller:    lipgloss.NewStyle().Faint(true),
+		Prefix:    lipgloss.NewStyle().Bold(true).Faint(true),
+		Message:   lipgloss.NewStyle(),
+		Key:       lipgloss.NewStyle().Faint(true),
+		Value:     lipgloss.NewStyle(),
+		Separator: lipgloss.NewStyle().Faint(true),
+		Levels: map[Level]lipgloss.Style{
+			DebugLevel: lipgloss.NewStyle().
+				SetString(strings.ToUpper(DebugLevel.String())).
+				Bold(true).
+				MaxWidth(4).
+				Foreground(lipgloss.AdaptiveColor{
+					Light: "63",
+					Dark:  "63",
+				}),
+			InfoLevel: lipgloss.NewStyle().
+				SetString(strings.ToUpper(InfoLevel.String())).
+				Bold(true).
+				MaxWidth(4).
+				Foreground(lipgloss.AdaptiveColor{
+					Light: "39",
+					Dark:  "86",
+				}),
+			WarnLevel: lipgloss.NewStyle().
+				SetString(strings.ToUpper(WarnLevel.String())).
+				Bold(true).
+				MaxWidth(4).
+				Foreground(lipgloss.AdaptiveColor{
+					Light: "208",
+					Dark:  "192",
+				}),
+			ErrorLevel: lipgloss.NewStyle().
+				SetString(strings.ToUpper(ErrorLevel.String())).
+				Bold(true).
+				MaxWidth(4).
+				Foreground(lipgloss.AdaptiveColor{
+					Light: "203",
+					Dark:  "204",
+				}),
+			FatalLevel: lipgloss.NewStyle().
+				SetString(strings.ToUpper(FatalLevel.String())).
+				Bold(true).
+				MaxWidth(4).
+				Foreground(lipgloss.AdaptiveColor{
+					Light: "133",
+					Dark:  "134",
+				}),
+		},
+		Keys:   map[string]lipgloss.Style{},
+		Values: map[string]lipgloss.Style{},
 	}
 }
