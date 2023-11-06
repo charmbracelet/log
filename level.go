@@ -59,6 +59,6 @@ func ParseLevel(level string) (Level, error) {
 	case FatalLevel.String():
 		return FatalLevel, nil
 	default:
-		return 0, fmt.Errorf("%w: %q", ErrInvalidLevel, level)
+		return InfoLevel, fmt.Errorf("%w: %q", ErrInvalidLevel, level)
 	}
 }
