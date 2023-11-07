@@ -46,6 +46,7 @@ type Logger struct {
 	fields []interface{}
 
 	helpers *sync.Map
+	styles  *Styles
 }
 
 func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
@@ -308,15 +309,28 @@ func (l *Logger) SetColorProfile(profile termenv.Profile) {
 	l.re.SetColorProfile(profile)
 }
 
+// SetStyles sets the logger styles for the TextFormatter.
+func (l *Logger) SetStyles(s *Styles) {
+	if s == nil {
+		s = DefaultStyles()
+	}
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.styles = s
+}
+
 // With returns a new logger with the given keyvals added.
 func (l *Logger) With(keyvals ...interface{}) *Logger {
+	var st Styles
 	l.mu.Lock()
 	sl := *l
+	st = *l.styles
 	l.mu.Unlock()
 	sl.b = bytes.Buffer{}
 	sl.mu = &sync.RWMutex{}
 	sl.helpers = &sync.Map{}
 	sl.fields = append(l.fields, keyvals...)
+	sl.styles = &st
 	return &sl
 }
 
