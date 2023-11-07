@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,52 +11,63 @@ func TestDefaultLevel(t *testing.T) {
 	var level Level
 	assert.Equal(t, InfoLevel, level)
 }
+
 func TestParseLevel(t *testing.T) {
 	testCases := []struct {
 		name     string
-		level    string
-		expLevel Level
+		input    string
+		expected Level
+		error    error
 	}{
 		{
 			name:     "Parse debug",
-			level:    "debug",
-			expLevel: DebugLevel,
+			input:    "debug",
+			expected: DebugLevel,
+			error:    nil,
 		},
 		{
 			name:     "Parse info",
-			level:    "Info",
-			expLevel: InfoLevel,
+			input:    "Info",
+			expected: InfoLevel,
+			error:    nil,
 		},
 		{
 			name:     "Parse warn",
-			level:    "WARN",
-			expLevel: WarnLevel,
+			input:    "WARN",
+			expected: WarnLevel,
+			error:    nil,
 		},
 		{
 			name:     "Parse error",
-			level:    "error",
-			expLevel: ErrorLevel,
+			input:    "error",
+			expected: ErrorLevel,
+			error:    nil,
 		},
 		{
 			name:     "Parse fatal",
-			level:    "FATAL",
-			expLevel: FatalLevel,
+			input:    "FATAL",
+			expected: FatalLevel,
+			error:    nil,
 		},
 		{
 			name:     "Default",
-			level:    "",
-			expLevel: InfoLevel,
+			input:    "",
+			expected: InfoLevel,
+			error:    fmt.Errorf("%w: %q", ErrInvalidLevel, ""),
 		},
 		{
 			name:     "Wrong level, set INFO",
-			level:    "WRONG_LEVEL",
-			expLevel: InfoLevel,
+			input:    "WRONG_LEVEL",
+			expected: InfoLevel,
+			error:    fmt.Errorf("%w: %q", ErrInvalidLevel, "WRONG_LEVEL"),
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.expLevel, ParseLevel(tc.level))
+			lvl, err := ParseLevel(tc.input)
+			assert.Equal(t, tc.expected, lvl)
+			assert.Equal(t, tc.error, err)
 		})
 	}
 }

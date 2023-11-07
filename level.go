@@ -1,6 +1,10 @@
 package log
 
-import "strings"
+import (
+	"errors"
+	"fmt"
+	"strings"
+)
 
 // Level is a logging level.
 type Level int32
@@ -38,20 +42,23 @@ func (l Level) String() string {
 	}
 }
 
+// ErrInvalidLevel is an error returned when parsing an invalid level string.
+var ErrInvalidLevel = errors.New("invalid level")
+
 // ParseLevel converts level in string to Level type. Default level is InfoLevel.
-func ParseLevel(level string) Level {
+func ParseLevel(level string) (Level, error) {
 	switch strings.ToLower(level) {
 	case DebugLevel.String():
-		return DebugLevel
+		return DebugLevel, nil
 	case InfoLevel.String():
-		return InfoLevel
+		return InfoLevel, nil
 	case WarnLevel.String():
-		return WarnLevel
+		return WarnLevel, nil
 	case ErrorLevel.String():
-		return ErrorLevel
+		return ErrorLevel, nil
 	case FatalLevel.String():
-		return FatalLevel
+		return FatalLevel, nil
 	default:
-		return InfoLevel
+		return 0, fmt.Errorf("%w: %q", ErrInvalidLevel, level)
 	}
 }
