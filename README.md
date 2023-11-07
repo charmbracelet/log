@@ -34,6 +34,7 @@ readable logging with batteries included.
 - Leveled logging.
 - Text, JSON, and Logfmt formatters.
 - Store and retrieve logger in and from context.
+- Slog handler.
 - Standard log adapter.
 
 ## Usage
@@ -305,6 +306,17 @@ startOven(400) // INFO <cookies/oven.go:123> Starting oven degree=400
 
 This will use the _caller_ function (`startOven`) line number instead of the
 logging function (`log.Info`) to report the source location.
+
+### Slog Handler
+
+You can use Log as an [`log/slog`](https://pkg.go.dev/log/slog) handler. Just
+pass a logger instance to Slog and you're good to go.
+
+```go
+handler := log.New(os.Stderr)
+logger := slog.New(handler)
+logger.Error("meow?")
+```
 
 ### Standard Log Adapter
 

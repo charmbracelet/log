@@ -15,11 +15,11 @@ const (
 
 var (
 	// TimestampKey is the key for the timestamp.
-	TimestampKey = "ts"
+	TimestampKey = "time"
 	// MessageKey is the key for the message.
 	MessageKey = "msg"
 	// LevelKey is the key for the level.
-	LevelKey = "lvl"
+	LevelKey = "level"
 	// CallerKey is the key for the caller.
 	CallerKey = "caller"
 	// PrefixKey is the key for the prefix.

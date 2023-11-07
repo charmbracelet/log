@@ -157,7 +157,6 @@ func WithPrefix(prefix string) *Logger {
 // and skips it for source location information.
 // It's the equivalent of testing.TB.Helper().
 func Helper() {
-	// skip this function frame
 	defaultLogger.helper(1)
 }
 
