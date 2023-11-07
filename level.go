@@ -1,9 +1,9 @@
 package log
 
 import (
-	"math"
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 )
 
