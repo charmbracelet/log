@@ -341,6 +341,16 @@ stdlog.Printf("Failed to make bake request, %s", fmt.Errorf("temperature is too 
 // ERROR http: Failed to make bake request, temperature is too low
 ```
 
+## Gum
+
+<img src="https://vhs.charm.sh/vhs-6jupuFM0s2fXiUrBE0I1vU.gif" width="600" alt="Running gum log with debug and error levels" />
+
+Log integrates with [Gum][gum] to log messages to output. Use `gum log [flags]
+[message]` to handle logging in your shell scripts. See
+[charmbracelet/gum](https://github.com/charmbracelet/gum#log) for more
+information.
+
+[gum]: https://github.com/charmbracelet/gum
 [lipgloss]: https://github.com/charmbracelet/lipgloss
 [stdlog]: https://pkg.go.dev/log
 
