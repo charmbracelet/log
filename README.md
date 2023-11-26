@@ -168,7 +168,7 @@ logger := log.NewWithOptions(os.Stderr, log.Options{
     ReportCaller: true,
     ReportTimestamp: true,
     TimeFormat: time.Kitchen,
-    Prefix: "Baking 🍪 "
+    Prefix: "Baking 🍪 ",
 })
 logger.Info("Starting oven!", "degree", 375)
 time.Sleep(10 * time.Minute)
