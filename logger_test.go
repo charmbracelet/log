@@ -257,12 +257,21 @@ func TestRace(t *testing.T) {
 			l.GetPrefix()
 
 			o := l.With("foo", "bar")
-			o.Print("foo")
+			o.Printf("foo %s", "bar")
 			o.SetTimeFormat(time.Kitchen)
-			o.Debug("foo")
+			o.Warn("foo")
 			o.SetOutput(w)
 			o.Error("foo")
 			o.SetFormatter(JSONFormatter)
 		})
 	}
+}
+
+func TestCustomLevel(t *testing.T) {
+	var buf bytes.Buffer
+	level500 := Level(500)
+	l := New(&buf)
+	l.SetLevel(level500)
+	l.Logf(level500, "foo")
+	assert.Equal(t, "foo\n", buf.String())
 }

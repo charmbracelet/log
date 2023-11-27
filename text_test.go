@@ -230,6 +230,7 @@ func TestTextFatal(t *testing.T) {
 	logger.SetReportCaller(true)
 	if os.Getenv("FATAL") == "1" {
 		logger.Fatal("i'm dead")
+		logger.Fatalf("bye %s", "bye")
 		return
 	}
 	cmd := exec.Command(os.Args[0], "-test.run=TestTextFatal")
@@ -420,4 +421,16 @@ func TestColorProfile(t *testing.T) {
 		l.SetColorProfile(p)
 		assert.Equal(t, p, l.re.ColorProfile())
 	}
+}
+
+func TestCustomLevelStyle(t *testing.T) {
+	var buf bytes.Buffer
+	l := New(&buf)
+	st := DefaultStyles()
+	lvl := Level(1234)
+	st.Levels[lvl] = lipgloss.NewStyle().Bold(true).SetString("FUNKY")
+	l.SetStyles(st)
+	l.SetLevel(lvl)
+	l.Log(lvl, "foobar")
+	assert.Equal(t, "FUNKY foobar\n", buf.String())
 }

@@ -183,9 +183,12 @@ func (l *Logger) textFormatter(keyvals ...interface{}) {
 		case LevelKey:
 			if level, ok := keyvals[i+1].(Level); ok {
 				var lvl string
-				if lvlStyle, ok := st.Levels[level]; ok {
-					lvl = lvlStyle.Renderer(l.re).String()
+				lvlStyle, ok := st.Levels[level]
+				if !ok {
+					continue
 				}
+
+				lvl = lvlStyle.Renderer(l.re).String()
 				if lvl != "" {
 					writeSpace(&l.b, firstKey)
 					l.b.WriteString(lvl)
