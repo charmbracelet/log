@@ -49,7 +49,13 @@ type Logger struct {
 	styles  *Styles
 }
 
-func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
+// Logf logs a message with formatting.
+func (l *Logger) Logf(level Level, format string, args ...interface{}) {
+	l.Log(level, fmt.Sprintf(format, args...))
+}
+
+// Log logs the given message with the given keyvals for the given level.
+func (l *Logger) Log(level Level, msg interface{}, keyvals ...interface{}) {
 	if atomic.LoadUint32(&l.isDiscard) != 0 {
 		return
 	}
@@ -83,7 +89,8 @@ func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg i
 		kvs = append(kvs, TimestampKey, ts)
 	}
 
-	if level != noLevel {
+	_, ok := l.styles.Levels[level]
+	if ok {
 		kvs = append(kvs, LevelKey, level)
 	}
 
@@ -343,62 +350,62 @@ func (l *Logger) WithPrefix(prefix string) *Logger {
 
 // Debug prints a debug message.
 func (l *Logger) Debug(msg interface{}, keyvals ...interface{}) {
-	l.log(DebugLevel, msg, keyvals...)
+	l.Log(DebugLevel, msg, keyvals...)
 }
 
 // Info prints an info message.
 func (l *Logger) Info(msg interface{}, keyvals ...interface{}) {
-	l.log(InfoLevel, msg, keyvals...)
+	l.Log(InfoLevel, msg, keyvals...)
 }
 
 // Warn prints a warning message.
 func (l *Logger) Warn(msg interface{}, keyvals ...interface{}) {
-	l.log(WarnLevel, msg, keyvals...)
+	l.Log(WarnLevel, msg, keyvals...)
 }
 
 // Error prints an error message.
 func (l *Logger) Error(msg interface{}, keyvals ...interface{}) {
-	l.log(ErrorLevel, msg, keyvals...)
+	l.Log(ErrorLevel, msg, keyvals...)
 }
 
 // Fatal prints a fatal message and exits.
 func (l *Logger) Fatal(msg interface{}, keyvals ...interface{}) {
-	l.log(FatalLevel, msg, keyvals...)
+	l.Log(FatalLevel, msg, keyvals...)
 	os.Exit(1)
 }
 
 // Print prints a message with no level.
 func (l *Logger) Print(msg interface{}, keyvals ...interface{}) {
-	l.log(noLevel, msg, keyvals...)
+	l.Log(noLevel, msg, keyvals...)
 }
 
 // Debugf prints a debug message with formatting.
 func (l *Logger) Debugf(format string, args ...interface{}) {
-	l.log(DebugLevel, fmt.Sprintf(format, args...))
+	l.Log(DebugLevel, fmt.Sprintf(format, args...))
 }
 
 // Infof prints an info message with formatting.
 func (l *Logger) Infof(format string, args ...interface{}) {
-	l.log(InfoLevel, fmt.Sprintf(format, args...))
+	l.Log(InfoLevel, fmt.Sprintf(format, args...))
 }
 
 // Warnf prints a warning message with formatting.
 func (l *Logger) Warnf(format string, args ...interface{}) {
-	l.log(WarnLevel, fmt.Sprintf(format, args...))
+	l.Log(WarnLevel, fmt.Sprintf(format, args...))
 }
 
 // Errorf prints an error message with formatting.
 func (l *Logger) Errorf(format string, args ...interface{}) {
-	l.log(ErrorLevel, fmt.Sprintf(format, args...))
+	l.Log(ErrorLevel, fmt.Sprintf(format, args...))
 }
 
 // Fatalf prints a fatal message with formatting and exits.
 func (l *Logger) Fatalf(format string, args ...interface{}) {
-	l.log(FatalLevel, fmt.Sprintf(format, args...))
+	l.Log(FatalLevel, fmt.Sprintf(format, args...))
 	os.Exit(1)
 }
 
 // Printf prints a message with no level and formatting.
 func (l *Logger) Printf(format string, args ...interface{}) {
-	l.log(noLevel, fmt.Sprintf(format, args...))
+	l.Log(noLevel, fmt.Sprintf(format, args...))
 }

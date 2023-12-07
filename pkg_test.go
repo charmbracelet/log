@@ -185,12 +185,12 @@ func TestGetLevel(t *testing.T) {
 func TestPrefix(t *testing.T) {
 	var buf bytes.Buffer
 	SetOutput(&buf)
-	SetLevel(InfoLevel)
+	SetLevel(WarnLevel)
 	SetReportCaller(false)
 	SetReportTimestamp(false)
 	SetPrefix("prefix")
-	Info("info")
-	assert.Equal(t, "INFO prefix: info\n", buf.String())
+	Warn("info")
+	assert.Equal(t, "WARN prefix: info\n", buf.String())
 	assert.Equal(t, "prefix", GetPrefix())
 	SetPrefix("")
 }
@@ -209,4 +209,17 @@ func TestFormatter(t *testing.T) {
 func TestWithPrefix(t *testing.T) {
 	l := WithPrefix("test")
 	assert.Equal(t, "test", l.prefix)
+}
+
+func TestGlobalCustomLevel(t *testing.T) {
+	var buf bytes.Buffer
+	lvl := Level(-1)
+	SetOutput(&buf)
+	SetLevel(lvl)
+	SetReportCaller(false)
+	SetReportTimestamp(false)
+	SetFormatter(JSONFormatter)
+	Log(lvl, "info")
+	Logf(lvl, "hey %s", "you")
+	assert.Equal(t, "{\"msg\":\"info\"}\n{\"msg\":\"hey you\"}\n", buf.String())
 }

@@ -160,66 +160,76 @@ func Helper() {
 	defaultLogger.helper(1)
 }
 
+// Log logs a message with the given level.
+func Log(level Level, msg interface{}, keyvals ...interface{}) {
+	defaultLogger.Log(level, msg, keyvals...)
+}
+
 // Debug logs a debug message.
 func Debug(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(DebugLevel, msg, keyvals...)
+	defaultLogger.Log(DebugLevel, msg, keyvals...)
 }
 
 // Info logs an info message.
 func Info(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(InfoLevel, msg, keyvals...)
+	defaultLogger.Log(InfoLevel, msg, keyvals...)
 }
 
 // Warn logs a warning message.
 func Warn(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(WarnLevel, msg, keyvals...)
+	defaultLogger.Log(WarnLevel, msg, keyvals...)
 }
 
 // Error logs an error message.
 func Error(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(ErrorLevel, msg, keyvals...)
+	defaultLogger.Log(ErrorLevel, msg, keyvals...)
 }
 
 // Fatal logs a fatal message and exit.
 func Fatal(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(FatalLevel, msg, keyvals...)
+	defaultLogger.Log(FatalLevel, msg, keyvals...)
 	os.Exit(1)
 }
 
 // Print logs a message with no level.
 func Print(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.log(noLevel, msg, keyvals...)
+	defaultLogger.Log(noLevel, msg, keyvals...)
+}
+
+// Logf logs a message with formatting and level.
+func Logf(level Level, format string, args ...interface{}) {
+	defaultLogger.Logf(level, format, args...)
 }
 
 // Debugf logs a debug message with formatting.
 func Debugf(format string, args ...interface{}) {
-	defaultLogger.log(DebugLevel, fmt.Sprintf(format, args...))
+	defaultLogger.Log(DebugLevel, fmt.Sprintf(format, args...))
 }
 
 // Infof logs an info message with formatting.
 func Infof(format string, args ...interface{}) {
-	defaultLogger.log(InfoLevel, fmt.Sprintf(format, args...))
+	defaultLogger.Log(InfoLevel, fmt.Sprintf(format, args...))
 }
 
 // Warnf logs a warning message with formatting.
 func Warnf(format string, args ...interface{}) {
-	defaultLogger.log(WarnLevel, fmt.Sprintf(format, args...))
+	defaultLogger.Log(WarnLevel, fmt.Sprintf(format, args...))
 }
 
 // Errorf logs an error message with formatting.
 func Errorf(format string, args ...interface{}) {
-	defaultLogger.log(ErrorLevel, fmt.Sprintf(format, args...))
+	defaultLogger.Log(ErrorLevel, fmt.Sprintf(format, args...))
 }
 
 // Fatalf logs a fatal message with formatting and exit.
 func Fatalf(format string, args ...interface{}) {
-	defaultLogger.log(FatalLevel, fmt.Sprintf(format, args...))
+	defaultLogger.Log(FatalLevel, fmt.Sprintf(format, args...))
 	os.Exit(1)
 }
 
 // Printf logs a message with formatting and no level.
 func Printf(format string, args ...interface{}) {
-	defaultLogger.log(noLevel, fmt.Sprintf(format, args...))
+	defaultLogger.Log(noLevel, fmt.Sprintf(format, args...))
 }
 
 // StandardLog returns a standard logger from the default logger.
