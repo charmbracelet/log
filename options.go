@@ -50,7 +50,7 @@ type Options struct {
 	ReportTimestamp bool
 	// ReportCaller is whether the logger should report the caller location. The default is false.
 	ReportCaller bool
-	// CallerFormatter is the caller format for the logger. The default is CallerShort.
+	// CallerFormatter is the caller format for the logger. The default is ShortCallerFormatter.
 	CallerFormatter CallerFormatter
 	// CallerOffset is the caller format for the logger. The default is 0.
 	CallerOffset int
