@@ -9,7 +9,7 @@ jobs:
         go_version: ["1.19", stable]
     uses: charmbracelet/meta/.github/workflows/build.yml@main
     with:
-      go_version: ${{ mastrix.go_version }}
+      go_version: ${{ matrix.go_version }}
 
   snapshot:
     uses: charmbracelet/meta/.github/workflows/snapshot.yml@main
