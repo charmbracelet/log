@@ -17,15 +17,4 @@ jobs:
       goreleaser_key: ${{ secrets.GORELEASER_KEY }}
 
   coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: stable
-      - name: Test
-        run: go test -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./... -timeout 5m
-      - uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage.txt
+    uses: charmbracelet/meta/.github/workflows/coverage.yml@main
