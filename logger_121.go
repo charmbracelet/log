@@ -22,6 +22,10 @@ func (l *Logger) Enabled(_ context.Context, level slog.Level) bool {
 //
 // Implements slog.Handler.
 func (l *Logger) Handle(_ context.Context, record slog.Record) error {
+	if !l.Enabled(ctx, record.Level) {
+		return nil
+	}
+	
 	fields := make([]interface{}, 0, record.NumAttrs()*2)
 	record.Attrs(func(a slog.Attr) bool {
 		fields = append(fields, a.Key, a.Value.String())
