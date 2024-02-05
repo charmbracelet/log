@@ -15,10 +15,8 @@ import (
 	"github.com/muesli/termenv"
 )
 
-var (
-	// ErrMissingValue is returned when a key is missing a value.
-	ErrMissingValue = fmt.Errorf("missing value")
-)
+// ErrMissingValue is returned when a key is missing a value.
+var ErrMissingValue = fmt.Errorf("missing value")
 
 // LoggerOption is an option for a logger.
 type LoggerOption = func(*Logger)
