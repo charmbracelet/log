@@ -13,3 +13,13 @@ var fromSlogLevel = map[slog.Level]Level{
 	slog.LevelError: ErrorLevel,
 	slog.Level(12):  FatalLevel,
 }
+
+var _ slog.Leveler = Level(0)
+
+// Leveler is a dynamic logging leveler.
+type Leveler = slog.Leveler
+
+// Level implements slog.Leveler.
+func (l Level) Level() slog.Level {
+	return slog.Level(l)
+}

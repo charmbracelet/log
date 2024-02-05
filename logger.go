@@ -33,6 +33,7 @@ type Logger struct {
 	isDiscard uint32
 
 	level           int32
+	leveler         Leveler
 	prefix          string
 	timeFunc        TimeFunction
 	timeFormat      string
@@ -233,10 +234,10 @@ func (l *Logger) GetLevel() Level {
 }
 
 // SetLevel sets the current level.
-func (l *Logger) SetLevel(level Level) {
+func (l *Logger) SetLevel(level Leveler) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	atomic.StoreInt32(&l.level, int32(level))
+	l.leveler = level
 }
 
 // GetPrefix returns the current prefix.

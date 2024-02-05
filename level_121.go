@@ -3,7 +3,9 @@
 
 package log
 
-import "log/slog"
+import (
+	"log/slog"
+)
 
 // fromSlogLevel converts slog.Level to log.Level.
 var fromSlogLevel = map[slog.Level]Level{
@@ -12,4 +14,14 @@ var fromSlogLevel = map[slog.Level]Level{
 	slog.LevelWarn:  WarnLevel,
 	slog.LevelError: ErrorLevel,
 	slog.Level(12):  FatalLevel,
+}
+
+var _ slog.Leveler = Level(0)
+
+// Leveler is a dynamic logging leveler.
+type Leveler = slog.Leveler
+
+// Level implements slog.Leveler.
+func (l Level) Level() slog.Level {
+	return slog.Level(l)
 }
