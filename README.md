@@ -216,6 +216,7 @@ styles.Levels[log.ErrorLevel] = lipgloss.NewStyle().
 	Padding(0, 1, 0, 1).
 	Background(lipgloss.Color("204")).
 	Foreground(lipgloss.Color("0"))
+// Add a custom style for key `err`
 styles.Keys["err"] = lipgloss.NewStyle().Foreground(lipgloss.Color("204"))
 styles.Values["err"] = lipgloss.NewStyle().Bold(true)
 logger := log.New(os.Stderr)
