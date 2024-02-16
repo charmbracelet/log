@@ -221,7 +221,6 @@ styles.Values["err"] = lipgloss.NewStyle().Bold(true)
 logger := log.New(os.Stderr)
 logger.SetStyles(styles)
 logger.Error("Whoops!", "err", "kitchen on fire")
-time.Sleep(3 * time.Second)
 ```
 
 <picture>
