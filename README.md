@@ -288,7 +288,7 @@ Skip caller frames in helper functions. Similar to what you can do with
 `testing.TB().Helper()`.
 
 ```go
-function startOven(degree int) {
+func startOven(degree int) {
     log.Helper()
     log.Info("Starting oven", "degree", degree)
 }
