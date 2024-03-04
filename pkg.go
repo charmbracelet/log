@@ -16,15 +16,14 @@ var (
 	// registry is a map of all registered lipgloss renderers.
 	registry = sync.Map{}
 
-	initDefaultOnce sync.Once
-
 	// defaultLogger is the default global logger instance.
-	defaultLogger *Logger
+	defaultLoggerOnce sync.Once
+	defaultLogger     *Logger
 )
 
 // Default returns the default logger. The default logger comes with timestamp enabled.
 func Default() *Logger {
-	initDefaultOnce.Do(func() {
+	defaultLoggerOnce.Do(func() {
 		if defaultLogger != nil {
 			// already set via SetDefault.
 			return

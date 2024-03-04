@@ -14,7 +14,7 @@ func FromContext(ctx context.Context) *Logger {
 	if logger, ok := ctx.Value(ContextKey).(*Logger); ok {
 		return logger
 	}
-	return defaultLogger
+	return Default()
 }
 
 type contextKey struct{ string }
