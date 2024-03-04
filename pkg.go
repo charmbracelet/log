@@ -16,12 +16,21 @@ var (
 	// registry is a map of all registered lipgloss renderers.
 	registry = sync.Map{}
 
+	initDefaultOnce sync.Once
+
 	// defaultLogger is the default global logger instance.
-	defaultLogger = NewWithOptions(os.Stderr, Options{ReportTimestamp: true})
+	defaultLogger *Logger
 )
 
 // Default returns the default logger. The default logger comes with timestamp enabled.
 func Default() *Logger {
+	initDefaultOnce.Do(func() {
+		if defaultLogger != nil {
+			// already set via SetDefault.
+			return
+		}
+		defaultLogger = NewWithOptions(os.Stderr, Options{ReportTimestamp: true})
+	})
 	return defaultLogger
 }
 
@@ -74,165 +83,165 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 
 // SetReportTimestamp sets whether to report timestamp for the default logger.
 func SetReportTimestamp(report bool) {
-	defaultLogger.SetReportTimestamp(report)
+	Default().SetReportTimestamp(report)
 }
 
 // SetReportCaller sets whether to report caller location for the default logger.
 func SetReportCaller(report bool) {
-	defaultLogger.SetReportCaller(report)
+	Default().SetReportCaller(report)
 }
 
 // SetLevel sets the level for the default logger.
 func SetLevel(level Level) {
-	defaultLogger.SetLevel(level)
+	Default().SetLevel(level)
 }
 
 // GetLevel returns the level for the default logger.
 func GetLevel() Level {
-	return defaultLogger.GetLevel()
+	return Default().GetLevel()
 }
 
 // SetTimeFormat sets the time format for the default logger.
 func SetTimeFormat(format string) {
-	defaultLogger.SetTimeFormat(format)
+	Default().SetTimeFormat(format)
 }
 
 // SetTimeFunction sets the time function for the default logger.
 func SetTimeFunction(f TimeFunction) {
-	defaultLogger.SetTimeFunction(f)
+	Default().SetTimeFunction(f)
 }
 
 // SetOutput sets the output for the default logger.
 func SetOutput(w io.Writer) {
-	defaultLogger.SetOutput(w)
+	Default().SetOutput(w)
 }
 
 // SetFormatter sets the formatter for the default logger.
 func SetFormatter(f Formatter) {
-	defaultLogger.SetFormatter(f)
+	Default().SetFormatter(f)
 }
 
 // SetCallerFormatter sets the caller formatter for the default logger.
 func SetCallerFormatter(f CallerFormatter) {
-	defaultLogger.SetCallerFormatter(f)
+	Default().SetCallerFormatter(f)
 }
 
 // SetCallerOffset sets the caller offset for the default logger.
 func SetCallerOffset(offset int) {
-	defaultLogger.SetCallerOffset(offset)
+	Default().SetCallerOffset(offset)
 }
 
 // SetPrefix sets the prefix for the default logger.
 func SetPrefix(prefix string) {
-	defaultLogger.SetPrefix(prefix)
+	Default().SetPrefix(prefix)
 }
 
 // SetColorProfile force sets the underlying Lip Gloss renderer color profile
 // for the TextFormatter.
 func SetColorProfile(profile termenv.Profile) {
-	defaultLogger.SetColorProfile(profile)
+	Default().SetColorProfile(profile)
 }
 
 // SetStyles sets the logger styles for the TextFormatter.
 func SetStyles(s *Styles) {
-	defaultLogger.SetStyles(s)
+	Default().SetStyles(s)
 }
 
 // GetPrefix returns the prefix for the default logger.
 func GetPrefix() string {
-	return defaultLogger.GetPrefix()
+	return Default().GetPrefix()
 }
 
 // With returns a new logger with the given keyvals.
 func With(keyvals ...interface{}) *Logger {
-	return defaultLogger.With(keyvals...)
+	return Default().With(keyvals...)
 }
 
 // WithPrefix returns a new logger with the given prefix.
 func WithPrefix(prefix string) *Logger {
-	return defaultLogger.WithPrefix(prefix)
+	return Default().WithPrefix(prefix)
 }
 
 // Helper marks the calling function as a helper
 // and skips it for source location information.
 // It's the equivalent of testing.TB.Helper().
 func Helper() {
-	defaultLogger.helper(1)
+	Default().helper(1)
 }
 
 // Log logs a message with the given level.
 func Log(level Level, msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Log(level, msg, keyvals...)
+	Default().Log(level, msg, keyvals...)
 }
 
 // Debug logs a debug message.
 func Debug(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Log(DebugLevel, msg, keyvals...)
+	Default().Log(DebugLevel, msg, keyvals...)
 }
 
 // Info logs an info message.
 func Info(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Log(InfoLevel, msg, keyvals...)
+	Default().Log(InfoLevel, msg, keyvals...)
 }
 
 // Warn logs a warning message.
 func Warn(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Log(WarnLevel, msg, keyvals...)
+	Default().Log(WarnLevel, msg, keyvals...)
 }
 
 // Error logs an error message.
 func Error(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Log(ErrorLevel, msg, keyvals...)
+	Default().Log(ErrorLevel, msg, keyvals...)
 }
 
 // Fatal logs a fatal message and exit.
 func Fatal(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Log(FatalLevel, msg, keyvals...)
+	Default().Log(FatalLevel, msg, keyvals...)
 	os.Exit(1)
 }
 
 // Print logs a message with no level.
 func Print(msg interface{}, keyvals ...interface{}) {
-	defaultLogger.Log(noLevel, msg, keyvals...)
+	Default().Log(noLevel, msg, keyvals...)
 }
 
 // Logf logs a message with formatting and level.
 func Logf(level Level, format string, args ...interface{}) {
-	defaultLogger.Logf(level, format, args...)
+	Default().Logf(level, format, args...)
 }
 
 // Debugf logs a debug message with formatting.
 func Debugf(format string, args ...interface{}) {
-	defaultLogger.Log(DebugLevel, fmt.Sprintf(format, args...))
+	Default().Log(DebugLevel, fmt.Sprintf(format, args...))
 }
 
 // Infof logs an info message with formatting.
 func Infof(format string, args ...interface{}) {
-	defaultLogger.Log(InfoLevel, fmt.Sprintf(format, args...))
+	Default().Log(InfoLevel, fmt.Sprintf(format, args...))
 }
 
 // Warnf logs a warning message with formatting.
 func Warnf(format string, args ...interface{}) {
-	defaultLogger.Log(WarnLevel, fmt.Sprintf(format, args...))
+	Default().Log(WarnLevel, fmt.Sprintf(format, args...))
 }
 
 // Errorf logs an error message with formatting.
 func Errorf(format string, args ...interface{}) {
-	defaultLogger.Log(ErrorLevel, fmt.Sprintf(format, args...))
+	Default().Log(ErrorLevel, fmt.Sprintf(format, args...))
 }
 
 // Fatalf logs a fatal message with formatting and exit.
 func Fatalf(format string, args ...interface{}) {
-	defaultLogger.Log(FatalLevel, fmt.Sprintf(format, args...))
+	Default().Log(FatalLevel, fmt.Sprintf(format, args...))
 	os.Exit(1)
 }
 
 // Printf logs a message with formatting and no level.
 func Printf(format string, args ...interface{}) {
-	defaultLogger.Log(noLevel, fmt.Sprintf(format, args...))
+	Default().Log(noLevel, fmt.Sprintf(format, args...))
 }
 
 // StandardLog returns a standard logger from the default logger.
 func StandardLog(opts ...StandardLogOptions) *log.Logger {
-	return defaultLogger.StandardLog(opts...)
+	return Default().StandardLog(opts...)
 }
