@@ -78,7 +78,7 @@ func (l *Logger) Log(level Level, msg interface{}, keyvals ...interface{}) {
 			}
 		}
 	}
-	l.handle(level, l.timeFunc(), []runtime.Frame{frame}, msg, keyvals...)
+	l.handle(level, l.timeFunc(time.Now()), []runtime.Frame{frame}, msg, keyvals...)
 }
 
 func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg interface{}, keyvals ...interface{}) {

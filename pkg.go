@@ -70,7 +70,7 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 	}
 
 	if l.timeFunc == nil {
-		l.timeFunc = time.Now
+		l.timeFunc = func(t time.Time) time.Time { return t }
 	}
 
 	if l.timeFormat == "" {
