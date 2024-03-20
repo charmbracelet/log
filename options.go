@@ -9,7 +9,7 @@ import (
 const DefaultTimeFormat = "2006/01/02 15:04:05"
 
 // TimeFunction is a function that returns a time.Time.
-type TimeFunction = func() time.Time
+type TimeFunction = func(time.Time) time.Time
 
 // NowUTC is a convenient function that returns the
 // current time in UTC timezone.
@@ -18,8 +18,8 @@ type TimeFunction = func() time.Time
 // For example:
 //
 //	log.SetTimeFunction(log.NowUTC)
-func NowUTC() time.Time {
-	return time.Now().UTC()
+func NowUTC(t time.Time) time.Time {
+	return t.UTC()
 }
 
 // CallerFormatter is the caller formatter.

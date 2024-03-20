@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func _zeroTime() time.Time {
+func _zeroTime(time.Time) time.Time {
 	return time.Time{}.AddDate(1, 0, 0)
 }
 
