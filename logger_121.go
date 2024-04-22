@@ -14,7 +14,7 @@ import (
 //
 // Implements slog.Handler.
 func (l *Logger) Enabled(_ context.Context, level slog.Level) bool {
-	return atomic.LoadInt32(&l.level) <= int32(fromSlogLevel[level])
+	return atomic.LoadInt32(&l.level) <= int32(level)
 }
 
 // Handle handles the Record. It will only be called if Enabled returns true.
@@ -33,7 +33,7 @@ func (l *Logger) Handle(ctx context.Context, record slog.Record) error {
 	// Get the caller frame using the record's PC.
 	frames := runtime.CallersFrames([]uintptr{record.PC})
 	frame, _ := frames.Next()
-	l.handle(fromSlogLevel[record.Level], l.timeFunc(record.Time), []runtime.Frame{frame}, record.Message, fields...)
+	l.handle(Level(record.Level), l.timeFunc(record.Time), []runtime.Frame{frame}, record.Message, fields...)
 	return nil
 }
 

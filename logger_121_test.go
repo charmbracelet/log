@@ -5,7 +5,9 @@ package log
 
 import (
 	"bytes"
+	"context"
 	"testing"
+	"time"
 
 	"log/slog"
 
@@ -145,6 +147,38 @@ func TestSlogWithGroup(t *testing.T) {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
 			l.Info(c.msg)
+			assert.Equal(t, c.expected, buf.String())
+		})
+	}
+}
+
+func TestSlogCustomLevel(t *testing.T) {
+	var buf bytes.Buffer
+	cases := []struct {
+		name     string
+		expected string
+		level    slog.Level
+		minLevel Level
+	}{
+		{
+			name:     "custom level not enabled",
+			expected: "",
+			level:    slog.Level(500),
+			minLevel: Level(600),
+		},
+		{
+			name:     "custom level enabled",
+			expected: "foo\n",
+			level:    slog.Level(500),
+			minLevel: Level(100),
+		},
+	}
+	for _, c := range cases {
+		buf.Reset()
+		t.Run(c.name, func(t *testing.T) {
+			l := New(&buf)
+			l.SetLevel(c.minLevel)
+			l.Handle(context.Background(), slog.NewRecord(time.Now(), c.level, "foo", 0))
 			assert.Equal(t, c.expected, buf.String())
 		})
 	}
