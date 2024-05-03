@@ -3,16 +3,34 @@ package log
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"testing"
 	"time"
 
 	"github.com/muesli/termenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestDefaultRace(t *testing.T) {
+	l := Default()
+	t.Cleanup(func() {
+		SetDefault(l)
+	})
+
+	for i := 0; i < 2; i++ {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			t.Parallel()
+
+			SetDefault(New(io.Discard))
+			Default().Info("foo")
+		})
+	}
+}
 
 func TestGlobal(t *testing.T) {
 	var buf bytes.Buffer
