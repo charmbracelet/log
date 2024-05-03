@@ -59,14 +59,14 @@ func TestJson(t *testing.T) {
 		},
 		{
 			name:     "odd number of kvs",
-			expected: "{\"baz\":\"missing value\",\"foo\":\"bar\",\"level\":\"error\",\"msg\":\"info\"}\n",
+			expected: "{\"level\":\"error\",\"msg\":\"info\",\"foo\":\"bar\",\"baz\":\"missing value\"}\n",
 			msg:      "info",
 			kvs:      []interface{}{"foo", "bar", "baz"},
 			f:        l.Error,
 		},
 		{
 			name:     "error field",
-			expected: "{\"error\":\"error message\",\"level\":\"error\",\"msg\":\"info\"}\n",
+			expected: "{\"level\":\"error\",\"msg\":\"info\",\"error\":\"error message\"}\n",
 			msg:      "info",
 			kvs:      []interface{}{"error", errors.New("error message")},
 			f:        l.Error,
@@ -108,7 +108,7 @@ func TestJson(t *testing.T) {
 		},
 		{
 			name:     "map of strings",
-			expected: "{\"level\":\"info\",\"map\":{\"a\":\"b\",\"foo\":\"bar\"},\"msg\":\"info\"}\n",
+			expected: "{\"level\":\"info\",\"msg\":\"info\",\"map\":{\"a\":\"b\",\"foo\":\"bar\"}}\n",
 			msg:      "info",
 			kvs:      []interface{}{"map", map[string]string{"a": "b", "foo": "bar"}},
 			f:        l.Info,
@@ -140,14 +140,14 @@ func TestJsonCaller(t *testing.T) {
 	}{
 		{
 			name:     "simple caller",
-			expected: fmt.Sprintf("{\"caller\":\"log/%s:%d\",\"level\":\"info\",\"msg\":\"info\"}\n", filepath.Base(file), line+30),
+			expected: fmt.Sprintf("{\"level\":\"info\",\"caller\":\"log/%s:%d\",\"msg\":\"info\"}\n", filepath.Base(file), line+30),
 			msg:      "info",
 			kvs:      nil,
 			f:        l.Info,
 		},
 		{
 			name:     "nested caller",
-			expected: fmt.Sprintf("{\"caller\":\"log/%s:%d\",\"level\":\"info\",\"msg\":\"info\"}\n", filepath.Base(file), line+30),
+			expected: fmt.Sprintf("{\"level\":\"info\",\"caller\":\"log/%s:%d\",\"msg\":\"info\"}\n", filepath.Base(file), line+30),
 			msg:      "info",
 			kvs:      nil,
 			f: func(msg interface{}, kvs ...interface{}) {
@@ -165,17 +165,163 @@ func TestJsonCaller(t *testing.T) {
 	}
 }
 
+func TestJsonTime(t *testing.T) {
+	var buf bytes.Buffer
+	logger := New(&buf)
+	logger.SetTimeFunction(_zeroTime)
+	logger.SetFormatter(JSONFormatter)
+	logger.SetReportTimestamp(true)
+	logger.Info("info")
+	require.Equal(t, "{\"time\":\"0002/01/01 00:00:00\",\"level\":\"info\",\"msg\":\"info\"}\n", buf.String())
+}
+
+func TestJsonPrefix(t *testing.T) {
+	var buf bytes.Buffer
+	logger := New(&buf)
+	logger.SetFormatter(JSONFormatter)
+	logger.SetPrefix("my-prefix")
+	logger.Info("info")
+	require.Equal(t, "{\"level\":\"info\",\"prefix\":\"my-prefix\",\"msg\":\"info\"}\n", buf.String())
+}
+
 func TestJsonCustomKey(t *testing.T) {
 	var buf bytes.Buffer
 	oldTsKey := TimestampKey
 	defer func() {
 		TimestampKey = oldTsKey
 	}()
-	TimestampKey = "time"
+	TimestampKey = "other-time"
 	logger := New(&buf)
 	logger.SetTimeFunction(_zeroTime)
 	logger.SetFormatter(JSONFormatter)
 	logger.SetReportTimestamp(true)
 	logger.Info("info")
-	require.Equal(t, "{\"level\":\"info\",\"msg\":\"info\",\"time\":\"0002/01/01 00:00:00\"}\n", buf.String())
+	require.Equal(t, "{\"other-time\":\"0002/01/01 00:00:00\",\"level\":\"info\",\"msg\":\"info\"}\n", buf.String())
+}
+
+func TestJsonWriter(t *testing.T) {
+	testCases := []struct {
+		name     string
+		fn       func(w *jsonWriter)
+		expected string
+	}{
+		{
+			"string",
+			func(w *jsonWriter) {
+				w.start()
+				w.write("a", "value")
+				w.end()
+			},
+			`{"a":"value"}` + "\n",
+		},
+		{
+			"int",
+			func(w *jsonWriter) {
+				w.start()
+				w.write("a", 123)
+				w.end()
+			},
+			`{"a":123}` + "\n",
+		},
+		{
+			"bytes",
+			func(w *jsonWriter) {
+				w.start()
+				w.write("b", []byte{0x0, 0x1})
+				w.end()
+			},
+			`{"b":"AAE="}` + "\n",
+		},
+		{
+			"no fields",
+			func(w *jsonWriter) {
+				w.start()
+				w.end()
+			},
+			`{}` + "\n",
+		},
+		{
+			"multiple in asc order",
+			func(w *jsonWriter) {
+				w.start()
+				w.write("a", "value")
+				w.write("b", "some-other")
+				w.end()
+			},
+			`{"a":"value","b":"some-other"}` + "\n",
+		},
+		{
+			"multiple in desc order",
+			func(w *jsonWriter) {
+				w.start()
+				w.write("b", "some-other")
+				w.write("a", "value")
+				w.end()
+			},
+			`{"b":"some-other","a":"value"}` + "\n",
+		},
+		{
+			"depth",
+			func(w *jsonWriter) {
+				w.start()
+				w.write("a", map[string]int{"b": 123})
+				w.end()
+			},
+			`{"a":{"b":123}}` + "\n",
+		},
+		{
+			"key contains reserved",
+			func(w *jsonWriter) {
+				w.start()
+				w.write("a:\"b", "value")
+				w.end()
+			},
+			`{"a:\"b":"value"}` + "\n",
+		},
+		{
+			"pointer",
+			func(w *jsonWriter) {
+				w.start()
+				w.write("a", ptr("pointer"))
+				w.end()
+			},
+			`{"a":"pointer"}` + "\n",
+		},
+		{
+			"double-pointer",
+			func(w *jsonWriter) {
+				w.start()
+				w.write("a", ptr(ptr("pointer")))
+				w.end()
+			},
+			`{"a":"pointer"}` + "\n",
+		},
+		{
+			"invalid",
+			func(w *jsonWriter) {
+				w.start()
+				w.write("a", invalidJSON{})
+				w.end()
+			},
+			`{"a":"invalid value"}` + "\n",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var buf bytes.Buffer
+			tc.fn(&jsonWriter{w: &buf})
+			require.Equal(t, tc.expected, buf.String())
+		})
+	}
+}
+
+func ptr[T any](v T) *T {
+	return &v
+}
+
+type invalidJSON struct{}
+
+func (invalidJSON) MarshalJSON() ([]byte, error) {
+	return nil, errors.New("invalid json error")
 }
