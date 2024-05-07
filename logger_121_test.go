@@ -6,10 +6,9 @@ package log
 import (
 	"bytes"
 	"context"
+	"log/slog"
 	"testing"
 	"time"
-
-	"log/slog"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -179,6 +178,98 @@ func TestSlogCustomLevel(t *testing.T) {
 			l := New(&buf)
 			l.SetLevel(c.minLevel)
 			l.Handle(context.Background(), slog.NewRecord(time.Now(), c.level, "foo", 0))
+			assert.Equal(t, c.expected, buf.String())
+		})
+	}
+}
+
+type testLogValue struct {
+	v slog.Value
+}
+
+func (v testLogValue) LogValue() slog.Value {
+	return v.v
+}
+
+func TestSlogAttr(t *testing.T) {
+	cases := []struct {
+		name     string
+		expected string
+		kvs      []interface{}
+	}{
+		{
+			name:     "any",
+			expected: `{"level":"info","msg":"message","any":42}` + "\n",
+			kvs:      []any{"any", slog.AnyValue(42)},
+		},
+		{
+			name:     "bool",
+			expected: `{"level":"info","msg":"message","bool":false}` + "\n",
+			kvs:      []any{"bool", slog.BoolValue(false)},
+		},
+		{
+			name:     "duration",
+			expected: `{"level":"info","msg":"message","duration":10800000000000}` + "\n",
+			kvs:      []any{"duration", slog.DurationValue(3 * time.Hour)},
+		},
+		{
+			name:     "float64",
+			expected: `{"level":"info","msg":"message","float64":123}` + "\n",
+			kvs:      []any{"float64", slog.Float64Value(123)},
+		},
+		{
+			name:     "string",
+			expected: `{"level":"info","msg":"message","string":"hello"}` + "\n",
+			kvs:      []any{"string", slog.StringValue("hello")},
+		},
+		{
+			name:     "time",
+			expected: `{"level":"info","msg":"message","_time":"1970-01-01T00:00:00Z"}` + "\n",
+			kvs:      []any{"_time", slog.TimeValue(time.Unix(0, 0).UTC())},
+		},
+		{
+			name:     "uint64",
+			expected: `{"level":"info","msg":"message","uint64":42}` + "\n",
+			kvs:      []any{"uint64", slog.Uint64Value(42)},
+		},
+		{
+			name:     "group",
+			expected: `{"level":"info","msg":"message","g":{"b":true}}` + "\n",
+			kvs:      []any{slog.Group("g", slog.Bool("b", true))},
+		},
+		{
+			name:     "log valuer",
+			expected: `{"level":"info","msg":"message","lv":42}` + "\n",
+			kvs: []any{
+				"lv", testLogValue{slog.AnyValue(42)},
+			},
+		},
+		{
+			name:     "log valuer",
+			expected: `{"level":"info","msg":"message","lv":{"first":"hello","last":"world"}}` + "\n",
+			kvs: []any{
+				"lv", testLogValue{slog.GroupValue(
+					slog.String("first", "hello"),
+					slog.String("last", "world"),
+				)},
+			},
+		},
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
+			// expect same output from slog and log
+			var buf bytes.Buffer
+			l := NewWithOptions(&buf, Options{Formatter: JSONFormatter})
+			l.Info("message", c.kvs...)
+			assert.Equal(t, c.expected, buf.String())
+
+			buf.Truncate(0)
+			sl := slog.New(l)
+			sl.Info("message", c.kvs...)
 			assert.Equal(t, c.expected, buf.String())
 		})
 	}

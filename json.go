@@ -11,16 +11,26 @@ func (l *Logger) jsonFormatter(keyvals ...interface{}) {
 	jw := &jsonWriter{w: &l.b}
 	jw.start()
 
-	for i := 0; i < len(keyvals); i += 2 {
-		l.jsonFormatterKeyVal(jw, keyvals[i], keyvals[i+1])
+	i := 0
+	for i < len(keyvals) {
+		switch kv := keyvals[i].(type) {
+		case slogAttr:
+			l.jsonFormatterRoot(jw, kv.Key, kv.Value)
+			i++
+		default:
+			if i+1 < len(keyvals) {
+				l.jsonFormatterRoot(jw, keyvals[i], keyvals[i+1])
+			}
+			i += 2
+		}
 	}
 
 	jw.end()
 	l.b.WriteRune('\n')
 }
 
-func (l *Logger) jsonFormatterKeyVal(jw *jsonWriter, anyKey, value any) {
-	switch anyKey {
+func (l *Logger) jsonFormatterRoot(jw *jsonWriter, key, value any) {
+	switch key {
 	case TimestampKey:
 		if t, ok := value.(time.Time); ok {
 			jw.objectItem(TimestampKey, t.Format(l.timeFormat))
@@ -42,22 +52,43 @@ func (l *Logger) jsonFormatterKeyVal(jw *jsonWriter, anyKey, value any) {
 			jw.objectItem(MessageKey, fmt.Sprint(msg))
 		}
 	default:
-		switch k := anyKey.(type) {
-		case fmt.Stringer:
-			jw.objectKey(k.String())
-		case error:
-			jw.objectKey(k.Error())
-		default:
-			jw.objectKey(fmt.Sprint(k))
+		l.jsonFormatterItem(jw, key, value)
+	}
+}
+
+func (l *Logger) jsonFormatterItem(jw *jsonWriter, key, value any) {
+	switch k := key.(type) {
+	case fmt.Stringer:
+		jw.objectKey(k.String())
+	case error:
+		jw.objectKey(k.Error())
+	default:
+		jw.objectKey(fmt.Sprint(k))
+	}
+	switch v := value.(type) {
+	case error:
+		jw.objectValue(v.Error())
+	case slogLogValuer:
+		l.writeSlogValue(jw, v.LogValue())
+	case slogValue:
+		l.writeSlogValue(jw, v.Resolve())
+	case fmt.Stringer:
+		jw.objectValue(v.String())
+	default:
+		jw.objectValue(v)
+	}
+}
+
+func (l *Logger) writeSlogValue(jw *jsonWriter, v slogValue) {
+	switch v.Kind() {
+	case slogKindGroup:
+		jw.start()
+		for _, attr := range v.Group() {
+			l.jsonFormatterItem(jw, attr.Key, attr.Value)
 		}
-		switch v := value.(type) {
-		case error:
-			jw.objectValue(v.Error())
-		case fmt.Stringer:
-			jw.objectValue(v.String())
-		default:
-			jw.objectValue(v)
-		}
+		jw.end()
+	default:
+		jw.objectValue(v.Any())
 	}
 }
 
