@@ -209,28 +209,28 @@ func TestJsonWriter(t *testing.T) {
 			"string",
 			func(w *jsonWriter) {
 				w.start()
-				w.write("a", "value")
+				w.objectItem("a", "value")
 				w.end()
 			},
-			`{"a":"value"}` + "\n",
+			`{"a":"value"}`,
 		},
 		{
 			"int",
 			func(w *jsonWriter) {
 				w.start()
-				w.write("a", 123)
+				w.objectItem("a", 123)
 				w.end()
 			},
-			`{"a":123}` + "\n",
+			`{"a":123}`,
 		},
 		{
 			"bytes",
 			func(w *jsonWriter) {
 				w.start()
-				w.write("b", []byte{0x0, 0x1})
+				w.objectItem("b", []byte{0x0, 0x1})
 				w.end()
 			},
-			`{"b":"AAE="}` + "\n",
+			`{"b":"AAE="}`,
 		},
 		{
 			"no fields",
@@ -238,72 +238,72 @@ func TestJsonWriter(t *testing.T) {
 				w.start()
 				w.end()
 			},
-			`{}` + "\n",
+			`{}`,
 		},
 		{
 			"multiple in asc order",
 			func(w *jsonWriter) {
 				w.start()
-				w.write("a", "value")
-				w.write("b", "some-other")
+				w.objectItem("a", "value")
+				w.objectItem("b", "some-other")
 				w.end()
 			},
-			`{"a":"value","b":"some-other"}` + "\n",
+			`{"a":"value","b":"some-other"}`,
 		},
 		{
 			"multiple in desc order",
 			func(w *jsonWriter) {
 				w.start()
-				w.write("b", "some-other")
-				w.write("a", "value")
+				w.objectItem("b", "some-other")
+				w.objectItem("a", "value")
 				w.end()
 			},
-			`{"b":"some-other","a":"value"}` + "\n",
+			`{"b":"some-other","a":"value"}`,
 		},
 		{
 			"depth",
 			func(w *jsonWriter) {
 				w.start()
-				w.write("a", map[string]int{"b": 123})
+				w.objectItem("a", map[string]int{"b": 123})
 				w.end()
 			},
-			`{"a":{"b":123}}` + "\n",
+			`{"a":{"b":123}}`,
 		},
 		{
 			"key contains reserved",
 			func(w *jsonWriter) {
 				w.start()
-				w.write("a:\"b", "value")
+				w.objectItem("a:\"b", "value")
 				w.end()
 			},
-			`{"a:\"b":"value"}` + "\n",
+			`{"a:\"b":"value"}`,
 		},
 		{
 			"pointer",
 			func(w *jsonWriter) {
 				w.start()
-				w.write("a", ptr("pointer"))
+				w.objectItem("a", ptr("pointer"))
 				w.end()
 			},
-			`{"a":"pointer"}` + "\n",
+			`{"a":"pointer"}`,
 		},
 		{
 			"double-pointer",
 			func(w *jsonWriter) {
 				w.start()
-				w.write("a", ptr(ptr("pointer")))
+				w.objectItem("a", ptr(ptr("pointer")))
 				w.end()
 			},
-			`{"a":"pointer"}` + "\n",
+			`{"a":"pointer"}`,
 		},
 		{
 			"invalid",
 			func(w *jsonWriter) {
 				w.start()
-				w.write("a", invalidJSON{})
+				w.objectItem("a", invalidJSON{})
 				w.end()
 			},
-			`{"a":"invalid value"}` + "\n",
+			`{"a":"invalid value"}`,
 		},
 	}
 
