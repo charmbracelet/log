@@ -8,88 +8,96 @@ import (
 )
 
 func (l *Logger) jsonFormatter(keyvals ...interface{}) {
-	jw := jsonWriter{w: &l.b}
+	jw := &jsonWriter{w: &l.b}
 	jw.start()
+
 	for i := 0; i < len(keyvals); i += 2 {
-		switch keyvals[i] {
-		case TimestampKey:
-			if t, ok := keyvals[i+1].(time.Time); ok {
-				jw.write(TimestampKey, t.Format(l.timeFormat))
-			}
-		case LevelKey:
-			if level, ok := keyvals[i+1].(Level); ok {
-				jw.write(LevelKey, level.String())
-			}
-		case CallerKey:
-			if caller, ok := keyvals[i+1].(string); ok {
-				jw.write(CallerKey, caller)
-			}
-		case PrefixKey:
-			if prefix, ok := keyvals[i+1].(string); ok {
-				jw.write(PrefixKey, prefix)
-			}
-		case MessageKey:
-			if msg := keyvals[i+1]; msg != nil {
-				jw.write(MessageKey, fmt.Sprint(msg))
-			}
+		l.jsonFormatterKeyVal(jw, keyvals[i], keyvals[i+1])
+	}
+
+	jw.end()
+	l.b.WriteRune('\n')
+}
+
+func (l *Logger) jsonFormatterKeyVal(jw *jsonWriter, anyKey, value any) {
+	switch anyKey {
+	case TimestampKey:
+		if t, ok := value.(time.Time); ok {
+			jw.objectItem(TimestampKey, t.Format(l.timeFormat))
+		}
+	case LevelKey:
+		if level, ok := value.(Level); ok {
+			jw.objectItem(LevelKey, level.String())
+		}
+	case CallerKey:
+		if caller, ok := value.(string); ok {
+			jw.objectItem(CallerKey, caller)
+		}
+	case PrefixKey:
+		if prefix, ok := value.(string); ok {
+			jw.objectItem(PrefixKey, prefix)
+		}
+	case MessageKey:
+		if msg := value; msg != nil {
+			jw.objectItem(MessageKey, fmt.Sprint(msg))
+		}
+	default:
+		switch k := anyKey.(type) {
+		case fmt.Stringer:
+			jw.objectKey(k.String())
+		case error:
+			jw.objectKey(k.Error())
 		default:
-			var (
-				key string
-				val interface{}
-			)
-			switch k := keyvals[i].(type) {
-			case fmt.Stringer:
-				key = k.String()
-			case error:
-				key = k.Error()
-			default:
-				key = fmt.Sprint(k)
-			}
-			switch v := keyvals[i+1].(type) {
-			case error:
-				val = v.Error()
-			case fmt.Stringer:
-				val = v.String()
-			default:
-				val = v
-			}
-			jw.write(key, val)
+			jw.objectKey(fmt.Sprint(k))
+		}
+		switch v := value.(type) {
+		case error:
+			jw.objectValue(v.Error())
+		case fmt.Stringer:
+			jw.objectValue(v.String())
+		default:
+			jw.objectValue(v)
 		}
 	}
-	jw.end()
 }
 
 type jsonWriter struct {
 	w *bytes.Buffer
+	d int
 }
 
 func (w *jsonWriter) start() {
 	w.w.WriteRune('{')
+	w.d = 0
 }
 
 func (w *jsonWriter) end() {
 	w.w.WriteRune('}')
-	w.w.WriteRune('\n')
 }
 
-func (w *jsonWriter) write(key string, value any) {
-	// store pos if we need to rewind
-	pos := w.w.Len()
+func (w *jsonWriter) objectItem(key string, value any) {
+	w.objectKey(key)
+	w.objectValue(value)
+}
 
-	// add separator when buffer is longer than '{'
-	if w.w.Len() > 1 {
+func (w *jsonWriter) objectKey(key string) {
+	if w.d > 0 {
 		w.w.WriteRune(',')
 	}
+	w.d++
 
+	pos := w.w.Len()
 	err := w.writeEncoded(key)
 	if err != nil {
 		w.w.Truncate(pos)
-		return
+		w.w.WriteString(`"invalid key"`)
 	}
 	w.w.WriteRune(':')
+}
 
-	pos = w.w.Len()
-	err = w.writeEncoded(value)
+func (w *jsonWriter) objectValue(value any) {
+	pos := w.w.Len()
+	err := w.writeEncoded(value)
 	if err != nil {
 		w.w.Truncate(pos)
 		w.w.WriteString(`"invalid value"`)
