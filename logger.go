@@ -334,7 +334,8 @@ func (l *Logger) With(keyvals ...interface{}) *Logger {
 	sl.b = bytes.Buffer{}
 	sl.mu = &sync.RWMutex{}
 	sl.helpers = &sync.Map{}
-	sl.fields = append(l.fields, keyvals...)
+	sl.fields = append(make([]interface{}, 0, len(l.fields)+len(keyvals)), l.fields...)
+	sl.fields = append(sl.fields, keyvals...)
 	sl.styles = &st
 	return &sl
 }
