@@ -2,6 +2,7 @@ package log
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"sync"
 	"testing"
@@ -204,7 +205,7 @@ func TestLogWithPrefix(t *testing.T) {
 }
 
 func TestLogWithRaceCondition(t *testing.T) {
-	var buf bytes.Buffer
+	w := io.Discard
 	cases := []struct {
 		name string
 	}{
@@ -214,21 +215,30 @@ func TestLogWithRaceCondition(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			buf.Reset()
-			l := New(&buf)
+			l := New(w)
 
 			var done sync.WaitGroup
-			done.Add(2)
 
-			go func() {
-				l.With("arg1", "val1", "arg2", "val2")
-				done.Done()
-			}()
+			longArgs := make([]interface{}, 0, 1000)
+			for i := 0; i < 1000; i++ {
+				longArgs = append(longArgs, fmt.Sprintf("arg%d", i), fmt.Sprintf("val%d", i))
+			}
+			l = l.With(longArgs...)
 
-			go func() {
-				l.Info("kinda long log message")
-				done.Done()
-			}()
+			for i := 0; i < 100; i++ {
+				done.Add(1)
+				go func() {
+					ll := l.With("arg1", "val1", "arg2", "val2")
+					ll.Info("kinda long long log message")
+					done.Done()
+				}()
+
+				done.Add(1)
+				go func() {
+					l.Info("kinda long log message")
+					done.Done()
+				}()
+			}
 			done.Wait()
 		})
 	}
