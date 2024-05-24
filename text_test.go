@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/termenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -245,8 +244,7 @@ func TestTextFatal(t *testing.T) {
 func TestTextValueStyles(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)
-	logger.SetColorProfile(termenv.ANSI256)
-	lipgloss.SetColorProfile(termenv.ANSI256)
+	logger.SetColorProfile(lipgloss.ANSI256)
 	st := DefaultStyles()
 	st.Value = lipgloss.NewStyle().Bold(true)
 	st.Values["key3"] = st.Value.Copy().Underline(true)
@@ -410,16 +408,16 @@ func TestTextValueStyles(t *testing.T) {
 }
 
 func TestColorProfile(t *testing.T) {
-	cases := []termenv.Profile{
-		termenv.Ascii,
-		termenv.ANSI,
-		termenv.ANSI256,
-		termenv.TrueColor,
+	cases := []lipgloss.Profile{
+		lipgloss.Ascii,
+		lipgloss.ANSI,
+		lipgloss.ANSI256,
+		lipgloss.TrueColor,
 	}
 	l := New(io.Discard)
 	for _, p := range cases {
 		l.SetColorProfile(p)
-		assert.Equal(t, p, l.re.ColorProfile())
+		assert.Equal(t, p, l.profile)
 	}
 }
 

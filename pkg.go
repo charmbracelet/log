@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/muesli/termenv"
+	"github.com/charmbracelet/lipgloss"
 )
 
 var (
@@ -27,6 +27,7 @@ func Default() *Logger {
 	dl := defaultLogger.Load()
 	if dl == nil {
 		defaultLoggerOnce.Do(func() {
+			lipgloss.DefaultOutput = os.Stderr
 			defaultLogger.CompareAndSwap(
 				nil, NewWithOptions(os.Stderr, Options{ReportTimestamp: true}),
 			)
@@ -140,7 +141,7 @@ func SetPrefix(prefix string) {
 
 // SetColorProfile force sets the underlying Lip Gloss renderer color profile
 // for the TextFormatter.
-func SetColorProfile(profile termenv.Profile) {
+func SetColorProfile(profile lipgloss.Profile) {
 	Default().SetColorProfile(profile)
 }
 
