@@ -11,6 +11,15 @@ import (
 	"golang.org/x/exp/slog"
 )
 
+// type alises for slog.
+type (
+	slogAttr      = slog.Attr
+	slogValue     = slog.Value
+	slogLogValuer = slog.LogValuer
+)
+
+const slogKindGroup = slog.KindGroup
+
 // Enabled reports whether the logger is enabled for the given level.
 //
 // Implements slog.Handler.
@@ -24,7 +33,7 @@ func (l *Logger) Enabled(_ context.Context, level slog.Level) bool {
 func (l *Logger) Handle(_ context.Context, record slog.Record) error {
 	fields := make([]interface{}, 0, record.NumAttrs()*2)
 	record.Attrs(func(a slog.Attr) bool {
-		fields = append(fields, a.Key, a.Value.String())
+		fields = append(fields, a.Key, a.Value)
 		return true
 	})
 	// Get the caller frame using the record's PC.
