@@ -66,7 +66,7 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 
 	l.SetOutput(w)
 	l.SetLevel(Level(l.level))
-	l.SetStyles(DefaultStyles())
+	l.SetStyles(o.Styles)
 
 	if l.callerFormatter == nil {
 		l.callerFormatter = ShortCallerFormatter
