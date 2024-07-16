@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/termenv"
 )
 
 // ErrMissingValue is returned when a key is missing a value.
@@ -23,10 +22,9 @@ type LoggerOption = func(*Logger)
 
 // Logger is a Logger that implements Logger.
 type Logger struct {
-	w  io.Writer
+	w  *lipgloss.Writer
 	b  bytes.Buffer
 	mu *sync.RWMutex
-	re *lipgloss.Renderer
 
 	isDiscard uint32
 
@@ -272,19 +270,12 @@ func (l *Logger) SetOutput(w io.Writer) {
 	if w == nil {
 		w = os.Stderr
 	}
-	l.w = w
+	l.w = lipgloss.NewWriter(w, nil)
 	var isDiscard uint32
 	if w == io.Discard {
 		isDiscard = 1
 	}
 	atomic.StoreUint32(&l.isDiscard, isDiscard)
-	// Reuse cached renderers
-	if v, ok := registry.Load(w); ok {
-		l.re = v.(*lipgloss.Renderer)
-	} else {
-		l.re = lipgloss.NewRenderer(w, termenv.WithColorCache(true))
-		registry.Store(w, l.re)
-	}
 }
 
 // SetFormatter sets the formatter.
@@ -310,8 +301,8 @@ func (l *Logger) SetCallerOffset(offset int) {
 
 // SetColorProfile force sets the underlying Lip Gloss renderer color profile
 // for the TextFormatter.
-func (l *Logger) SetColorProfile(profile termenv.Profile) {
-	l.re.SetColorProfile(profile)
+func (l *Logger) SetColorProfile(profile lipgloss.Profile) {
+	l.w.Profile = profile
 }
 
 // SetStyles sets the logger styles for the TextFormatter.

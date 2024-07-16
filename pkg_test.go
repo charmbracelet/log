@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/muesli/termenv"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -82,7 +82,7 @@ func TestPrint(t *testing.T) {
 	SetReportTimestamp(true)
 	SetReportCaller(false)
 	SetTimeFormat(DefaultTimeFormat)
-	SetColorProfile(termenv.ANSI)
+	SetColorProfile(lipgloss.ANSI)
 	Error("error")
 	Print("print")
 	assert.Equal(t, "0002/01/01 00:00:00 print\n", buf.String())
