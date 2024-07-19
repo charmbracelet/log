@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/charmbracelet/lipgloss"
 )
 
 func (l *Logger) jsonFormatter(keyvals ...interface{}) {
-	jw := &jsonWriter{w: &l.b}
+	jw := &jsonWriter{w: &l.b, r: l.re, s: l.styles.Separator}
 	jw.start()
 
 	i := 0
@@ -33,87 +35,114 @@ func (l *Logger) jsonFormatterRoot(jw *jsonWriter, key, value any) {
 	switch key {
 	case TimestampKey:
 		if t, ok := value.(time.Time); ok {
-			jw.objectItem(TimestampKey, t.Format(l.timeFormat))
+			jw.objectItem(l.styles.Key, TimestampKey, l.styles.Timestamp, t.Format(l.timeFormat))
 		}
 	case LevelKey:
 		if level, ok := value.(Level); ok {
-			jw.objectItem(LevelKey, level.String())
+			ls, ok := l.styles.Levels[level]
+			if ok {
+				jw.objectItem(l.styles.Key, LevelKey, ls, level.String())
+			}
 		}
 	case CallerKey:
 		if caller, ok := value.(string); ok {
-			jw.objectItem(CallerKey, caller)
+			jw.objectItem(l.styles.Key, CallerKey, l.styles.Caller, caller)
 		}
 	case PrefixKey:
 		if prefix, ok := value.(string); ok {
-			jw.objectItem(PrefixKey, prefix)
+			jw.objectItem(l.styles.Key, PrefixKey, l.styles.Prefix, prefix)
 		}
 	case MessageKey:
 		if msg := value; msg != nil {
-			jw.objectItem(MessageKey, fmt.Sprint(msg))
+			jw.objectItem(l.styles.Key, MessageKey, l.styles.Message, fmt.Sprint(msg))
 		}
 	default:
-		l.jsonFormatterItem(jw, key, value)
+		l.jsonFormatterItem(jw, 0, l.styles.Key, key, l.styles.Value, value)
 	}
 }
 
-func (l *Logger) jsonFormatterItem(jw *jsonWriter, key, value any) {
-	switch k := key.(type) {
+func (l *Logger) jsonFormatterItem(
+	jw *jsonWriter, d int, ks lipgloss.Style, anyKey any, vs lipgloss.Style, value any,
+) {
+	var key string
+	switch k := anyKey.(type) {
 	case fmt.Stringer:
-		jw.objectKey(k.String())
+		key = k.String()
 	case error:
-		jw.objectKey(k.Error())
+		key = k.Error()
 	default:
-		jw.objectKey(fmt.Sprint(k))
+		key = fmt.Sprint(k)
 	}
+
+	// override styles based on root key
+	if d == 0 {
+		if s, ok := l.styles.Keys[key]; ok {
+			ks = s
+		}
+		if s, ok := l.styles.Values[key]; ok {
+			vs = s
+		}
+	}
+
+	jw.objectKey(ks, key)
+
 	switch v := value.(type) {
 	case error:
-		jw.objectValue(v.Error())
+		jw.objectValue(vs, v.Error())
 	case slogLogValuer:
-		l.writeSlogValue(jw, v.LogValue())
+		l.writeSlogValue(jw, d, ks, vs, v.LogValue())
 	case slogValue:
-		l.writeSlogValue(jw, v.Resolve())
+		l.writeSlogValue(jw, d, ks, vs, v.Resolve())
 	case fmt.Stringer:
-		jw.objectValue(v.String())
+		jw.objectValue(vs, v.String())
 	default:
-		jw.objectValue(v)
+		jw.objectValue(vs, v)
 	}
 }
 
-func (l *Logger) writeSlogValue(jw *jsonWriter, v slogValue) {
+func (l *Logger) writeSlogValue(jw *jsonWriter, depth int, ks, vs lipgloss.Style, v slogValue) {
 	switch v.Kind() {
 	case slogKindGroup:
 		jw.start()
 		for _, attr := range v.Group() {
-			l.jsonFormatterItem(jw, attr.Key, attr.Value)
+			l.jsonFormatterItem(jw, depth+1, ks, attr.Key, vs, attr.Value)
 		}
 		jw.end()
 	default:
-		jw.objectValue(v.Any())
+		jw.objectValue(vs, v.Any())
 	}
 }
 
 type jsonWriter struct {
 	w *bytes.Buffer
+	r *lipgloss.Renderer
+	s lipgloss.Style
 	d int
 }
 
 func (w *jsonWriter) start() {
-	w.w.WriteRune('{')
+	objectStart := w.s.Renderer(w.r).Render("{")
+	w.w.WriteString(objectStart)
 	w.d = 0
 }
 
 func (w *jsonWriter) end() {
-	w.w.WriteRune('}')
+	objectEnd := w.s.Renderer(w.r).Render("}")
+	w.w.WriteString(objectEnd)
 }
 
-func (w *jsonWriter) objectItem(key string, value any) {
-	w.objectKey(key)
-	w.objectValue(value)
+func (w *jsonWriter) objectItem(
+	ks lipgloss.Style, key string,
+	vs lipgloss.Style, value any,
+) {
+	w.objectKey(ks, key)
+	w.objectValue(vs, value)
 }
 
-func (w *jsonWriter) objectKey(key string) {
+func (w *jsonWriter) objectKey(s lipgloss.Style, key string) {
 	if w.d > 0 {
-		w.w.WriteRune(',')
+		itemSep := w.s.Renderer(w.r).Render(",")
+		w.w.WriteString(itemSep)
 	}
 	w.d++
 
@@ -123,16 +152,49 @@ func (w *jsonWriter) objectKey(key string) {
 		w.w.Truncate(pos)
 		w.w.WriteString(`"invalid key"`)
 	}
-	w.w.WriteRune(':')
+
+	// re-apply value with style
+	w.renderStyle(s, pos)
+
+	valSep := w.s.Renderer(w.r).Render(`:`)
+	w.w.WriteString(valSep)
 }
 
-func (w *jsonWriter) objectValue(value any) {
+func (w *jsonWriter) objectValue(s lipgloss.Style, value any) {
 	pos := w.w.Len()
 	err := w.writeEncoded(value)
 	if err != nil {
 		w.w.Truncate(pos)
 		w.w.WriteString(`"invalid value"`)
 	}
+
+	// re-apply value with style
+	w.renderStyle(s, pos)
+}
+
+// renderStyle applies the given style to the string at the given position.
+func (w *jsonWriter) renderStyle(st lipgloss.Style, pos int) {
+	s := w.w.String()[pos:]
+
+	// manually apply quotes
+	sep := ""
+	if len(s) > 2 && s[0] == '"' && s[len(s)-1] == '"' {
+		s = s[1 : len(s)-1] // apply style within quotes
+		sep = w.s.Renderer(w.r).Render(`"`)
+	} else if st.String() != "" {
+		sep = w.s.Renderer(w.r).Render(`"`)
+	}
+
+	// render with style
+	s = st.Renderer(w.r).Render(s)
+
+	// rewind
+	w.w.Truncate(pos)
+
+	// re-apply with colors
+	w.w.WriteString(sep)
+	w.w.WriteString(s)
+	w.w.WriteString(sep)
 }
 
 func (w *jsonWriter) writeEncoded(v any) error {
