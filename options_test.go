@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
 	"testing"
 
+	"github.com/charmbracelet/shampoo"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,7 +17,7 @@ func TestOptions(t *testing.T) {
 		ReportCaller: true,
 		Fields:       []interface{}{"foo", "bar"},
 	}
-	logger := NewWithOptions(io.Discard, opts)
+	logger := NewWithOptions(shampoo.NewWriter(io.Discard, os.Environ()), opts)
 	require.Equal(t, ErrorLevel, logger.GetLevel())
 	require.True(t, logger.reportCaller)
 	require.False(t, logger.reportTimestamp)
@@ -27,7 +29,7 @@ func TestOptions(t *testing.T) {
 
 func TestCallerFormatter(t *testing.T) {
 	var buf bytes.Buffer
-	l := NewWithOptions(&buf, Options{ReportCaller: true})
+	l := NewWithOptions(shampoo.NewWriter(&buf, os.Environ()), Options{ReportCaller: true})
 	frames := l.frames(0)
 	frame, _ := frames.Next()
 	file, line, fn := frame.File, frame.Line, frame.Function

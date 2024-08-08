@@ -34,7 +34,7 @@ func TestDefaultRace(t *testing.T) {
 
 func TestGlobal(t *testing.T) {
 	var buf bytes.Buffer
-	SetOutput(&buf)
+	SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 	SetTimeFunction(_zeroTime)
 	cases := []struct {
 		name     string
@@ -138,7 +138,7 @@ func TestFatalf(t *testing.T) {
 
 func TestDebugf(t *testing.T) {
 	var buf bytes.Buffer
-	SetOutput(&buf)
+	SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 	SetLevel(DebugLevel)
 	SetTimeFunction(_zeroTime)
 	SetReportTimestamp(true)
@@ -151,7 +151,7 @@ func TestDebugf(t *testing.T) {
 
 func TestInfof(t *testing.T) {
 	var buf bytes.Buffer
-	SetOutput(&buf)
+	SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 	SetLevel(InfoLevel)
 	SetReportTimestamp(false)
 	SetReportCaller(false)
@@ -162,7 +162,7 @@ func TestInfof(t *testing.T) {
 
 func TestWarnf(t *testing.T) {
 	var buf bytes.Buffer
-	SetOutput(&buf)
+	SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 	SetLevel(WarnLevel)
 	SetReportCaller(false)
 	SetReportTimestamp(true)
@@ -174,7 +174,7 @@ func TestWarnf(t *testing.T) {
 
 func TestErrorf(t *testing.T) {
 	var buf bytes.Buffer
-	SetOutput(&buf)
+	SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 	SetLevel(ErrorLevel)
 	SetReportCaller(false)
 	SetReportTimestamp(true)
@@ -186,7 +186,7 @@ func TestErrorf(t *testing.T) {
 
 func TestWith(t *testing.T) {
 	var buf bytes.Buffer
-	SetOutput(&buf)
+	SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 	SetLevel(InfoLevel)
 	SetReportCaller(false)
 	SetReportTimestamp(true)
@@ -203,7 +203,7 @@ func TestGetLevel(t *testing.T) {
 
 func TestPrefix(t *testing.T) {
 	var buf bytes.Buffer
-	SetOutput(&buf)
+	SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 	SetLevel(WarnLevel)
 	SetReportCaller(false)
 	SetReportTimestamp(false)
@@ -216,7 +216,7 @@ func TestPrefix(t *testing.T) {
 
 func TestFormatter(t *testing.T) {
 	var buf bytes.Buffer
-	SetOutput(&buf)
+	SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 	SetLevel(InfoLevel)
 	SetReportCaller(false)
 	SetReportTimestamp(false)
@@ -233,7 +233,7 @@ func TestWithPrefix(t *testing.T) {
 func TestGlobalCustomLevel(t *testing.T) {
 	var buf bytes.Buffer
 	lvl := Level(-1)
-	SetOutput(&buf)
+	SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 	SetLevel(lvl)
 	SetReportCaller(false)
 	SetReportTimestamp(false)

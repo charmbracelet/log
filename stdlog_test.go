@@ -41,7 +41,7 @@ func TestStdLog(t *testing.T) {
 	for _, c := range cases {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
-			l.SetOutput(&buf)
+			l.SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 			l.SetTimeFunction(_zeroTime)
 			c.f(l.StandardLog())
 			assert.Equal(t, c.expected, buf.String())

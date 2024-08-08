@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"os"
 	"testing"
 
+	"github.com/charmbracelet/shampoo"
 	"github.com/stretchr/testify/require"
 )
 
@@ -14,14 +16,14 @@ func TestLogContext_empty(t *testing.T) {
 }
 
 func TestLogContext_simple(t *testing.T) {
-	l := New(io.Discard)
+	l := New(shampoo.NewWriter(io.Discard, os.Environ()))
 	ctx := WithContext(context.Background(), l)
 	require.Equal(t, l, FromContext(ctx))
 }
 
 func TestLogContext_fields(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := New(shampoo.NewWriter(&buf, os.Environ()))
 	l.SetLevel(DebugLevel)
 	ctx := WithContext(context.Background(), l.With("foo", "bar"))
 	l = FromContext(ctx)

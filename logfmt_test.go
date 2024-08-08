@@ -3,14 +3,16 @@ package log
 import (
 	"bytes"
 	"errors"
+	"os"
 	"testing"
 
+	"github.com/charmbracelet/shampoo"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestLogfmt(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := New(shampoo.NewWriter(&buf, os.Environ()))
 	l.SetFormatter(LogfmtFormatter)
 	cases := []struct {
 		name     string
