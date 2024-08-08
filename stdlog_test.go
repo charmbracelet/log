@@ -4,17 +4,19 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
 
+	"github.com/charmbracelet/shampoo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestStdLog(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := New(shampoo.NewWriter(&buf, os.Environ()))
 	cases := []struct {
 		f        func(l *log.Logger)
 		name     string
@@ -49,7 +51,7 @@ func TestStdLog(t *testing.T) {
 
 func TestStdLog_forceLevel(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := New(shampoo.NewWriter(&buf, os.Environ()))
 	cases := []struct {
 		name     string
 		expected string
@@ -83,7 +85,7 @@ func TestStdLog_forceLevel(t *testing.T) {
 
 func TestStdLog_writer(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := New(shampoo.NewWriter(&buf, os.Environ()))
 	logger.SetReportCaller(true)
 	_, file, line, ok := runtime.Caller(0)
 	require.True(t, ok)
