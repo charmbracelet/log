@@ -41,6 +41,7 @@ type Styles struct {
 
 // DefaultStyles returns the default styles.
 func DefaultStyles() *Styles {
+	// TODO handle this based on light/dark colors
 	return &Styles{
 		Timestamp: lipgloss.NewStyle(),
 		Caller:    lipgloss.NewStyle().Faint(true),
