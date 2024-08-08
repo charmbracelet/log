@@ -2,6 +2,7 @@ package log
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -10,8 +11,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"github.com/charmbracelet/shampoo"
 )
 
 // ErrMissingValue is returned when a key is missing a value.
@@ -25,7 +24,6 @@ type Logger struct {
 	w  io.Writer
 	b  bytes.Buffer
 	mu *sync.RWMutex
-	re *shampoo.Writer
 
 	isDiscard uint32
 
@@ -133,7 +131,14 @@ func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg i
 	}
 
 	// WriteTo will reset the buffer
-	l.b.WriteTo(l.w) //nolint: errcheck
+	if _, err := l.b.WriteTo(l.w); err != nil {
+		if errors.Is(err, io.ErrShortWrite) {
+			// Reset the buffer even if the lengths don't match up. If we're
+			// using shampoo's Writer, it will strip the ansi sequences based on
+			// the color profile which can cause this error.
+			l.b.Reset()
+		}
+	}
 }
 
 // Helper marks the calling function as a helper
@@ -278,13 +283,14 @@ func (l *Logger) SetOutput(w io.Writer) {
 	}
 	atomic.StoreUint32(&l.isDiscard, isDiscard)
 	// Reuse cached renderers
-	if v, ok := registry.Load(w); ok {
-		l.re = v.(*shampoo.Writer)
-	} else {
-		// TODO calculate background color (termenv.colorcache used to do this)
-		l.re = shampoo.NewWriter(w, []string{})
-		registry.Store(w, l.re)
-	}
+	// TODO is this still relevant?
+	//	if v, ok := registry.Load(w); ok {
+	//		l.re = v.(*shampoo.Writer)
+	//	} else {
+	//		// TODO calculate background color (termenv.colorcache used to do this)
+	//		l.re = shampoo.NewWriter(w, os.Environ())
+	//		registry.Store(w, l.re)
+	//	}
 }
 
 // SetFormatter sets the formatter.
@@ -306,13 +312,6 @@ func (l *Logger) SetCallerOffset(offset int) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.callerOffset = offset
-}
-
-// SetColorProfile force sets the underlying Lip Gloss renderer color profile
-// for the TextFormatter.
-func (l *Logger) SetColorProfile(profile shampoo.Profile) {
-	// TODO should shampoo have a setter for profile?
-	l.re.Profile = profile
 }
 
 // SetStyles sets the logger styles for the TextFormatter.

@@ -9,8 +9,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"github.com/charmbracelet/shampoo"
 )
 
 var (
@@ -138,11 +136,12 @@ func SetPrefix(prefix string) {
 	Default().SetPrefix(prefix)
 }
 
+// TODO
 // SetColorProfile force sets the underlying Lip Gloss renderer color profile
 // for the TextFormatter.
-func SetColorProfile(profile shampoo.Profile) {
-	Default().SetColorProfile(profile)
-}
+// func SetColorProfile(profile shampoo.Profile) {
+// 	Default().SetColorProfile(profile)
+// }
 
 // SetStyles sets the logger styles for the TextFormatter.
 func SetStyles(s *Styles) {

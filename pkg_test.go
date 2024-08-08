@@ -76,13 +76,14 @@ func TestGlobal(t *testing.T) {
 
 func TestPrint(t *testing.T) {
 	var buf bytes.Buffer
-	SetOutput(&buf)
+	w := shampoo.NewWriter(&buf, os.Environ())
+	w.Profile = shampoo.ANSI
+	SetOutput(w)
 	SetLevel(FatalLevel)
 	SetTimeFunction(_zeroTime)
 	SetReportTimestamp(true)
 	SetReportCaller(false)
 	SetTimeFormat(DefaultTimeFormat)
-	SetColorProfile(shampoo.ANSI)
 	Error("error")
 	Print("print")
 	assert.Equal(t, "0002/01/01 00:00:00 print\n", buf.String())
@@ -90,7 +91,7 @@ func TestPrint(t *testing.T) {
 
 func TestPrintf(t *testing.T) {
 	var buf bytes.Buffer
-	SetOutput(&buf)
+	SetOutput(shampoo.NewWriter(&buf, os.Environ()))
 	SetLevel(FatalLevel)
 	SetTimeFunction(_zeroTime)
 	SetReportTimestamp(true)

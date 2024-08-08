@@ -24,14 +24,14 @@ func _zeroTime(time.Time) time.Time {
 
 func TestNilStyles(t *testing.T) {
 	st := DefaultStyles()
-	l := New(io.Discard)
+	l := New(shampoo.NewWriter(io.Discard, os.Environ()))
 	l.SetStyles(nil)
 	assert.Equal(t, st, l.styles)
 }
 
 func TestTextCaller(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := New(shampoo.NewWriter(&buf, os.Environ()))
 	logger.SetReportCaller(true)
 	// We calculate the caller offset based on the caller line number.
 	_, file, line, _ := runtime.Caller(0)
@@ -100,7 +100,7 @@ func TestTextCaller(t *testing.T) {
 
 func TestTextLogger(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := New(shampoo.NewWriter(&buf, os.Environ()))
 	cases := []struct {
 		name     string
 		expected string
@@ -211,7 +211,7 @@ func TestTextLogger(t *testing.T) {
 
 func TestTextHelper(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := New(shampoo.NewWriter(&buf, os.Environ()))
 	logger.SetReportCaller(true)
 	helper := func() {
 		logger.Helper()
@@ -226,7 +226,7 @@ func TestTextHelper(t *testing.T) {
 
 func TestTextFatal(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := New(shampoo.NewWriter(&buf, os.Environ()))
 	logger.SetReportCaller(true)
 	if os.Getenv("FATAL") == "1" {
 		logger.Fatal("i'm dead")
@@ -244,8 +244,9 @@ func TestTextFatal(t *testing.T) {
 
 func TestTextValueStyles(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
-	logger.SetColorProfile(shampoo.ANSI256)
+	w := shampoo.NewWriter(&buf, os.Environ())
+	w.Profile = shampoo.ANSI256
+	logger := New(w)
 	st := DefaultStyles()
 	st.Value = lipgloss.NewStyle().Bold(true)
 	st.Values["key3"] = st.Value.Underline(true)
@@ -408,23 +409,9 @@ func TestTextValueStyles(t *testing.T) {
 	}
 }
 
-func TestColorProfile(t *testing.T) {
-	cases := []shampoo.Profile{
-		shampoo.Ascii,
-		shampoo.ANSI,
-		shampoo.ANSI256,
-		shampoo.TrueColor,
-	}
-	l := New(io.Discard)
-	for _, p := range cases {
-		l.SetColorProfile(p)
-		assert.Equal(t, p, l.re.Profile)
-	}
-}
-
 func TestCustomLevelStyle(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := New(shampoo.NewWriter(&buf, os.Environ()))
 	st := DefaultStyles()
 	lvl := Level(1234)
 	st.Levels[lvl] = lipgloss.NewStyle().Bold(true).SetString("FUNKY")
