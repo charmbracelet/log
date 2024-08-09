@@ -10,13 +10,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/muesli/termenv"
+	"github.com/charmbracelet/shampoo"
 )
 
 var (
-	// registry is a map of all registered lipgloss renderers.
-	registry = sync.Map{}
-
 	// defaultLogger is the default global logger instance.
 	defaultLogger     atomic.Pointer[Logger]
 	defaultLoggerOnce sync.Once
@@ -140,7 +137,7 @@ func SetPrefix(prefix string) {
 
 // SetColorProfile force sets the underlying Lip Gloss renderer color profile
 // for the TextFormatter.
-func SetColorProfile(profile termenv.Profile) {
+func SetColorProfile(profile shampoo.Profile) {
 	Default().SetColorProfile(profile)
 }
 
