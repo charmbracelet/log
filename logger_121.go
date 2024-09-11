@@ -23,7 +23,7 @@ const slogKindGroup = slog.KindGroup
 //
 // Implements slog.Handler.
 func (l *Logger) Enabled(_ context.Context, level slog.Level) bool {
-	return atomic.LoadInt32(&l.level) <= int32(level)
+	return atomic.LoadInt64(&l.level) <= int64(level)
 }
 
 // Handle handles the Record. It will only be called if Enabled returns true.
