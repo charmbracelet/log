@@ -3,7 +3,7 @@ module github.com/charmbracelet/log
 go 1.19
 
 require (
-	github.com/charmbracelet/lipgloss v0.12.1
+	github.com/charmbracelet/lipgloss v0.13.0
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/muesli/termenv v0.15.2
 	github.com/stretchr/testify v1.9.0
