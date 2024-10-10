@@ -139,7 +139,7 @@ func SetPrefix(prefix string) {
 // TODO
 // SetColorProfile force sets the underlying Lip Gloss renderer color profile
 // for the TextFormatter.
-// func SetColorProfile(profile shampoo.Profile) {
+// func SetColorProfile(profile colorprofile.Profile) {
 // 	Default().SetColorProfile(profile)
 // }
 

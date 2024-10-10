@@ -9,13 +9,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/shampoo"
+	"github.com/charmbracelet/colorprofile"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSubLogger(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(shampoo.NewWriter(&buf, os.Environ()))
+	l := New(colorprofile.NewWriter(&buf, os.Environ()))
 	cases := []struct {
 		name     string
 		expected string
@@ -82,7 +82,7 @@ func TestWrongLevel(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			buf.Reset()
-			l := New(shampoo.NewWriter(&buf, os.Environ()))
+			l := New(colorprofile.NewWriter(&buf, os.Environ()))
 			l.SetLevel(c.level)
 			l.Info("info")
 			assert.Equal(t, c.expected, buf.String())
@@ -92,7 +92,7 @@ func TestWrongLevel(t *testing.T) {
 
 func TestLogFormatter(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(shampoo.NewWriter(&buf, os.Environ()))
+	l := New(colorprofile.NewWriter(&buf, os.Environ()))
 	l.SetLevel(DebugLevel)
 	cases := []struct {
 		name     string
@@ -141,7 +141,7 @@ func TestLogFormatter(t *testing.T) {
 
 func TestEmptyMessage(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(shampoo.NewWriter(&buf, os.Environ()))
+	l := New(colorprofile.NewWriter(&buf, os.Environ()))
 	cases := []struct {
 		name     string
 		expected string
@@ -198,7 +198,7 @@ func TestLogWithPrefix(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			buf.Reset()
-			l := New(shampoo.NewWriter(&buf, os.Environ()))
+			l := New(colorprofile.NewWriter(&buf, os.Environ()))
 			l.SetPrefix(c.prefix)
 			l.Info(c.msg)
 			assert.Equal(t, c.expected, buf.String())

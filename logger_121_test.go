@@ -11,13 +11,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/shampoo"
+	"github.com/charmbracelet/colorprofile"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSlogSimple(t *testing.T) {
 	var buf bytes.Buffer
-	h := New(shampoo.NewWriter(&buf, os.Environ()))
+	h := New(colorprofile.NewWriter(&buf, os.Environ()))
 	h.SetLevel(DebugLevel)
 	l := slog.New(h)
 	cases := []struct {
@@ -75,7 +75,7 @@ func TestSlogSimple(t *testing.T) {
 
 func TestSlogWith(t *testing.T) {
 	var buf bytes.Buffer
-	h := New(shampoo.NewWriter(&buf, os.Environ()))
+	h := New(colorprofile.NewWriter(&buf, os.Environ()))
 	h.SetLevel(DebugLevel)
 	l := slog.New(h).With("a", "b")
 	cases := []struct {
@@ -126,7 +126,7 @@ func TestSlogWith(t *testing.T) {
 
 func TestSlogWithGroup(t *testing.T) {
 	var buf bytes.Buffer
-	h := New(shampoo.NewWriter(&buf, os.Environ()))
+	h := New(colorprofile.NewWriter(&buf, os.Environ()))
 	l := slog.New(h).WithGroup("charm").WithGroup("bracelet")
 	cases := []struct {
 		name     string

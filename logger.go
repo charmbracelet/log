@@ -134,7 +134,7 @@ func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg i
 	if _, err := l.b.WriteTo(l.w); err != nil {
 		if errors.Is(err, io.ErrShortWrite) {
 			// Reset the buffer even if the lengths don't match up. If we're
-			// using shampoo's Writer, it will strip the ansi sequences based on
+			// using colorprofile's Writer, it will strip the ansi sequences based on
 			// the color profile which can cause this error.
 			l.b.Reset()
 		}
@@ -285,10 +285,10 @@ func (l *Logger) SetOutput(w io.Writer) {
 	// Reuse cached renderers
 	// TODO is this still relevant?
 	//	if v, ok := registry.Load(w); ok {
-	//		l.re = v.(*shampoo.Writer)
+	//		l.re = v.(*colorprofile.Writer)
 	//	} else {
 	//		// TODO calculate background color (termenv.colorcache used to do this)
-	//		l.re = shampoo.NewWriter(w, os.Environ())
+	//		l.re = colorprofile.NewWriter(w, os.Environ())
 	//		registry.Store(w, l.re)
 	//	}
 }
