@@ -1,11 +1,11 @@
-github.com/aymanbagabas/go-osc52/v2 v2.0.1 h1:HwpRHbFMcZLEVr42D4p7XBqjyuxQH5SMiErDT4WkJ2k=
-github.com/aymanbagabas/go-osc52/v2 v2.0.1/go.mod h1:uYgXzlJ7ZpABp8OJ+exZzJJhRNQ2ASbcXHWsFqH8hp8=
 github.com/charmbracelet/colorprofile v0.1.2 h1:nuB1bd/yAExT4fkcZvpqtQ2N5/8cJHSRIKb6CzT7lAM=
 github.com/charmbracelet/colorprofile v0.1.2/go.mod h1:1htIKZYeI4TQs+OykPvpuBTUbUJxBYeSYBDIZuejMj0=
-github.com/charmbracelet/lipgloss v1.0.0 h1:O7VkGDvqEdGi93X+DeqsQ7PKHDgtQfF8j8/O2qFMQNg=
-github.com/charmbracelet/lipgloss v1.0.0/go.mod h1:U5fy9Z+C38obMs+T+tJqst9VGzlOYGj4ri9reL3qUlo=
+github.com/charmbracelet/lipgloss/v2 v2.0.0-20241101153040-904e60506df7 h1:od3rYcqNPhFzECY/xWPnHgSJF7WJdkB3inncDXpUCZ8=
+github.com/charmbracelet/lipgloss/v2 v2.0.0-20241101153040-904e60506df7/go.mod h1:M8oXIuQtauwIZFuFREK6cYi+2fu0YNiBFnmCP7N8c2c=
 github.com/charmbracelet/x/ansi v0.4.2 h1:0JM6Aj/g/KC154/gOP4vfxun0ff6itogDYk41kof+qk=
 github.com/charmbracelet/x/ansi v0.4.2/go.mod h1:dk73KoMTT5AX5BsX0KrqhsTqAnhZZoCBjs7dGWp4Ktw=
+github.com/charmbracelet/x/input v0.2.0 h1:1Sv+y/flcqUfUH2PXNIDKDIdT2G8smOnGOgawqhwy8A=
+github.com/charmbracelet/x/input v0.2.0/go.mod h1:KUSFIS6uQymtnr5lHVSOK9j8RvwTD4YHnWnzJUYnd/M=
 github.com/charmbracelet/x/term v0.2.0 h1:cNB9Ot9q8I711MyZ7myUR5HFWL/lc3OpU8jZ4hwm0x0=
 github.com/charmbracelet/x/term v0.2.0/go.mod h1:GVxgxAbjUrmpvIINHIQnJJKpMlHiZ4cktEQCN6GWyF0=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
