@@ -27,7 +27,7 @@ type Logger struct {
 
 	isDiscard uint32
 
-	level           int32
+	level           int64
 	prefix          string
 	timeFunc        TimeFunction
 	timeFormat      string
@@ -56,7 +56,7 @@ func (l *Logger) Log(level Level, msg interface{}, keyvals ...interface{}) {
 	}
 
 	// check if the level is allowed
-	if atomic.LoadInt32(&l.level) > int32(level) {
+	if atomic.LoadInt64(&l.level) > int64(level) {
 		return
 	}
 
@@ -238,7 +238,7 @@ func (l *Logger) GetLevel() Level {
 func (l *Logger) SetLevel(level Level) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	atomic.StoreInt32(&l.level, int32(level))
+	atomic.StoreInt64(&l.level, int64(level))
 }
 
 // GetPrefix returns the current prefix.

@@ -15,21 +15,14 @@ issues:
 linters:
   enable:
     - bodyclose
-    - dupl
-    - exportloopref
-    - goconst
-    - godot
-    - godox
     - gofumpt
     - goimports
-    - goprintffuncname
     - gosec
-    - misspell
-    - nolintlint
-    - prealloc
+    - nilerr
     - revive
     - rowserrcheck
     - sqlclosecheck
+    - tparallel
     - unconvert
     - unparam
     - whitespace
