@@ -6,7 +6,7 @@ require (
 	github.com/charmbracelet/lipgloss v1.0.0
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/muesli/termenv v0.15.2
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 )
 
