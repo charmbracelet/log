@@ -12,9 +12,6 @@ import (
 )
 
 var (
-	// registry is a map of all registered lipgloss renderers.
-	registry = sync.Map{}
-
 	// defaultLogger is the default global logger instance.
 	defaultLogger     atomic.Pointer[Logger]
 	defaultLoggerOnce sync.Once
