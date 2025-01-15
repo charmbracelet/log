@@ -6,7 +6,7 @@ require (
 	github.com/charmbracelet/colorprofile v0.1.9
 	github.com/charmbracelet/lipgloss/v2 v2.0.0-alpha.2.0.20250114171829-b67eb015d607
 	github.com/go-logfmt/logfmt v0.6.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 )
 
