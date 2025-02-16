@@ -3,7 +3,7 @@ package log
 import (
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 // Styles defines the styles for the text logger.
@@ -41,6 +41,7 @@ type Styles struct {
 
 // DefaultStyles returns the default styles.
 func DefaultStyles() *Styles {
+	// TODO handle this based on light/dark colors
 	return &Styles{
 		Timestamp: lipgloss.NewStyle(),
 		Caller:    lipgloss.NewStyle().Faint(true),
