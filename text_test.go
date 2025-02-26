@@ -24,14 +24,15 @@ func _zeroTime(time.Time) time.Time {
 
 func TestNilStyles(t *testing.T) {
 	st := DefaultStyles()
-	l := New(colorprofile.NewWriter(io.Discard, os.Environ()))
+	l := New(io.Discard)
+	l.SetColorProfile(colorprofile.TrueColor)
 	l.SetStyles(nil)
 	assert.Equal(t, st, l.styles)
 }
 
 func TestTextCaller(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(colorprofile.NewWriter(&buf, os.Environ()))
+	logger := New(&buf)
 	logger.SetReportCaller(true)
 	// We calculate the caller offset based on the caller line number.
 	_, file, line, _ := runtime.Caller(0)
@@ -100,7 +101,7 @@ func TestTextCaller(t *testing.T) {
 
 func TestTextLogger(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(colorprofile.NewWriter(&buf, os.Environ()))
+	logger := New(&buf)
 	cases := []struct {
 		name     string
 		expected string
@@ -211,7 +212,7 @@ func TestTextLogger(t *testing.T) {
 
 func TestTextHelper(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(colorprofile.NewWriter(&buf, os.Environ()))
+	logger := New(&buf)
 	logger.SetReportCaller(true)
 	helper := func() {
 		logger.Helper()
@@ -226,7 +227,8 @@ func TestTextHelper(t *testing.T) {
 
 func TestTextFatal(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(colorprofile.NewWriter(&buf, os.Environ()))
+	logger := New(&buf)
+	logger.SetColorProfile(colorprofile.TrueColor)
 	logger.SetReportCaller(true)
 	if os.Getenv("FATAL") == "1" {
 		logger.Fatal("i'm dead")
@@ -244,9 +246,8 @@ func TestTextFatal(t *testing.T) {
 
 func TestTextValueStyles(t *testing.T) {
 	var buf bytes.Buffer
-	w := colorprofile.NewWriter(&buf, os.Environ())
-	w.Profile = colorprofile.ANSI256
-	logger := New(w)
+	logger := New(&buf)
+	logger.SetColorProfile(colorprofile.ANSI256)
 	st := DefaultStyles()
 	st.Value = lipgloss.NewStyle().Bold(true)
 	st.Values["key3"] = st.Value.Underline(true)
@@ -411,12 +412,13 @@ func TestTextValueStyles(t *testing.T) {
 
 func TestCustomLevelStyle(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(colorprofile.NewWriter(&buf, os.Environ()))
+	l := New(&buf)
+	l.SetColorProfile(colorprofile.TrueColor)
 	st := DefaultStyles()
 	lvl := Level(1234)
 	st.Levels[lvl] = lipgloss.NewStyle().Bold(true).SetString("FUNKY")
 	l.SetStyles(st)
 	l.SetLevel(lvl)
 	l.Log(lvl, "foobar")
-	assert.Equal(t, "FUNKY foobar\n", buf.String())
+	assert.Equal(t, "\x1b[1mFUNKY\x1b[m foobar\n", buf.String())
 }

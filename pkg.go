@@ -9,6 +9,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/charmbracelet/colorprofile"
 )
 
 var (
@@ -60,6 +62,8 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 	}
 
 	l.SetOutput(w)
+	// Detect color profile from the writer and environment.
+	l.SetColorProfile(colorprofile.Detect(w, os.Environ()))
 	l.SetLevel(Level(l.level))
 	l.SetStyles(DefaultStyles())
 
@@ -133,12 +137,11 @@ func SetPrefix(prefix string) {
 	Default().SetPrefix(prefix)
 }
 
-// TODO
-// SetColorProfile force sets the underlying Lip Gloss renderer color profile
-// for the TextFormatter.
-// func SetColorProfile(profile colorprofile.Profile) {
-// 	Default().SetColorProfile(profile)
-// }
+// SetColorProfile force sets the underlying color profile for the
+// TextFormatter.
+func SetColorProfile(profile colorprofile.Profile) {
+	Default().SetColorProfile(profile)
+}
 
 // SetStyles sets the logger styles for the TextFormatter.
 func SetStyles(s *Styles) {

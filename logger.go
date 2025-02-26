@@ -11,6 +11,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/charmbracelet/colorprofile"
 )
 
 // ErrMissingValue is returned when a key is missing a value.
@@ -21,7 +23,7 @@ type LoggerOption = func(*Logger)
 
 // Logger is a Logger that implements Logger.
 type Logger struct {
-	w  io.Writer
+	w  colorprofile.Writer
 	b  bytes.Buffer
 	mu *sync.RWMutex
 
@@ -131,7 +133,7 @@ func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg i
 	}
 
 	// WriteTo will reset the buffer
-	if _, err := l.b.WriteTo(l.w); err != nil {
+	if _, err := l.b.WriteTo(&l.w); err != nil {
 		if errors.Is(err, io.ErrShortWrite) {
 			// Reset the buffer even if the lengths don't match up. If we're
 			// using colorprofile's Writer, it will strip the ansi sequences based on
@@ -276,21 +278,20 @@ func (l *Logger) SetOutput(w io.Writer) {
 	if w == nil {
 		w = os.Stderr
 	}
-	l.w = w
+	l.w.Forward = w
 	var isDiscard uint32
 	if w == io.Discard {
 		isDiscard = 1
 	}
 	atomic.StoreUint32(&l.isDiscard, isDiscard)
-	// Reuse cached renderers
-	// TODO is this still relevant?
-	//	if v, ok := registry.Load(w); ok {
-	//		l.re = v.(*colorprofile.Writer)
-	//	} else {
-	//		// TODO calculate background color (termenv.colorcache used to do this)
-	//		l.re = colorprofile.NewWriter(w, os.Environ())
-	//		registry.Store(w, l.re)
-	//	}
+}
+
+// SetColorProfile force sets the underlying color profile for the
+// TextFormatter.
+func (l *Logger) SetColorProfile(profile colorprofile.Profile) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.w.Profile = profile
 }
 
 // SetFormatter sets the formatter.

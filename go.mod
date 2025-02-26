@@ -3,7 +3,7 @@ module github.com/charmbracelet/log/v2
 go 1.19
 
 require (
-	github.com/charmbracelet/colorprofile v0.2.1
+	github.com/charmbracelet/colorprofile v0.2.2
 	github.com/charmbracelet/lipgloss/v2 v2.0.0-alpha.2.0.20250218201041-aa91bd691cf5
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/stretchr/testify v1.10.0
