@@ -129,6 +129,8 @@ func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg i
 		l.logfmtFormatter(kvs...)
 	case JSONFormatter:
 		l.jsonFormatter(kvs...)
+	case TextFormatter:
+		fallthrough
 	default:
 		l.textFormatter(kvs...)
 	}

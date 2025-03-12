@@ -21,7 +21,7 @@ func (l *Logger) writeIndent(w io.Writer, str string, indent string, newline boo
 	// kindly borrowed from hclog
 	for {
 		nl := strings.IndexByte(str, '\n')
-		if nl == -1 {
+		if nl == -1 { //nolint:nestif
 			if str != "" {
 				_, _ = w.Write([]byte(indent))
 				val := escapeStringForOutput(str, false)

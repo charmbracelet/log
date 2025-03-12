@@ -80,7 +80,7 @@ func (l *Logger) jsonFormatterItem(jw *jsonWriter, key, value any) {
 }
 
 func (l *Logger) writeSlogValue(jw *jsonWriter, v slogValue) {
-	switch v.Kind() {
+	switch v.Kind() { //nolint:exhaustive
 	case slogKindGroup:
 		jw.start()
 		for _, attr := range v.Group() {
@@ -139,7 +139,7 @@ func (w *jsonWriter) writeEncoded(v any) error {
 	e := json.NewEncoder(w.w)
 	e.SetEscapeHTML(false)
 	if err := e.Encode(v); err != nil {
-		return err
+		return fmt.Errorf("failed to encode value: %w", err)
 	}
 
 	// trailing \n added by json.Encode
