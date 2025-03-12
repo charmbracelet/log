@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/stretchr/testify/require"
 )
 
@@ -200,6 +201,7 @@ func TestJsonCustomKey(t *testing.T) {
 }
 
 func TestJsonWriter(t *testing.T) {
+	noStyle := lipgloss.NewStyle()
 	testCases := []struct {
 		name     string
 		fn       func(w *jsonWriter)
@@ -209,7 +211,7 @@ func TestJsonWriter(t *testing.T) {
 			"string",
 			func(w *jsonWriter) {
 				w.start()
-				w.objectItem("a", "value")
+				w.objectItem(noStyle, "a", noStyle, "value")
 				w.end()
 			},
 			`{"a":"value"}`,
@@ -218,7 +220,7 @@ func TestJsonWriter(t *testing.T) {
 			"int",
 			func(w *jsonWriter) {
 				w.start()
-				w.objectItem("a", 123)
+				w.objectItem(noStyle, "a", noStyle, 123)
 				w.end()
 			},
 			`{"a":123}`,
@@ -227,7 +229,7 @@ func TestJsonWriter(t *testing.T) {
 			"bytes",
 			func(w *jsonWriter) {
 				w.start()
-				w.objectItem("b", []byte{0x0, 0x1})
+				w.objectItem(noStyle, "b", noStyle, []byte{0x0, 0x1})
 				w.end()
 			},
 			`{"b":"AAE="}`,
@@ -244,8 +246,8 @@ func TestJsonWriter(t *testing.T) {
 			"multiple in asc order",
 			func(w *jsonWriter) {
 				w.start()
-				w.objectItem("a", "value")
-				w.objectItem("b", "some-other")
+				w.objectItem(noStyle, "a", noStyle, "value")
+				w.objectItem(noStyle, "b", noStyle, "some-other")
 				w.end()
 			},
 			`{"a":"value","b":"some-other"}`,
@@ -254,8 +256,8 @@ func TestJsonWriter(t *testing.T) {
 			"multiple in desc order",
 			func(w *jsonWriter) {
 				w.start()
-				w.objectItem("b", "some-other")
-				w.objectItem("a", "value")
+				w.objectItem(noStyle, "b", noStyle, "some-other")
+				w.objectItem(noStyle, "a", noStyle, "value")
 				w.end()
 			},
 			`{"b":"some-other","a":"value"}`,
@@ -264,7 +266,7 @@ func TestJsonWriter(t *testing.T) {
 			"depth",
 			func(w *jsonWriter) {
 				w.start()
-				w.objectItem("a", map[string]int{"b": 123})
+				w.objectItem(noStyle, "a", noStyle, map[string]int{"b": 123})
 				w.end()
 			},
 			`{"a":{"b":123}}`,
@@ -273,7 +275,7 @@ func TestJsonWriter(t *testing.T) {
 			"key contains reserved",
 			func(w *jsonWriter) {
 				w.start()
-				w.objectItem("a:\"b", "value")
+				w.objectItem(noStyle, "a:\"b", noStyle, "value")
 				w.end()
 			},
 			`{"a:\"b":"value"}`,
@@ -282,7 +284,7 @@ func TestJsonWriter(t *testing.T) {
 			"pointer",
 			func(w *jsonWriter) {
 				w.start()
-				w.objectItem("a", ptr("pointer"))
+				w.objectItem(noStyle, "a", noStyle, ptr("pointer"))
 				w.end()
 			},
 			`{"a":"pointer"}`,
@@ -291,7 +293,7 @@ func TestJsonWriter(t *testing.T) {
 			"double-pointer",
 			func(w *jsonWriter) {
 				w.start()
-				w.objectItem("a", ptr(ptr("pointer")))
+				w.objectItem(noStyle, "a", noStyle, ptr(ptr("pointer")))
 				w.end()
 			},
 			`{"a":"pointer"}`,
@@ -300,7 +302,7 @@ func TestJsonWriter(t *testing.T) {
 			"invalid",
 			func(w *jsonWriter) {
 				w.start()
-				w.objectItem("a", invalidJSON{})
+				w.objectItem(noStyle, "a", noStyle, invalidJSON{})
 				w.end()
 			},
 			`{"a":"invalid value"}`,
