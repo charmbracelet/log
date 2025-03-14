@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/termenv"
+	"github.com/charmbracelet/colorprofile"
+	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -25,6 +25,7 @@ func _zeroTime(time.Time) time.Time {
 func TestNilStyles(t *testing.T) {
 	st := DefaultStyles()
 	l := New(io.Discard)
+	l.SetColorProfile(colorprofile.TrueColor)
 	l.SetStyles(nil)
 	assert.Equal(t, st, l.styles)
 }
@@ -227,6 +228,7 @@ func TestTextHelper(t *testing.T) {
 func TestTextFatal(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)
+	logger.SetColorProfile(colorprofile.TrueColor)
 	logger.SetReportCaller(true)
 	if os.Getenv("FATAL") == "1" {
 		logger.Fatal("i'm dead")
@@ -245,11 +247,10 @@ func TestTextFatal(t *testing.T) {
 func TestTextValueStyles(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)
-	logger.SetColorProfile(termenv.ANSI256)
-	lipgloss.SetColorProfile(termenv.ANSI256)
+	logger.SetColorProfile(colorprofile.ANSI256)
 	st := DefaultStyles()
 	st.Value = lipgloss.NewStyle().Bold(true)
-	st.Values["key3"] = st.Value.Copy().Underline(true)
+	st.Values["key3"] = st.Value.Underline(true)
 	logger.SetStyles(st)
 	cases := []struct {
 		name     string
@@ -409,28 +410,15 @@ func TestTextValueStyles(t *testing.T) {
 	}
 }
 
-func TestColorProfile(t *testing.T) {
-	cases := []termenv.Profile{
-		termenv.Ascii,
-		termenv.ANSI,
-		termenv.ANSI256,
-		termenv.TrueColor,
-	}
-	l := New(io.Discard)
-	for _, p := range cases {
-		l.SetColorProfile(p)
-		assert.Equal(t, p, l.re.ColorProfile())
-	}
-}
-
 func TestCustomLevelStyle(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(&buf)
+	l.SetColorProfile(colorprofile.TrueColor)
 	st := DefaultStyles()
 	lvl := Level(1234)
 	st.Levels[lvl] = lipgloss.NewStyle().Bold(true).SetString("FUNKY")
 	l.SetStyles(st)
 	l.SetLevel(lvl)
 	l.Log(lvl, "foobar")
-	assert.Equal(t, "FUNKY foobar\n", buf.String())
+	assert.Equal(t, "\x1b[1mFUNKY\x1b[m foobar\n", buf.String())
 }
