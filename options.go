@@ -58,4 +58,6 @@ type Options struct {
 	Fields []interface{}
 	// Formatter is the formatter for the logger. The default is TextFormatter.
 	Formatter Formatter
+	// Styles is the logger styles for the TextFormatter.
+	Styles *Styles
 }
