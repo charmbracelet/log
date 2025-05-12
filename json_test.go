@@ -113,6 +113,13 @@ func TestJson(t *testing.T) {
 			kvs:      []interface{}{"map", map[string]string{"a": "b", "foo": "bar"}},
 			f:        l.Info,
 		},
+		{
+			name:     "slog any value error type",
+			expected: "{\"level\":\"info\",\"msg\":\"info\",\"error\":\"error message\"}\n",
+			msg:      "info",
+			kvs:      []interface{}{"error", slogAnyValue(fmt.Errorf("error message"))},
+			f:        l.Info,
+		},
 	}
 	for _, c := range cases {
 		buf.Reset()

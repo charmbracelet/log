@@ -18,6 +18,8 @@ type (
 	slogLogValuer = slog.LogValuer
 )
 
+var slogAnyValue = slog.AnyValue
+
 const slogKindGroup = slog.KindGroup
 
 // Enabled reports whether the logger is enabled for the given level.
