@@ -88,7 +88,13 @@ func (l *Logger) writeSlogValue(jw *jsonWriter, v slogValue) {
 		}
 		jw.end()
 	default:
-		jw.objectValue(v.Any())
+		a := v.Any()
+		_, jm := a.(json.Marshaler)
+		if err, ok := a.(error); ok && !jm {
+			jw.objectValue(err.Error())
+		} else {
+			jw.objectValue(a)
+		}
 	}
 }
 
