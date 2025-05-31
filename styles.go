@@ -53,27 +53,27 @@ func DefaultStyles() *Styles {
 			DebugLevel: lipgloss.NewStyle().
 				SetString(strings.ToUpper(DebugLevel.String())).
 				Bold(true).
-				MaxWidth(4).
+				MaxWidth(5).
 				Foreground(lipgloss.Color("63")),
 			InfoLevel: lipgloss.NewStyle().
 				SetString(strings.ToUpper(InfoLevel.String())).
 				Bold(true).
-				MaxWidth(4).
+				MaxWidth(5).
 				Foreground(lipgloss.Color("86")),
 			WarnLevel: lipgloss.NewStyle().
 				SetString(strings.ToUpper(WarnLevel.String())).
 				Bold(true).
-				MaxWidth(4).
+				MaxWidth(5).
 				Foreground(lipgloss.Color("192")),
 			ErrorLevel: lipgloss.NewStyle().
 				SetString(strings.ToUpper(ErrorLevel.String())).
 				Bold(true).
-				MaxWidth(4).
+				MaxWidth(5).
 				Foreground(lipgloss.Color("204")),
 			FatalLevel: lipgloss.NewStyle().
 				SetString(strings.ToUpper(FatalLevel.String())).
 				Bold(true).
-				MaxWidth(4).
+				MaxWidth(5).
 				Foreground(lipgloss.Color("134")),
 		},
 		Keys:   map[string]lipgloss.Style{},
