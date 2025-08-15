@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"runtime"
 	"strings"
@@ -30,7 +31,7 @@ type Logger struct {
 
 	isDiscard uint32
 
-	level           int64
+	level           *slog.LevelVar
 	prefix          string
 	timeFunc        TimeFunction
 	timeFormat      string
@@ -48,18 +49,18 @@ type Logger struct {
 }
 
 // Logf logs a message with formatting.
-func (l *Logger) Logf(level Level, format string, args ...interface{}) {
+func (l *Logger) Logf(level slog.Leveler, format string, args ...interface{}) {
 	l.Log(level, fmt.Sprintf(format, args...))
 }
 
 // Log logs the given message with the given keyvals for the given level.
-func (l *Logger) Log(level Level, msg interface{}, keyvals ...interface{}) {
+func (l *Logger) Log(level slog.Leveler, msg interface{}, keyvals ...interface{}) {
 	if atomic.LoadUint32(&l.isDiscard) != 0 {
 		return
 	}
 
 	// check if the level is allowed
-	if atomic.LoadInt64(&l.level) > int64(level) {
+	if l.level.Level() > level.Level() {
 		return
 	}
 
@@ -81,16 +82,21 @@ func (l *Logger) Log(level Level, msg interface{}, keyvals ...interface{}) {
 	l.handle(level, l.timeFunc(time.Now()), []runtime.Frame{frame}, msg, keyvals...)
 }
 
-func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg interface{}, keyvals ...interface{}) {
+func (l *Logger) handle(level slog.Leveler, ts time.Time, frames []runtime.Frame, msg interface{}, keyvals ...interface{}) {
 	var kvs []interface{}
 	if l.reportTimestamp && !ts.IsZero() {
 		kvs = append(kvs, TimestampKey, ts)
 	}
 
-	_, ok := l.styles.Levels[level]
+	_, ok := l.styles.Levels[int(level.Level())]
 	if ok {
 		kvs = append(kvs, LevelKey, level)
 	}
+	//  else if _, ok := level.(slog.Level); !ok {
+	// 	if level, ok := level.(fmt.Stringer); ok {
+	// 		kvs = append(kvs, LevelKey, level)
+	// 	}
+	// }
 
 	if l.reportCaller && len(frames) > 0 && frames[0].PC != 0 {
 		file, line, fn := l.location(frames)
@@ -226,17 +232,17 @@ func (l *Logger) SetReportCaller(report bool) {
 }
 
 // GetLevel returns the current level.
-func (l *Logger) GetLevel() Level {
+func (l *Logger) GetLevel() slog.Leveler {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
-	return Level(l.level)
+	return l.level.Level()
 }
 
 // SetLevel sets the current level.
-func (l *Logger) SetLevel(level Level) {
+func (l *Logger) SetLevel(level slog.Leveler) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	atomic.StoreInt64(&l.level, int64(level))
+	l.level.Set(level.Level())
 }
 
 // GetPrefix returns the current prefix.

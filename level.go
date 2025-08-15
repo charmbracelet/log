@@ -3,12 +3,15 @@ package log
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"math"
 	"strings"
 )
 
 // Level is a logging level.
 type Level int
+
+func (l Level) Level() slog.Level { return slog.Level(l) }
 
 const (
 	// DebugLevel is the debug level.
@@ -24,6 +27,14 @@ const (
 	// noLevel is used with log.Print.
 	noLevel Level = math.MaxInt
 )
+
+var Levels map[int]fmt.Stringer = map[int]fmt.Stringer{
+	int(DebugLevel): DebugLevel,
+	int(InfoLevel):  InfoLevel,
+	int(WarnLevel):  WarnLevel,
+	int(ErrorLevel): ErrorLevel,
+	int(FatalLevel): FatalLevel,
+}
 
 // String returns the string representation of the level.
 func (l Level) String() string {

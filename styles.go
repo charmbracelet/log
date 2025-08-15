@@ -30,7 +30,7 @@ type Styles struct {
 	Separator lipgloss.Style
 
 	// Levels are the styles for each level.
-	Levels map[Level]lipgloss.Style
+	Levels map[int]lipgloss.Style
 
 	// Keys overrides styles for specific keys.
 	Keys map[string]lipgloss.Style
@@ -49,28 +49,28 @@ func DefaultStyles() *Styles {
 		Key:       lipgloss.NewStyle().Faint(true),
 		Value:     lipgloss.NewStyle(),
 		Separator: lipgloss.NewStyle().Faint(true),
-		Levels: map[Level]lipgloss.Style{
-			DebugLevel: lipgloss.NewStyle().
+		Levels: map[int]lipgloss.Style{
+			int(DebugLevel): lipgloss.NewStyle().
 				SetString(strings.ToUpper(DebugLevel.String())).
 				Bold(true).
 				MaxWidth(4).
 				Foreground(lipgloss.Color("63")),
-			InfoLevel: lipgloss.NewStyle().
+			int(InfoLevel): lipgloss.NewStyle().
 				SetString(strings.ToUpper(InfoLevel.String())).
 				Bold(true).
 				MaxWidth(4).
 				Foreground(lipgloss.Color("86")),
-			WarnLevel: lipgloss.NewStyle().
+			int(WarnLevel): lipgloss.NewStyle().
 				SetString(strings.ToUpper(WarnLevel.String())).
 				Bold(true).
 				MaxWidth(4).
 				Foreground(lipgloss.Color("192")),
-			ErrorLevel: lipgloss.NewStyle().
+			int(ErrorLevel): lipgloss.NewStyle().
 				SetString(strings.ToUpper(ErrorLevel.String())).
 				Bold(true).
 				MaxWidth(4).
 				Foreground(lipgloss.Color("204")),
-			FatalLevel: lipgloss.NewStyle().
+			int(FatalLevel): lipgloss.NewStyle().
 				SetString(strings.ToUpper(FatalLevel.String())).
 				Bold(true).
 				MaxWidth(4).

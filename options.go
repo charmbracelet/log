@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"log/slog"
 	"time"
 )
 
@@ -43,7 +44,7 @@ type Options struct {
 	// TimeFormat is the time format for the logger. The default is "2006/01/02 15:04:05".
 	TimeFormat string
 	// Level is the level for the logger. The default is InfoLevel.
-	Level Level
+	Level slog.Leveler
 	// Prefix is the prefix for the logger. The default is no prefix.
 	Prefix string
 	// ReportTimestamp is whether the logger should report the timestamp. The default is false.
