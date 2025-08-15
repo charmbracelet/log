@@ -3,6 +3,7 @@ package log
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"strings"
 	"sync"
 	"time"
@@ -181,9 +182,9 @@ func (l *Logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(ts)
 			}
 		case LevelKey:
-			if level, ok := keyvals[i+1].(Level); ok {
+			if level, ok := keyvals[i+1].(slog.Leveler); ok {
 				var lvl string
-				lvlStyle, ok := st.Levels[level]
+				lvlStyle, ok := st.Levels[int(level.Level())]
 				if !ok {
 					continue
 				}

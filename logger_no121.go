@@ -41,7 +41,7 @@ func (l *Logger) Handle(_ context.Context, record slog.Record) error {
 	// Get the caller frame using the record's PC.
 	frames := runtime.CallersFrames([]uintptr{record.PC})
 	frame, _ := frames.Next()
-	l.handle(Level(record.Level), l.timeFunc(record.Time), []runtime.Frame{frame}, record.Message, fields...)
+	l.handle(record.Level, l.timeFunc(record.Time), []runtime.Frame{frame}, record.Message, fields...)
 	return nil
 }
 

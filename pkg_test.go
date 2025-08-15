@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -197,7 +198,7 @@ func TestWith(t *testing.T) {
 
 func TestGetLevel(t *testing.T) {
 	SetLevel(InfoLevel)
-	assert.Equal(t, InfoLevel, GetLevel())
+	assert.Equal(t, slog.Level(InfoLevel), GetLevel())
 }
 
 func TestPrefix(t *testing.T) {

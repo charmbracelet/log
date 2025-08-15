@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -279,9 +282,31 @@ func TestRace(t *testing.T) {
 
 func TestCustomLevel(t *testing.T) {
 	var buf bytes.Buffer
-	level500 := Level(500)
+	level500 := slog.Level(500)
 	l := New(&buf)
 	l.SetLevel(level500)
 	l.Logf(level500, "foo")
 	assert.Equal(t, "foo\n", buf.String())
+}
+
+type CriticalLevel int
+
+func (l CriticalLevel) Level() slog.Level { return slog.Level(l) }
+func (l CriticalLevel) String() string    { return "crit" }
+
+const Critical CriticalLevel = 600
+
+func TestCustomLevelWithStyle(t *testing.T) {
+	var buf bytes.Buffer
+	l := New(&buf)
+	styles := DefaultStyles()
+	styles.Levels[int(Critical)] = lipgloss.NewStyle().
+		SetString(strings.ToUpper(Critical.String())).
+		Bold(true).
+		MaxWidth(4).
+		Foreground(lipgloss.Color("134"))
+	l.SetStyles(styles)
+	l.SetLevel(InfoLevel)
+	l.Logf(Critical, "foo")
+	assert.Equal(t, "CRIT foo\n", buf.String())
 }

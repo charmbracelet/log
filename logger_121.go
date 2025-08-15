@@ -7,7 +7,6 @@ import (
 	"context"
 	"log/slog"
 	"runtime"
-	"sync/atomic"
 )
 
 // type aliases for slog.
@@ -25,7 +24,7 @@ const slogKindGroup = slog.KindGroup
 //
 // Implements slog.Handler.
 func (l *Logger) Enabled(_ context.Context, level slog.Level) bool {
-	return atomic.LoadInt64(&l.level) <= int64(level)
+	return l.level.Level() <= level
 }
 
 // Handle handles the Record. It will only be called if Enabled returns true.
@@ -44,7 +43,7 @@ func (l *Logger) Handle(ctx context.Context, record slog.Record) error {
 	// Get the caller frame using the record's PC.
 	frames := runtime.CallersFrames([]uintptr{record.PC})
 	frame, _ := frames.Next()
-	l.handle(Level(record.Level), l.timeFunc(record.Time), []runtime.Frame{frame}, record.Message, fields...)
+	l.handle(record.Level, l.timeFunc(record.Time), []runtime.Frame{frame}, record.Message, fields...)
 	return nil
 }
 
