@@ -16,7 +16,7 @@ func TestOptions(t *testing.T) {
 		Fields:       []interface{}{"foo", "bar"},
 	}
 	logger := NewWithOptions(io.Discard, opts)
-	require.Equal(t, ErrorLevel, logger.GetLevel())
+	require.Equal(t, opts.Level, Level(logger.GetLevel().Level()))
 	require.True(t, logger.reportCaller)
 	require.False(t, logger.reportTimestamp)
 	require.Equal(t, []interface{}{"foo", "bar"}, logger.fields)

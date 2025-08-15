@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"os"
 	"sync"
 	"sync/atomic"
@@ -52,7 +53,7 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 		b:               bytes.Buffer{},
 		mu:              &sync.RWMutex{},
 		helpers:         &sync.Map{},
-		level:           int64(o.Level),
+		level:           nil,
 		reportTimestamp: o.ReportTimestamp,
 		reportCaller:    o.ReportCaller,
 		prefix:          o.Prefix,
@@ -65,7 +66,18 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 	}
 
 	l.SetOutput(w)
-	l.SetLevel(Level(l.level))
+	switch o.Level.(type) {
+	case *slog.LevelVar:
+		l.level = o.Level.(*slog.LevelVar)
+	default:
+		lvl := new(slog.LevelVar)
+		if o.Level == nil {
+			lvl.Set(slog.LevelInfo)
+		} else {
+			lvl.Set(o.Level.Level())
+		}
+		l.level = lvl
+	}
 	l.SetStyles(DefaultStyles())
 
 	if l.callerFormatter == nil {
@@ -99,7 +111,7 @@ func SetLevel(level Level) {
 }
 
 // GetLevel returns the level for the default logger.
-func GetLevel() Level {
+func GetLevel() slog.Leveler {
 	return Default().GetLevel()
 }
 

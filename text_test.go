@@ -260,7 +260,7 @@ func TestTextValueStyles(t *testing.T) {
 	}{
 		{
 			name:     "simple message",
-			expected: fmt.Sprintf("%s info\n", st.Levels[InfoLevel]),
+			expected: fmt.Sprintf("%s info\n", st.Levels[int(InfoLevel)]),
 			msg:      "info",
 			kvs:      nil,
 			f:        logger.Info,
@@ -276,7 +276,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "message with keyvals",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s %s%s%s\n",
-				st.Levels[InfoLevel],
+				st.Levels[int(InfoLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render("val1"),
 				st.Key.Render("key2"), st.Separator.Render(separator), st.Value.Render("val2"),
 			),
@@ -288,7 +288,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "error message with multiline",
 			expected: fmt.Sprintf(
 				"%s info\n  %s%s\n%s%s\n%s%s\n",
-				st.Levels[ErrorLevel],
+				st.Levels[int(ErrorLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator),
 				st.Separator.Render(indentSeparator), st.Value.Render("val1"),
 				st.Separator.Render(indentSeparator), st.Value.Render("val2"),
@@ -301,7 +301,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "error message with keyvals",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s %s%s%s\n",
-				st.Levels[ErrorLevel],
+				st.Levels[int(ErrorLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render("val1"),
 				st.Key.Render("key2"), st.Separator.Render(separator), st.Value.Render("val2"),
 			),
@@ -313,7 +313,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "odd number of keyvals",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s %s%s%s %s%s%s\n",
-				st.Levels[ErrorLevel],
+				st.Levels[int(ErrorLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render("val1"),
 				st.Key.Render("key2"), st.Separator.Render(separator), st.Value.Render("val2"),
 				st.Key.Render("key3"), st.Separator.Render(separator), st.Values["key3"].Render(`"missing value"`),
@@ -326,7 +326,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "error field",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s\n",
-				st.Levels[ErrorLevel],
+				st.Levels[int(ErrorLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"error value"`),
 			),
 			msg: "info",
@@ -337,7 +337,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "struct field",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s\n",
-				st.Levels[InfoLevel],
+				st.Levels[int(InfoLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render("{foo:bar}"),
 			),
 			msg: "info",
@@ -348,7 +348,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "struct field quoted",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s\n",
-				st.Levels[InfoLevel],
+				st.Levels[int(InfoLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"{foo:bar baz}"`),
 			),
 			msg: "info",
@@ -359,7 +359,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "slice of strings",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s\n",
-				st.Levels[ErrorLevel],
+				st.Levels[int(ErrorLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"[foo bar]"`),
 			),
 			msg: "info",
@@ -370,7 +370,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "slice of structs",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s\n",
-				st.Levels[ErrorLevel],
+				st.Levels[int(ErrorLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"[{foo:bar} {foo:baz}]"`),
 			),
 			msg: "info",
@@ -381,7 +381,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "slice of errors",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s\n",
-				st.Levels[ErrorLevel],
+				st.Levels[int(ErrorLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"[error value1 error value2]"`),
 			),
 			msg: "info",
@@ -392,7 +392,7 @@ func TestTextValueStyles(t *testing.T) {
 			name: "map of strings",
 			expected: fmt.Sprintf(
 				"%s info %s%s%s\n",
-				st.Levels[ErrorLevel],
+				st.Levels[int(ErrorLevel)],
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"map[baz:qux foo:bar]"`),
 			),
 			msg: "info",
@@ -428,7 +428,7 @@ func TestCustomLevelStyle(t *testing.T) {
 	l := New(&buf)
 	st := DefaultStyles()
 	lvl := Level(1234)
-	st.Levels[lvl] = lipgloss.NewStyle().Bold(true).SetString("FUNKY")
+	st.Levels[int(lvl)] = lipgloss.NewStyle().Bold(true).SetString("FUNKY")
 	l.SetStyles(st)
 	l.SetLevel(lvl)
 	l.Log(lvl, "foobar")

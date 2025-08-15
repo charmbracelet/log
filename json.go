@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"time"
 )
 
@@ -38,6 +39,10 @@ func (l *Logger) jsonFormatterRoot(jw *jsonWriter, key, value any) {
 	case LevelKey:
 		if level, ok := value.(Level); ok {
 			jw.objectItem(LevelKey, level.String())
+		} else if level, ok := value.(slog.Leveler); ok {
+			if lvl, ok := Levels[int(level.Level())]; ok {
+				jw.objectItem(LevelKey, lvl.String())
+			}
 		}
 	case CallerKey:
 		if caller, ok := value.(string); ok {

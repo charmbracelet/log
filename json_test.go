@@ -6,10 +6,29 @@ import (
 	"fmt"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/stretchr/testify/require"
 )
+
+func TestJsonCustomLevelWithStyle(t *testing.T) {
+	var buf bytes.Buffer
+	l := New(&buf)
+	styles := DefaultStyles()
+	Levels[int(Critical)] = Critical
+	styles.Levels[int(Critical)] = lipgloss.NewStyle().
+		SetString(strings.ToUpper(Critical.String())).
+		Bold(true).
+		MaxWidth(4).
+		Foreground(lipgloss.Color("134"))
+	l.SetStyles(styles)
+	l.SetLevel(InfoLevel)
+	l.SetFormatter(JSONFormatter)
+	l.Logf(Critical, "foo")
+	require.Equal(t, "{\"level\":\"crit\",\"msg\":\"foo\"}\n", buf.String())
+}
 
 func TestJson(t *testing.T) {
 	var buf bytes.Buffer
