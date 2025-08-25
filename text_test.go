@@ -39,15 +39,15 @@ func TestTextCaller(t *testing.T) {
 		name     string
 		expected string
 		msg      string
-		kvs      []interface{}
-		f        func(msg interface{}, kvs ...interface{})
+		kvs      []any
+		f        func(msg any, kvs ...any)
 	}{
 		{
 			name:     "simple caller",
 			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+14),
 			msg:      "info",
 			kvs:      nil,
-			f: func(msg interface{}, kvs ...interface{}) {
+			f: func(msg any, kvs ...any) {
 				logger.Info(msg, kvs...)
 			},
 		},
@@ -56,7 +56,7 @@ func TestTextCaller(t *testing.T) {
 			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+58),
 			msg:      "info",
 			kvs:      nil,
-			f: func(msg interface{}, kvs ...interface{}) {
+			f: func(msg any, kvs ...any) {
 				logger.Helper()
 				logger.Info(msg, kvs...)
 			},
@@ -66,8 +66,8 @@ func TestTextCaller(t *testing.T) {
 			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+37),
 			msg:      "info",
 			kvs:      nil,
-			f: func(msg interface{}, kvs ...interface{}) {
-				fun := func(msg interface{}, kvs ...interface{}) {
+			f: func(msg any, kvs ...any) {
+				fun := func(msg any, kvs ...any) {
 					logger.Helper()
 					logger.Info(msg, kvs...)
 				}
@@ -79,9 +79,9 @@ func TestTextCaller(t *testing.T) {
 			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+58),
 			msg:      "info",
 			kvs:      nil,
-			f: func(msg interface{}, kvs ...interface{}) {
+			f: func(msg any, kvs ...any) {
 				logger.Helper()
-				fun := func(msg interface{}, kvs ...interface{}) {
+				fun := func(msg any, kvs ...any) {
 					logger.Helper()
 					logger.Info(msg, kvs...)
 				}
@@ -105,8 +105,8 @@ func TestTextLogger(t *testing.T) {
 		name     string
 		expected string
 		msg      string
-		kvs      []interface{}
-		f        func(msg interface{}, kvs ...interface{})
+		kvs      []any
+		f        func(msg any, kvs ...any)
 	}{
 		{
 			name:     "simple message",
@@ -126,77 +126,77 @@ func TestTextLogger(t *testing.T) {
 			name:     "message with keyvals",
 			expected: "INFO info key1=val1 key2=val2\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", "val1", "key2", "val2"},
+			kvs:      []any{"key1", "val1", "key2", "val2"},
 			f:        logger.Info,
 		},
 		{
 			name:     "error message with keyvals",
 			expected: "ERRO info key1=val1 key2=val2\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", "val1", "key2", "val2"},
+			kvs:      []any{"key1", "val1", "key2", "val2"},
 			f:        logger.Error,
 		},
 		{
 			name:     "error message with multiline",
 			expected: "ERRO info\n  key1=\n  │ val1\n  │ val2\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", "val1\nval2"},
+			kvs:      []any{"key1", "val1\nval2"},
 			f:        logger.Error,
 		},
 		{
 			name:     "odd number of keyvals",
 			expected: "ERRO info key1=val1 key2=val2 key3=\"missing value\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", "val1", "key2", "val2", "key3"},
+			kvs:      []any{"key1", "val1", "key2", "val2", "key3"},
 			f:        logger.Error,
 		},
 		{
 			name:     "error field",
 			expected: "ERRO info key1=\"error value\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", errors.New("error value")},
+			kvs:      []any{"key1", errors.New("error value")},
 			f:        logger.Error,
 		},
 		{
 			name:     "struct field",
 			expected: "ERRO info key1={foo:bar}\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", struct{ foo string }{foo: "bar"}},
+			kvs:      []any{"key1", struct{ foo string }{foo: "bar"}},
 			f:        logger.Error,
 		},
 		{
 			name:     "struct field quoted",
 			expected: "ERRO info key1=\"{foo:bar baz}\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", struct{ foo string }{foo: "bar baz"}},
+			kvs:      []any{"key1", struct{ foo string }{foo: "bar baz"}},
 			f:        logger.Error,
 		},
 		{
 			name:     "slice of strings",
 			expected: "ERRO info key1=\"[foo bar]\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", []string{"foo", "bar"}},
+			kvs:      []any{"key1", []string{"foo", "bar"}},
 			f:        logger.Error,
 		},
 		{
 			name:     "slice of structs",
 			expected: "ERRO info key1=\"[{foo:bar} {foo:baz}]\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", []struct{ foo string }{{foo: "bar"}, {foo: "baz"}}},
+			kvs:      []any{"key1", []struct{ foo string }{{foo: "bar"}, {foo: "baz"}}},
 			f:        logger.Error,
 		},
 		{
 			name:     "slice of errors",
 			expected: "ERRO info key1=\"[error value1 error value2]\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", []error{errors.New("error value1"), errors.New("error value2")}},
+			kvs:      []any{"key1", []error{errors.New("error value1"), errors.New("error value2")}},
 			f:        logger.Error,
 		},
 		{
 			name:     "map of strings",
 			expected: "ERRO info key1=\"map[baz:qux foo:bar]\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"key1", map[string]string{"foo": "bar", "baz": "qux"}},
+			kvs:      []any{"key1", map[string]string{"foo": "bar", "baz": "qux"}},
 			f:        logger.Error,
 		},
 	}
@@ -255,8 +255,8 @@ func TestTextValueStyles(t *testing.T) {
 		name     string
 		expected string
 		msg      string
-		kvs      []interface{}
-		f        func(msg interface{}, kvs ...interface{})
+		kvs      []any
+		f        func(msg any, kvs ...any)
 	}{
 		{
 			name:     "simple message",
@@ -281,7 +281,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Key.Render("key2"), st.Separator.Render(separator), st.Value.Render("val2"),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", "val1", "key2", "val2"},
+			kvs: []any{"key1", "val1", "key2", "val2"},
 			f:   logger.Info,
 		},
 		{
@@ -294,7 +294,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Separator.Render(indentSeparator), st.Value.Render("val2"),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", "val1\nval2"},
+			kvs: []any{"key1", "val1\nval2"},
 			f:   logger.Error,
 		},
 		{
@@ -306,7 +306,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Key.Render("key2"), st.Separator.Render(separator), st.Value.Render("val2"),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", "val1", "key2", "val2"},
+			kvs: []any{"key1", "val1", "key2", "val2"},
 			f:   logger.Error,
 		},
 		{
@@ -319,7 +319,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Key.Render("key3"), st.Separator.Render(separator), st.Values["key3"].Render(`"missing value"`),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", "val1", "key2", "val2", "key3"},
+			kvs: []any{"key1", "val1", "key2", "val2", "key3"},
 			f:   logger.Error,
 		},
 		{
@@ -330,7 +330,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"error value"`),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", errors.New("error value")},
+			kvs: []any{"key1", errors.New("error value")},
 			f:   logger.Error,
 		},
 		{
@@ -341,7 +341,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render("{foo:bar}"),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", struct{ foo string }{foo: "bar"}},
+			kvs: []any{"key1", struct{ foo string }{foo: "bar"}},
 			f:   logger.Info,
 		},
 		{
@@ -352,7 +352,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"{foo:bar baz}"`),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", struct{ foo string }{foo: "bar baz"}},
+			kvs: []any{"key1", struct{ foo string }{foo: "bar baz"}},
 			f:   logger.Info,
 		},
 		{
@@ -363,7 +363,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"[foo bar]"`),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", []string{"foo", "bar"}},
+			kvs: []any{"key1", []string{"foo", "bar"}},
 			f:   logger.Error,
 		},
 		{
@@ -374,7 +374,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"[{foo:bar} {foo:baz}]"`),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", []struct{ foo string }{{foo: "bar"}, {foo: "baz"}}},
+			kvs: []any{"key1", []struct{ foo string }{{foo: "bar"}, {foo: "baz"}}},
 			f:   logger.Error,
 		},
 		{
@@ -385,7 +385,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"[error value1 error value2]"`),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", []error{errors.New("error value1"), errors.New("error value2")}},
+			kvs: []any{"key1", []error{errors.New("error value1"), errors.New("error value2")}},
 			f:   logger.Error,
 		},
 		{
@@ -396,7 +396,7 @@ func TestTextValueStyles(t *testing.T) {
 				st.Key.Render("key1"), st.Separator.Render(separator), st.Value.Render(`"map[baz:qux foo:bar]"`),
 			),
 			msg: "info",
-			kvs: []interface{}{"key1", map[string]string{"foo": "bar", "baz": "qux"}},
+			kvs: []any{"key1", map[string]string{"foo": "bar", "baz": "qux"}},
 			f:   logger.Error,
 		},
 	}
