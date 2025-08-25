@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (l *Logger) jsonFormatter(keyvals ...interface{}) {
+func (l *Logger) jsonFormatter(keyvals ...any) {
 	jw := &jsonWriter{w: &l.b}
 	jw.start()
 

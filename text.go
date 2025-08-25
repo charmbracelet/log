@@ -62,7 +62,7 @@ const (
 )
 
 var bufPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return new(strings.Builder)
 	},
 }
@@ -164,7 +164,7 @@ func writeSpace(w io.Writer, first bool) {
 	}
 }
 
-func (l *Logger) textFormatter(keyvals ...interface{}) {
+func (l *Logger) textFormatter(keyvals ...any) {
 	st := l.styles
 	lenKeyvals := len(keyvals)
 

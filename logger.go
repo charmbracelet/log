@@ -41,19 +41,19 @@ type Logger struct {
 	reportCaller    bool
 	reportTimestamp bool
 
-	fields []interface{}
+	fields []any
 
 	helpers *sync.Map
 	styles  *Styles
 }
 
 // Logf logs a message with formatting.
-func (l *Logger) Logf(level Level, format string, args ...interface{}) {
+func (l *Logger) Logf(level Level, format string, args ...any) {
 	l.Log(level, fmt.Sprintf(format, args...))
 }
 
 // Log logs the given message with the given keyvals for the given level.
-func (l *Logger) Log(level Level, msg interface{}, keyvals ...interface{}) {
+func (l *Logger) Log(level Level, msg any, keyvals ...any) {
 	if atomic.LoadUint32(&l.isDiscard) != 0 {
 		return
 	}
@@ -81,8 +81,8 @@ func (l *Logger) Log(level Level, msg interface{}, keyvals ...interface{}) {
 	l.handle(level, l.timeFunc(time.Now()), []runtime.Frame{frame}, msg, keyvals...)
 }
 
-func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg interface{}, keyvals ...interface{}) {
-	var kvs []interface{}
+func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg any, keyvals ...any) {
+	var kvs []any
 	if l.reportTimestamp && !ts.IsZero() {
 		kvs = append(kvs, TimestampKey, ts)
 	}
@@ -327,7 +327,7 @@ func (l *Logger) SetStyles(s *Styles) {
 }
 
 // With returns a new logger with the given keyvals added.
-func (l *Logger) With(keyvals ...interface{}) *Logger {
+func (l *Logger) With(keyvals ...any) *Logger {
 	var st Styles
 	l.mu.Lock()
 	sl := *l
@@ -336,7 +336,7 @@ func (l *Logger) With(keyvals ...interface{}) *Logger {
 	sl.b = bytes.Buffer{}
 	sl.mu = &sync.RWMutex{}
 	sl.helpers = &sync.Map{}
-	sl.fields = append(make([]interface{}, 0, len(l.fields)+len(keyvals)), l.fields...)
+	sl.fields = append(make([]any, 0, len(l.fields)+len(keyvals)), l.fields...)
 	sl.fields = append(sl.fields, keyvals...)
 	sl.styles = &st
 	return &sl
@@ -350,63 +350,63 @@ func (l *Logger) WithPrefix(prefix string) *Logger {
 }
 
 // Debug prints a debug message.
-func (l *Logger) Debug(msg interface{}, keyvals ...interface{}) {
+func (l *Logger) Debug(msg any, keyvals ...any) {
 	l.Log(DebugLevel, msg, keyvals...)
 }
 
 // Info prints an info message.
-func (l *Logger) Info(msg interface{}, keyvals ...interface{}) {
+func (l *Logger) Info(msg any, keyvals ...any) {
 	l.Log(InfoLevel, msg, keyvals...)
 }
 
 // Warn prints a warning message.
-func (l *Logger) Warn(msg interface{}, keyvals ...interface{}) {
+func (l *Logger) Warn(msg any, keyvals ...any) {
 	l.Log(WarnLevel, msg, keyvals...)
 }
 
 // Error prints an error message.
-func (l *Logger) Error(msg interface{}, keyvals ...interface{}) {
+func (l *Logger) Error(msg any, keyvals ...any) {
 	l.Log(ErrorLevel, msg, keyvals...)
 }
 
 // Fatal prints a fatal message and exits.
-func (l *Logger) Fatal(msg interface{}, keyvals ...interface{}) {
+func (l *Logger) Fatal(msg any, keyvals ...any) {
 	l.Log(FatalLevel, msg, keyvals...)
 	os.Exit(1)
 }
 
 // Print prints a message with no level.
-func (l *Logger) Print(msg interface{}, keyvals ...interface{}) {
+func (l *Logger) Print(msg any, keyvals ...any) {
 	l.Log(noLevel, msg, keyvals...)
 }
 
 // Debugf prints a debug message with formatting.
-func (l *Logger) Debugf(format string, args ...interface{}) {
+func (l *Logger) Debugf(format string, args ...any) {
 	l.Log(DebugLevel, fmt.Sprintf(format, args...))
 }
 
 // Infof prints an info message with formatting.
-func (l *Logger) Infof(format string, args ...interface{}) {
+func (l *Logger) Infof(format string, args ...any) {
 	l.Log(InfoLevel, fmt.Sprintf(format, args...))
 }
 
 // Warnf prints a warning message with formatting.
-func (l *Logger) Warnf(format string, args ...interface{}) {
+func (l *Logger) Warnf(format string, args ...any) {
 	l.Log(WarnLevel, fmt.Sprintf(format, args...))
 }
 
 // Errorf prints an error message with formatting.
-func (l *Logger) Errorf(format string, args ...interface{}) {
+func (l *Logger) Errorf(format string, args ...any) {
 	l.Log(ErrorLevel, fmt.Sprintf(format, args...))
 }
 
 // Fatalf prints a fatal message with formatting and exits.
-func (l *Logger) Fatalf(format string, args ...interface{}) {
+func (l *Logger) Fatalf(format string, args ...any) {
 	l.Log(FatalLevel, fmt.Sprintf(format, args...))
 	os.Exit(1)
 }
 
 // Printf prints a message with no level and formatting.
-func (l *Logger) Printf(format string, args ...interface{}) {
+func (l *Logger) Printf(format string, args ...any) {
 	l.Log(noLevel, fmt.Sprintf(format, args...))
 }

@@ -155,7 +155,7 @@ func GetPrefix() string {
 }
 
 // With returns a new logger with the given keyvals.
-func With(keyvals ...interface{}) *Logger {
+func With(keyvals ...any) *Logger {
 	return Default().With(keyvals...)
 }
 
@@ -172,74 +172,74 @@ func Helper() {
 }
 
 // Log logs a message with the given level.
-func Log(level Level, msg interface{}, keyvals ...interface{}) {
+func Log(level Level, msg any, keyvals ...any) {
 	Default().Log(level, msg, keyvals...)
 }
 
 // Debug logs a debug message.
-func Debug(msg interface{}, keyvals ...interface{}) {
+func Debug(msg any, keyvals ...any) {
 	Default().Log(DebugLevel, msg, keyvals...)
 }
 
 // Info logs an info message.
-func Info(msg interface{}, keyvals ...interface{}) {
+func Info(msg any, keyvals ...any) {
 	Default().Log(InfoLevel, msg, keyvals...)
 }
 
 // Warn logs a warning message.
-func Warn(msg interface{}, keyvals ...interface{}) {
+func Warn(msg any, keyvals ...any) {
 	Default().Log(WarnLevel, msg, keyvals...)
 }
 
 // Error logs an error message.
-func Error(msg interface{}, keyvals ...interface{}) {
+func Error(msg any, keyvals ...any) {
 	Default().Log(ErrorLevel, msg, keyvals...)
 }
 
 // Fatal logs a fatal message and exit.
-func Fatal(msg interface{}, keyvals ...interface{}) {
+func Fatal(msg any, keyvals ...any) {
 	Default().Log(FatalLevel, msg, keyvals...)
 	os.Exit(1)
 }
 
 // Print logs a message with no level.
-func Print(msg interface{}, keyvals ...interface{}) {
+func Print(msg any, keyvals ...any) {
 	Default().Log(noLevel, msg, keyvals...)
 }
 
 // Logf logs a message with formatting and level.
-func Logf(level Level, format string, args ...interface{}) {
+func Logf(level Level, format string, args ...any) {
 	Default().Logf(level, format, args...)
 }
 
 // Debugf logs a debug message with formatting.
-func Debugf(format string, args ...interface{}) {
+func Debugf(format string, args ...any) {
 	Default().Log(DebugLevel, fmt.Sprintf(format, args...))
 }
 
 // Infof logs an info message with formatting.
-func Infof(format string, args ...interface{}) {
+func Infof(format string, args ...any) {
 	Default().Log(InfoLevel, fmt.Sprintf(format, args...))
 }
 
 // Warnf logs a warning message with formatting.
-func Warnf(format string, args ...interface{}) {
+func Warnf(format string, args ...any) {
 	Default().Log(WarnLevel, fmt.Sprintf(format, args...))
 }
 
 // Errorf logs an error message with formatting.
-func Errorf(format string, args ...interface{}) {
+func Errorf(format string, args ...any) {
 	Default().Log(ErrorLevel, fmt.Sprintf(format, args...))
 }
 
 // Fatalf logs a fatal message with formatting and exit.
-func Fatalf(format string, args ...interface{}) {
+func Fatalf(format string, args ...any) {
 	Default().Log(FatalLevel, fmt.Sprintf(format, args...))
 	os.Exit(1)
 }
 
 // Printf logs a message with formatting and no level.
-func Printf(format string, args ...interface{}) {
+func Printf(format string, args ...any) {
 	Default().Log(noLevel, fmt.Sprintf(format, args...))
 }
 

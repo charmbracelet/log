@@ -8,7 +8,7 @@ import (
 	"github.com/go-logfmt/logfmt"
 )
 
-func (l *Logger) logfmtFormatter(keyvals ...interface{}) {
+func (l *Logger) logfmtFormatter(keyvals ...any) {
 	e := logfmt.NewEncoder(&l.b)
 
 	for i := 0; i < len(keyvals); i += 2 {

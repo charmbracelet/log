@@ -19,8 +19,8 @@ func TestJson(t *testing.T) {
 		name     string
 		expected string
 		msg      string
-		kvs      []interface{}
-		f        func(msg interface{}, kvs ...interface{})
+		kvs      []any
+		f        func(msg any, kvs ...any)
 	}{
 		{
 			name:     "default logger info with timestamp",
@@ -54,70 +54,70 @@ func TestJson(t *testing.T) {
 			name:     "multiline kvs",
 			expected: "{\"level\":\"error\",\"msg\":\"info\",\"multiline\":\"info\\ninfo\"}\n",
 			msg:      "info",
-			kvs:      []interface{}{"multiline", "info\ninfo"},
+			kvs:      []any{"multiline", "info\ninfo"},
 			f:        l.Error,
 		},
 		{
 			name:     "odd number of kvs",
 			expected: "{\"level\":\"error\",\"msg\":\"info\",\"foo\":\"bar\",\"baz\":\"missing value\"}\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", "bar", "baz"},
+			kvs:      []any{"foo", "bar", "baz"},
 			f:        l.Error,
 		},
 		{
 			name:     "error field",
 			expected: "{\"level\":\"error\",\"msg\":\"info\",\"error\":\"error message\"}\n",
 			msg:      "info",
-			kvs:      []interface{}{"error", errors.New("error message")},
+			kvs:      []any{"error", errors.New("error message")},
 			f:        l.Error,
 		},
 		{
 			name:     "struct field",
 			expected: "{\"level\":\"info\",\"msg\":\"info\",\"struct\":{}}\n",
 			msg:      "info",
-			kvs:      []interface{}{"struct", struct{ foo string }{foo: "bar"}},
+			kvs:      []any{"struct", struct{ foo string }{foo: "bar"}},
 			f:        l.Info,
 		},
 		{
 			name:     "slice field",
 			expected: "{\"level\":\"info\",\"msg\":\"info\",\"slice\":[1,2,3]}\n",
 			msg:      "info",
-			kvs:      []interface{}{"slice", []int{1, 2, 3}},
+			kvs:      []any{"slice", []int{1, 2, 3}},
 			f:        l.Info,
 		},
 		{
 			name:     "slice of structs",
 			expected: "{\"level\":\"info\",\"msg\":\"info\",\"slice\":[{},{}]}\n",
 			msg:      "info",
-			kvs:      []interface{}{"slice", []struct{ foo string }{{foo: "bar"}, {foo: "baz"}}},
+			kvs:      []any{"slice", []struct{ foo string }{{foo: "bar"}, {foo: "baz"}}},
 			f:        l.Info,
 		},
 		{
 			name:     "slice of strings",
 			expected: "{\"level\":\"info\",\"msg\":\"info\",\"slice\":[\"foo\",\"bar\"]}\n",
 			msg:      "info",
-			kvs:      []interface{}{"slice", []string{"foo", "bar"}},
+			kvs:      []any{"slice", []string{"foo", "bar"}},
 			f:        l.Info,
 		},
 		{
 			name:     "slice of errors",
 			expected: "{\"level\":\"info\",\"msg\":\"info\",\"slice\":[{},{}]}\n",
 			msg:      "info",
-			kvs:      []interface{}{"slice", []error{errors.New("error message1"), errors.New("error message2")}},
+			kvs:      []any{"slice", []error{errors.New("error message1"), errors.New("error message2")}},
 			f:        l.Info,
 		},
 		{
 			name:     "map of strings",
 			expected: "{\"level\":\"info\",\"msg\":\"info\",\"map\":{\"a\":\"b\",\"foo\":\"bar\"}}\n",
 			msg:      "info",
-			kvs:      []interface{}{"map", map[string]string{"a": "b", "foo": "bar"}},
+			kvs:      []any{"map", map[string]string{"a": "b", "foo": "bar"}},
 			f:        l.Info,
 		},
 		{
 			name:     "slog any value error type",
 			expected: "{\"level\":\"info\",\"msg\":\"info\",\"error\":\"error message\"}\n",
 			msg:      "info",
-			kvs:      []interface{}{"error", slogAnyValue(fmt.Errorf("error message"))},
+			kvs:      []any{"error", slogAnyValue(fmt.Errorf("error message"))},
 			f:        l.Info,
 		},
 	}
@@ -141,9 +141,9 @@ func TestJsonCaller(t *testing.T) {
 		name     string
 		expected string
 		msg      string
-		kvs      []interface{}
+		kvs      []any
 
-		f func(msg interface{}, kvs ...interface{})
+		f func(msg any, kvs ...any)
 	}{
 		{
 			name:     "simple caller",
@@ -157,7 +157,7 @@ func TestJsonCaller(t *testing.T) {
 			expected: fmt.Sprintf("{\"level\":\"info\",\"caller\":\"log/%s:%d\",\"msg\":\"info\"}\n", filepath.Base(file), line+30),
 			msg:      "info",
 			kvs:      nil,
-			f: func(msg interface{}, kvs ...interface{}) {
+			f: func(msg any, kvs ...any) {
 				l.Helper()
 				l.Info(msg, kvs...)
 			},
