@@ -167,8 +167,16 @@ func WithPrefix(prefix string) *Logger {
 // Helper marks the calling function as a helper
 // and skips it for source location information.
 // It's the equivalent of testing.TB.Helper().
-func Helper() {
-	Default().helper(1)
+//
+// It takes an optional argument skip,
+// which is the depth of the call stack that should be skipped.
+// In most cases you should omit providing it and it will default to 1.
+func Helper(skip ...int) {
+	if len(skip) > 0 {
+		Default().helper(skip[0])
+	} else {
+		Default().helper(1)
+	}
 }
 
 // Log logs a message with the given level.

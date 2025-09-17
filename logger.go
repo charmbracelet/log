@@ -142,8 +142,16 @@ func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg a
 // Helper marks the calling function as a helper
 // and skips it for source location information.
 // It's the equivalent of testing.TB.Helper().
-func (l *Logger) Helper() {
-	l.helper(1)
+//
+// It takes an optional argument skip,
+// which is the depth of the call stack that should be skipped.
+// In most cases you should omit providing it and it will default to 1.
+func (l *Logger) Helper(skip ...int) {
+	if len(skip) > 0 {
+		l.helper(skip[0])
+	} else {
+		l.helper(1)
+	}
 }
 
 func (l *Logger) helper(skip int) {
