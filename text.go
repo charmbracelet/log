@@ -196,7 +196,6 @@ func (l *Logger) textFormatter(keyvals ...any) {
 			}
 		case CallerKey:
 			if caller, ok := keyvals[i+1].(string); ok {
-				caller = fmt.Sprintf("<%s>", caller)
 				caller = st.Caller.Renderer(l.re).Render(caller)
 				writeSpace(&l.b, firstKey)
 				l.b.WriteString(caller)
