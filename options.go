@@ -55,7 +55,7 @@ type Options struct {
 	// CallerOffset is the caller format for the logger. The default is 0.
 	CallerOffset int
 	// Fields is the fields for the logger. The default is no fields.
-	Fields []interface{}
+	Fields []any
 	// Formatter is the formatter for the logger. The default is TextFormatter.
 	Formatter Formatter
 }

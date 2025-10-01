@@ -15,13 +15,13 @@ func TestOptions(t *testing.T) {
 	opts := Options{
 		Level:        ErrorLevel,
 		ReportCaller: true,
-		Fields:       []interface{}{"foo", "bar"},
+		Fields:       []any{"foo", "bar"},
 	}
 	logger := NewWithOptions(colorprofile.NewWriter(io.Discard, os.Environ()), opts)
 	require.Equal(t, ErrorLevel, logger.GetLevel())
 	require.True(t, logger.reportCaller)
 	require.False(t, logger.reportTimestamp)
-	require.Equal(t, []interface{}{"foo", "bar"}, logger.fields)
+	require.Equal(t, []any{"foo", "bar"}, logger.fields)
 	require.Equal(t, TextFormatter, logger.formatter)
 	require.Equal(t, DefaultTimeFormat, logger.timeFormat)
 	require.NotNil(t, logger.timeFunc)

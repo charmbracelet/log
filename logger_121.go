@@ -17,6 +17,8 @@ type (
 	slogLogValuer = slog.LogValuer
 )
 
+var slogAnyValue = slog.AnyValue
+
 const slogKindGroup = slog.KindGroup
 
 // Enabled reports whether the logger is enabled for the given level.
@@ -34,7 +36,7 @@ func (l *Logger) Handle(ctx context.Context, record slog.Record) error {
 		return nil
 	}
 
-	fields := make([]interface{}, 0, record.NumAttrs()*2)
+	fields := make([]any, 0, record.NumAttrs()*2)
 	record.Attrs(func(a slog.Attr) bool {
 		fields = append(fields, a.Key, a.Value)
 		return true
@@ -50,7 +52,7 @@ func (l *Logger) Handle(ctx context.Context, record slog.Record) error {
 //
 // Implements slog.Handler.
 func (l *Logger) WithAttrs(attrs []slog.Attr) slog.Handler {
-	fields := make([]interface{}, 0, len(attrs)*2)
+	fields := make([]any, 0, len(attrs)*2)
 	for _, attr := range attrs {
 		fields = append(fields, attr.Key, attr.Value)
 	}

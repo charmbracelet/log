@@ -18,8 +18,8 @@ func TestLogfmt(t *testing.T) {
 		name     string
 		expected string
 		msg      string
-		kvs      []interface{}
-		f        func(msg interface{}, kvs ...interface{})
+		kvs      []any
+		f        func(msg any, kvs ...any)
 	}{
 		{
 			name:     "simple",
@@ -39,14 +39,14 @@ func TestLogfmt(t *testing.T) {
 			name:     "message with keyvals",
 			expected: "level=info msg=info foo=bar\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", "bar"},
+			kvs:      []any{"foo", "bar"},
 			f:        l.Info,
 		},
 		{
 			name:     "message with multiline keyvals",
 			expected: "level=info msg=info foo=\"bar\\nbaz\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", "bar\nbaz"},
+			kvs:      []any{"foo", "bar\nbaz"},
 			f:        l.Info,
 		},
 		{
@@ -60,63 +60,63 @@ func TestLogfmt(t *testing.T) {
 			name:     "message with error",
 			expected: "level=info msg=info err=\"foo: bar\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"err", errors.New("foo: bar")},
+			kvs:      []any{"err", errors.New("foo: bar")},
 			f:        l.Info,
 		},
 		{
 			name:     "odd number of keyvals",
 			expected: "level=info msg=info foo=bar baz=\"missing value\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", "bar", "baz"},
+			kvs:      []any{"foo", "bar", "baz"},
 			f:        l.Info,
 		},
 		{
 			name:     "struct field",
 			expected: "level=info msg=info foo=\"{bar:foo bar}\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", struct{ bar string }{"foo bar"}},
+			kvs:      []any{"foo", struct{ bar string }{"foo bar"}},
 			f:        l.Info,
 		},
 		{
 			name:     "multiple struct fields",
 			expected: "level=info msg=info foo={bar:baz} foo2={bar:baz}\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", struct{ bar string }{"baz"}, "foo2", struct{ bar string }{"baz"}},
+			kvs:      []any{"foo", struct{ bar string }{"baz"}, "foo2", struct{ bar string }{"baz"}},
 			f:        l.Info,
 		},
 		{
 			name:     "slice of structs",
 			expected: "level=info msg=info foo=\"[{bar:baz} {bar:baz}]\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", []struct{ bar string }{{"baz"}, {"baz"}}},
+			kvs:      []any{"foo", []struct{ bar string }{{"baz"}, {"baz"}}},
 			f:        l.Info,
 		},
 		{
 			name:     "slice of strings",
 			expected: "level=info msg=info foo=\"[bar baz]\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", []string{"bar", "baz"}},
+			kvs:      []any{"foo", []string{"bar", "baz"}},
 			f:        l.Info,
 		},
 		{
 			name:     "slice of errors",
 			expected: "level=info msg=info foo=\"[error1 error2]\"\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", []error{errors.New("error1"), errors.New("error2")}},
+			kvs:      []any{"foo", []error{errors.New("error1"), errors.New("error2")}},
 			f:        l.Info,
 		},
 		{
 			name:     "map of strings",
 			expected: "level=info msg=info foo=map[bar:baz]\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", map[string]string{"bar": "baz"}},
+			kvs:      []any{"foo", map[string]string{"bar": "baz"}},
 			f:        l.Info,
 		},
 		{
 			name:     "map with interface",
 			expected: "level=info msg=info foo=map[bar:baz]\n",
 			msg:      "info",
-			kvs:      []interface{}{"foo", map[string]interface{}{"bar": "baz"}},
+			kvs:      []any{"foo", map[string]any{"bar": "baz"}},
 			f:        l.Info,
 		},
 	}

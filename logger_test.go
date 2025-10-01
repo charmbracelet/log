@@ -20,8 +20,8 @@ func TestSubLogger(t *testing.T) {
 		name     string
 		expected string
 		msg      string
-		fields   []interface{}
-		kvs      []interface{}
+		fields   []any
+		kvs      []any
 	}{
 		{
 			name:     "sub logger nil fields",
@@ -34,15 +34,15 @@ func TestSubLogger(t *testing.T) {
 			name:     "sub logger info",
 			expected: "INFO info foo=bar\n",
 			msg:      "info",
-			fields:   []interface{}{"foo", "bar"},
+			fields:   []any{"foo", "bar"},
 			kvs:      nil,
 		},
 		{
 			name:     "sub logger info with kvs",
 			expected: "INFO info foo=bar foobar=baz\n",
 			msg:      "info",
-			fields:   []interface{}{"foo", "bar"},
-			kvs:      []interface{}{"foobar", "baz"},
+			fields:   []any{"foo", "bar"},
+			kvs:      []any{"foobar", "baz"},
 		},
 		{
 			name:     "emoji",
@@ -97,35 +97,35 @@ func TestLogFormatter(t *testing.T) {
 	cases := []struct {
 		name     string
 		format   string
-		args     []interface{}
-		fun      func(string, ...interface{})
+		args     []any
+		fun      func(string, ...any)
 		expected string
 	}{
 		{
 			name:     "info format",
 			format:   "%s %s",
-			args:     []interface{}{"foo", "bar"},
+			args:     []any{"foo", "bar"},
 			fun:      l.Infof,
 			expected: "INFO foo bar\n",
 		},
 		{
 			name:     "debug format",
 			format:   "%s %s",
-			args:     []interface{}{"foo", "bar"},
+			args:     []any{"foo", "bar"},
 			fun:      l.Debugf,
 			expected: "DEBU foo bar\n",
 		},
 		{
 			name:     "warn format",
 			format:   "%s %s",
-			args:     []interface{}{"foo", "bar"},
+			args:     []any{"foo", "bar"},
 			fun:      l.Warnf,
 			expected: "WARN foo bar\n",
 		},
 		{
 			name:     "error format",
 			format:   "%s %s",
-			args:     []interface{}{"foo", "bar"},
+			args:     []any{"foo", "bar"},
 			fun:      l.Errorf,
 			expected: "ERRO foo bar\n",
 		},
@@ -146,8 +146,8 @@ func TestEmptyMessage(t *testing.T) {
 		name     string
 		expected string
 		msg      string
-		fields   []interface{}
-		kvs      []interface{}
+		fields   []any
+		kvs      []any
 	}{
 		{
 			name:     "empty message nil fields",
@@ -160,15 +160,15 @@ func TestEmptyMessage(t *testing.T) {
 			name:     "empty message with fields",
 			expected: "INFO foo=bar\n",
 			msg:      "",
-			fields:   []interface{}{"foo", "bar"},
+			fields:   []any{"foo", "bar"},
 			kvs:      nil,
 		},
 		{
 			name:     "empty message with fields & kvs",
 			expected: "INFO foo=bar foobar=baz\n",
 			msg:      "",
-			fields:   []interface{}{"foo", "bar"},
-			kvs:      []interface{}{"foobar", "baz"},
+			fields:   []any{"foo", "bar"},
+			kvs:      []any{"foobar", "baz"},
 		},
 	}
 	for _, c := range cases {
@@ -221,7 +221,7 @@ func TestLogWithRaceCondition(t *testing.T) {
 
 			var done sync.WaitGroup
 
-			longArgs := make([]interface{}, 0, 1000)
+			longArgs := make([]any, 0, 1000)
 			for i := 0; i < 1000; i++ {
 				longArgs = append(longArgs, fmt.Sprintf("arg%d", i), fmt.Sprintf("val%d", i))
 			}

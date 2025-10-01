@@ -14,7 +14,7 @@ func (l *stdLogWriter) Write(p []byte) (n int, err error) {
 	str := strings.TrimSuffix(string(p), "\n")
 
 	if l.opt != nil {
-		switch l.opt.ForceLevel {
+		switch l.opt.ForceLevel { //nolint:exhaustive
 		case DebugLevel:
 			l.l.Debug(str)
 		case InfoLevel:

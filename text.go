@@ -21,7 +21,7 @@ func (l *Logger) writeIndent(w io.Writer, str string, indent string, newline boo
 	// kindly borrowed from hclog
 	for {
 		nl := strings.IndexByte(str, '\n')
-		if nl == -1 {
+		if nl == -1 { //nolint:nestif
 			if str != "" {
 				_, _ = w.Write([]byte(indent))
 				val := escapeStringForOutput(str, false)
@@ -62,7 +62,7 @@ const (
 )
 
 var bufPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return new(strings.Builder)
 	},
 }
@@ -164,7 +164,7 @@ func writeSpace(w io.Writer, first bool) {
 	}
 }
 
-func (l *Logger) textFormatter(keyvals ...interface{}) {
+func (l *Logger) textFormatter(keyvals ...any) {
 	st := l.styles
 	lenKeyvals := len(keyvals)
 

@@ -197,7 +197,7 @@ func TestSlogAttr(t *testing.T) {
 	cases := []struct {
 		name     string
 		expected string
-		kvs      []interface{}
+		kvs      []any
 	}{
 		{
 			name:     "any",

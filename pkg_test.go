@@ -40,8 +40,8 @@ func TestGlobal(t *testing.T) {
 		name     string
 		expected string
 		msg      string
-		kvs      []interface{}
-		f        func(msg interface{}, kvs ...interface{})
+		kvs      []any
+		f        func(msg any, kvs ...any)
 	}{
 		{
 			name:     "default logger info with timestamp",
