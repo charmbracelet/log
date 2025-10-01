@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        go_version: ["1.19", stable]
+        go_version: ["1.24", stable]
     uses: charmbracelet/meta/.github/workflows/build.yml@main
     with:
       go_version: ${{ matrix.go_version }}
