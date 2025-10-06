@@ -1,10 +1,10 @@
 module github.com/charmbracelet/log
 
-go 1.19
+go 1.21
 
 require (
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/go-logfmt/logfmt v0.6.0
+	github.com/go-logfmt/logfmt v0.6.1
 	github.com/muesli/termenv v0.16.0
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
