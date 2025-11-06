@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/colorprofile"
-	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

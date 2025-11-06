@@ -3,8 +3,8 @@ module github.com/charmbracelet/log/v2
 go 1.24.2
 
 require (
+	charm.land/lipgloss/v2 v2.0.0-beta.3.0.20251104200114-3aae28661422
 	github.com/charmbracelet/colorprofile v0.3.2
-	github.com/charmbracelet/lipgloss/v2 v2.0.0-beta.3.0.20251103214348-d3032608aa74
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
