@@ -1,5 +1,4 @@
 //go:build go1.21
-// +build go1.21
 
 package log
 
@@ -17,7 +16,7 @@ type (
 	slogLogValuer = slog.LogValuer
 )
 
-var slogAnyValue = slog.AnyValue
+var slogAnyValue = slog.AnyValue //nolint:unused
 
 const slogKindGroup = slog.KindGroup
 

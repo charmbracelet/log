@@ -160,7 +160,7 @@ func init() {
 
 func writeSpace(w io.Writer, first bool) {
 	if !first {
-		w.Write([]byte{' '}) //nolint: errcheck
+		_, _ = w.Write([]byte{' '})
 	}
 }
 
