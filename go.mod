@@ -1,4 +1,4 @@
-module github.com/charmbracelet/log/v2
+module charm.land/log/v2
 
 go 1.24.2
 

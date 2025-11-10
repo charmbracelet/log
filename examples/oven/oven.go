@@ -1,6 +1,6 @@
 package main
 
-import "github.com/charmbracelet/log/v2"
+import "charm.land/log/v2"
 
 func startOven(degree int) {
 	log.Helper()
