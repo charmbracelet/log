@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
-	"github.com/charmbracelet/log/v2"
+	"charm.land/log/v2"
 )
 
 func main() {
