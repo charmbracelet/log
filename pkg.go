@@ -47,6 +47,40 @@ func New(w io.Writer) *Logger {
 	return NewWithOptions(w, Options{ReportTimestamp: true})
 }
 
+// HandlerOptions provides slog-style configuration.
+type HandlerOptions struct {
+	AddSource bool
+	Level     Level
+}
+
+// NewTextHandler returns a Handler with text formatting.
+// Timestamps are enabled by default.
+func NewTextHandler(w io.Writer, opts *HandlerOptions) *Logger {
+	if opts == nil {
+		opts = &HandlerOptions{}
+	}
+	return NewWithOptions(w, Options{
+		ReportTimestamp: true,
+		Formatter:       TextFormatter,
+		Level:           opts.Level,
+		ReportCaller:    opts.AddSource,
+	})
+}
+
+// NewJSONHandler returns a Handler with JSON formatting.
+// Timestamps are enabled by default.
+func NewJSONHandler(w io.Writer, opts *HandlerOptions) *Logger {
+	if opts == nil {
+		opts = &HandlerOptions{}
+	}
+	return NewWithOptions(w, Options{
+		ReportTimestamp: true,
+		Formatter:       JSONFormatter,
+		Level:           opts.Level,
+		ReportCaller:    opts.AddSource,
+	})
+}
+
 // NewWithOptions returns a new logger using the provided options.
 func NewWithOptions(w io.Writer, o Options) *Logger {
 	l := &Logger{
