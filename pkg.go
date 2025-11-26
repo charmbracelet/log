@@ -42,8 +42,9 @@ func SetDefault(logger *Logger) {
 }
 
 // New returns a new logger with the default options.
+// Timestamps are enabled by default.
 func New(w io.Writer) *Logger {
-	return NewWithOptions(w, Options{})
+	return NewWithOptions(w, Options{ReportTimestamp: true})
 }
 
 // NewWithOptions returns a new logger using the provided options.
