@@ -15,7 +15,7 @@ import (
 
 func TestSlogSimple(t *testing.T) {
 	var buf bytes.Buffer
-	h := New(&buf)
+	h := NewWithOptions(&buf, Options{})
 	h.SetLevel(DebugLevel)
 	l := slog.New(h)
 	cases := []struct {
@@ -73,7 +73,7 @@ func TestSlogSimple(t *testing.T) {
 
 func TestSlogWith(t *testing.T) {
 	var buf bytes.Buffer
-	h := New(&buf)
+	h := NewWithOptions(&buf, Options{})
 	h.SetLevel(DebugLevel)
 	l := slog.New(h).With("a", "b")
 	cases := []struct {
@@ -124,7 +124,7 @@ func TestSlogWith(t *testing.T) {
 
 func TestSlogWithGroup(t *testing.T) {
 	var buf bytes.Buffer
-	h := New(&buf)
+	h := NewWithOptions(&buf, Options{})
 	l := slog.New(h).WithGroup("charm").WithGroup("bracelet")
 	cases := []struct {
 		name     string
@@ -175,7 +175,7 @@ func TestSlogCustomLevel(t *testing.T) {
 	for _, c := range cases {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
-			l := New(&buf)
+			l := NewWithOptions(&buf, Options{})
 			l.SetLevel(c.minLevel)
 			l.Handle(context.Background(), slog.NewRecord(time.Now(), c.level, "foo", 0))
 			assert.Equal(t, c.expected, buf.String())
