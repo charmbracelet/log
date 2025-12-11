@@ -199,6 +199,41 @@ func TestTextLogger(t *testing.T) {
 			kvs:      []any{"key1", map[string]string{"foo": "bar", "baz": "qux"}},
 			f:        logger.Error,
 		},
+		{
+			name:     "slice of pointers to structs",
+			expected: "ERRO info key1=\"[{foo:bar} {foo:baz}]\"\n",
+			msg:      "info",
+			kvs:      []any{"key1", []*struct{ foo string }{{foo: "bar"}, {foo: "baz"}}},
+			f:        logger.Error,
+		},
+		{
+			name:     "map with pointer values to structs",
+			expected: "ERRO info key1=\"map[key1:{foo:bar} key2:{foo:baz}]\"\n",
+			msg:      "info",
+			kvs:      []any{"key1", map[string]*struct{ foo string }{"key1": {foo: "bar"}, "key2": {foo: "baz"}}},
+			f:        logger.Error,
+		},
+		{
+			name:     "slice with nil pointer",
+			expected: "ERRO info key1=[]\n",
+			msg:      "info",
+			kvs:      []any{"key1", []*struct{ foo string }{nil}},
+			f:        logger.Error,
+		},
+		{
+			name:     "empty slice of pointers",
+			expected: "ERRO info key1=[]\n",
+			msg:      "info",
+			kvs:      []any{"key1", []*struct{ foo string }{}},
+			f:        logger.Error,
+		},
+		{
+			name:     "empty map with pointer values",
+			expected: "ERRO info key1=map[]\n",
+			msg:      "info",
+			kvs:      []any{"key1", map[string]*struct{ foo string }{}},
+			f:        logger.Error,
+		},
 	}
 	for _, c := range cases {
 		buf.Reset()
