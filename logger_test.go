@@ -13,7 +13,7 @@ import (
 
 func TestSubLogger(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := NewWithOptions(&buf, Options{})
 	cases := []struct {
 		name     string
 		expected string
@@ -80,7 +80,7 @@ func TestWrongLevel(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			buf.Reset()
-			l := New(&buf)
+			l := NewWithOptions(&buf, Options{})
 			l.SetLevel(c.level)
 			l.Info("info")
 			assert.Equal(t, c.expected, buf.String())
@@ -90,7 +90,7 @@ func TestWrongLevel(t *testing.T) {
 
 func TestLogFormatter(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := NewWithOptions(&buf, Options{})
 	l.SetLevel(DebugLevel)
 	cases := []struct {
 		name     string
@@ -139,7 +139,7 @@ func TestLogFormatter(t *testing.T) {
 
 func TestEmptyMessage(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := NewWithOptions(&buf, Options{})
 	cases := []struct {
 		name     string
 		expected string
@@ -196,7 +196,7 @@ func TestLogWithPrefix(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			buf.Reset()
-			l := New(&buf)
+			l := NewWithOptions(&buf, Options{})
 			l.SetPrefix(c.prefix)
 			l.Info(c.msg)
 			assert.Equal(t, c.expected, buf.String())
@@ -215,7 +215,7 @@ func TestLogWithRaceCondition(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			l := New(w)
+			l := NewWithOptions(w, Options{})
 
 			var done sync.WaitGroup
 
@@ -248,7 +248,7 @@ func TestRace(t *testing.T) {
 	t.Parallel()
 
 	w := io.Discard
-	l := New(w)
+	l := NewWithOptions(w, Options{})
 	for i := 0; i < 100; i++ {
 		t.Run("race", func(t *testing.T) {
 			t.Parallel()
@@ -280,7 +280,7 @@ func TestRace(t *testing.T) {
 func TestCustomLevel(t *testing.T) {
 	var buf bytes.Buffer
 	level500 := Level(500)
-	l := New(&buf)
+	l := NewWithOptions(&buf, Options{})
 	l.SetLevel(level500)
 	l.Logf(level500, "foo")
 	assert.Equal(t, "foo\n", buf.String())

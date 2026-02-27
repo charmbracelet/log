@@ -10,7 +10,7 @@ import (
 
 func TestLogfmt(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := NewWithOptions(&buf, Options{})
 	l.SetFormatter(LogfmtFormatter)
 	cases := []struct {
 		name     string

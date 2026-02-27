@@ -24,14 +24,14 @@ func _zeroTime(time.Time) time.Time {
 
 func TestNilStyles(t *testing.T) {
 	st := DefaultStyles()
-	l := New(io.Discard)
+	l := NewWithOptions(io.Discard, Options{})
 	l.SetStyles(nil)
 	assert.Equal(t, st, l.styles)
 }
 
 func TestTextCaller(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := NewWithOptions(&buf, Options{})
 	logger.SetReportCaller(true)
 	// We calculate the caller offset based on the caller line number.
 	_, file, line, _ := runtime.Caller(0)
@@ -100,7 +100,7 @@ func TestTextCaller(t *testing.T) {
 
 func TestTextLogger(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := NewWithOptions(&buf, Options{})
 	cases := []struct {
 		name     string
 		expected string
@@ -211,7 +211,7 @@ func TestTextLogger(t *testing.T) {
 
 func TestTextHelper(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := NewWithOptions(&buf, Options{})
 	logger.SetReportCaller(true)
 	helper := func() {
 		logger.Helper()
@@ -226,7 +226,7 @@ func TestTextHelper(t *testing.T) {
 
 func TestTextFatal(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := NewWithOptions(&buf, Options{})
 	logger.SetReportCaller(true)
 	if os.Getenv("FATAL") == "1" {
 		logger.Fatal("i'm dead")
@@ -244,7 +244,7 @@ func TestTextFatal(t *testing.T) {
 
 func TestTextValueStyles(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := NewWithOptions(&buf, Options{})
 	logger.SetColorProfile(termenv.ANSI256)
 	lipgloss.SetColorProfile(termenv.ANSI256)
 	st := DefaultStyles()
@@ -416,7 +416,7 @@ func TestColorProfile(t *testing.T) {
 		termenv.ANSI256,
 		termenv.TrueColor,
 	}
-	l := New(io.Discard)
+	l := NewWithOptions(io.Discard, Options{})
 	for _, p := range cases {
 		l.SetColorProfile(p)
 		assert.Equal(t, p, l.re.ColorProfile())
@@ -425,7 +425,7 @@ func TestColorProfile(t *testing.T) {
 
 func TestCustomLevelStyle(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := NewWithOptions(&buf, Options{})
 	st := DefaultStyles()
 	lvl := Level(1234)
 	st.Levels[lvl] = lipgloss.NewStyle().Bold(true).SetString("FUNKY")

@@ -13,7 +13,7 @@ import (
 
 func TestJson(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := NewWithOptions(&buf, Options{})
 	l.SetFormatter(JSONFormatter)
 	cases := []struct {
 		name     string
@@ -132,7 +132,7 @@ func TestJson(t *testing.T) {
 
 func TestJsonCaller(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := NewWithOptions(&buf, Options{})
 	l.SetFormatter(JSONFormatter)
 	l.SetReportCaller(true)
 	l.SetLevel(DebugLevel)
@@ -174,7 +174,7 @@ func TestJsonCaller(t *testing.T) {
 
 func TestJsonTime(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := NewWithOptions(&buf, Options{})
 	logger.SetTimeFunction(_zeroTime)
 	logger.SetFormatter(JSONFormatter)
 	logger.SetReportTimestamp(true)
@@ -184,7 +184,7 @@ func TestJsonTime(t *testing.T) {
 
 func TestJsonPrefix(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := NewWithOptions(&buf, Options{})
 	logger.SetFormatter(JSONFormatter)
 	logger.SetPrefix("my-prefix")
 	logger.Info("info")
@@ -198,7 +198,7 @@ func TestJsonCustomKey(t *testing.T) {
 		TimestampKey = oldTsKey
 	}()
 	TimestampKey = "other-time"
-	logger := New(&buf)
+	logger := NewWithOptions(&buf, Options{})
 	logger.SetTimeFunction(_zeroTime)
 	logger.SetFormatter(JSONFormatter)
 	logger.SetReportTimestamp(true)

@@ -14,7 +14,7 @@ import (
 
 func TestStdLog(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := NewWithOptions(&buf, Options{})
 	cases := []struct {
 		f        func(l *log.Logger)
 		name     string
@@ -49,7 +49,7 @@ func TestStdLog(t *testing.T) {
 
 func TestStdLog_forceLevel(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := NewWithOptions(&buf, Options{})
 	cases := []struct {
 		name     string
 		expected string
@@ -83,7 +83,7 @@ func TestStdLog_forceLevel(t *testing.T) {
 
 func TestStdLog_writer(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := NewWithOptions(&buf, Options{})
 	logger.SetReportCaller(true)
 	_, file, line, ok := runtime.Caller(0)
 	require.True(t, ok)

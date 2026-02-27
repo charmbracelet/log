@@ -241,3 +241,79 @@ func TestGlobalCustomLevel(t *testing.T) {
 	Logf(lvl, "hey %s", "you")
 	assert.Equal(t, "{\"msg\":\"info\"}\n{\"msg\":\"hey you\"}\n", buf.String())
 }
+
+func TestNew(t *testing.T) {
+	var buf bytes.Buffer
+	l := New(&buf)
+	l.SetTimeFunction(_zeroTime)
+	l.Info("hello")
+	assert.Equal(t, "0002/01/01 00:00:00 INFO hello\n", buf.String())
+	assert.True(t, l.reportTimestamp)
+}
+
+func TestNewTextHandler(t *testing.T) {
+	var buf bytes.Buffer
+	l := NewTextHandler(&buf, &HandlerOptions{Level: DebugLevel})
+	l.SetTimeFunction(_zeroTime)
+
+	l.Debug("debug msg")
+	assert.Equal(t, "0002/01/01 00:00:00 DEBU debug msg\n", buf.String())
+	assert.True(t, l.reportTimestamp)
+	assert.Equal(t, TextFormatter, l.formatter)
+	assert.Equal(t, DebugLevel, l.GetLevel())
+}
+
+func TestNewTextHandlerWithSource(t *testing.T) {
+	var buf bytes.Buffer
+	l := NewTextHandler(&buf, &HandlerOptions{AddSource: true})
+	l.SetTimeFunction(_zeroTime)
+	_, file, line, _ := runtime.Caller(0)
+	l.Info("hello")
+	assert.Equal(t, fmt.Sprintf("0002/01/01 00:00:00 INFO <log/%s:%d> hello\n", filepath.Base(file), line+1), buf.String())
+	assert.True(t, l.reportCaller)
+}
+
+func TestNewJSONHandler(t *testing.T) {
+	var buf bytes.Buffer
+	l := NewJSONHandler(&buf, &HandlerOptions{Level: WarnLevel})
+	l.SetTimeFunction(_zeroTime)
+
+	l.Warn("warn msg")
+	assert.Equal(t, "{\"time\":\"0002/01/01 00:00:00\",\"level\":\"warn\",\"msg\":\"warn msg\"}\n", buf.String())
+	assert.True(t, l.reportTimestamp)
+	assert.Equal(t, JSONFormatter, l.formatter)
+	assert.Equal(t, WarnLevel, l.GetLevel())
+}
+
+func TestNewJSONHandlerWithSource(t *testing.T) {
+	var buf bytes.Buffer
+	l := NewJSONHandler(&buf, &HandlerOptions{AddSource: true})
+	l.SetTimeFunction(_zeroTime)
+	_, file, line, _ := runtime.Caller(0)
+	l.Info("hello")
+	expected := fmt.Sprintf("{\"time\":\"0002/01/01 00:00:00\",\"level\":\"info\",\"caller\":\"%s:%d\",\"msg\":\"hello\"}\n", trimCallerPath(file, 2), line+1)
+	assert.Equal(t, expected, buf.String())
+	assert.True(t, l.reportCaller)
+}
+
+func TestHandlerOptionsNil(t *testing.T) {
+	var buf bytes.Buffer
+
+	// NewTextHandler with nil opts
+	tl := NewTextHandler(&buf, nil)
+	tl.SetTimeFunction(_zeroTime)
+	tl.Info("text")
+	assert.Equal(t, "0002/01/01 00:00:00 INFO text\n", buf.String())
+	assert.Equal(t, InfoLevel, tl.GetLevel())
+	assert.False(t, tl.reportCaller)
+
+	buf.Reset()
+
+	// NewJSONHandler with nil opts
+	jl := NewJSONHandler(&buf, nil)
+	jl.SetTimeFunction(_zeroTime)
+	jl.Info("json")
+	assert.Equal(t, "{\"time\":\"0002/01/01 00:00:00\",\"level\":\"info\",\"msg\":\"json\"}\n", buf.String())
+	assert.Equal(t, InfoLevel, jl.GetLevel())
+	assert.False(t, jl.reportCaller)
+}
