@@ -4,16 +4,18 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
 
+	"github.com/charmbracelet/colorprofile"
 	"github.com/stretchr/testify/require"
 )
 
 func TestJson(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := New(colorprofile.NewWriter(&buf, os.Environ()))
 	l.SetFormatter(JSONFormatter)
 	cases := []struct {
 		name     string
@@ -132,7 +134,7 @@ func TestJson(t *testing.T) {
 
 func TestJsonCaller(t *testing.T) {
 	var buf bytes.Buffer
-	l := New(&buf)
+	l := New(colorprofile.NewWriter(&buf, os.Environ()))
 	l.SetFormatter(JSONFormatter)
 	l.SetReportCaller(true)
 	l.SetLevel(DebugLevel)
@@ -174,7 +176,7 @@ func TestJsonCaller(t *testing.T) {
 
 func TestJsonTime(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := New(colorprofile.NewWriter(&buf, os.Environ()))
 	logger.SetTimeFunction(_zeroTime)
 	logger.SetFormatter(JSONFormatter)
 	logger.SetReportTimestamp(true)
@@ -184,7 +186,7 @@ func TestJsonTime(t *testing.T) {
 
 func TestJsonPrefix(t *testing.T) {
 	var buf bytes.Buffer
-	logger := New(&buf)
+	logger := New(colorprofile.NewWriter(&buf, os.Environ()))
 	logger.SetFormatter(JSONFormatter)
 	logger.SetPrefix("my-prefix")
 	logger.Info("info")
@@ -198,7 +200,7 @@ func TestJsonCustomKey(t *testing.T) {
 		TimestampKey = oldTsKey
 	}()
 	TimestampKey = "other-time"
-	logger := New(&buf)
+	logger := New(colorprofile.NewWriter(&buf, os.Environ()))
 	logger.SetTimeFunction(_zeroTime)
 	logger.SetFormatter(JSONFormatter)
 	logger.SetReportTimestamp(true)

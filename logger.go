@@ -2,6 +2,7 @@ package log
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -11,8 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/termenv"
+	"github.com/charmbracelet/colorprofile"
 )
 
 // ErrMissingValue is returned when a key is missing a value.
@@ -23,10 +23,9 @@ type LoggerOption = func(*Logger)
 
 // Logger is a Logger that implements Logger.
 type Logger struct {
-	w  io.Writer
+	w  colorprofile.Writer
 	b  bytes.Buffer
 	mu *sync.RWMutex
-	re *lipgloss.Renderer
 
 	isDiscard uint32
 
@@ -136,7 +135,14 @@ func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg a
 	}
 
 	// WriteTo will reset the buffer
-	l.b.WriteTo(l.w) //nolint: errcheck
+	if _, err := l.b.WriteTo(&l.w); err != nil {
+		if errors.Is(err, io.ErrShortWrite) {
+			// Reset the buffer even if the lengths don't match up. If we're
+			// using colorprofile's Writer, it will strip the ansi sequences based on
+			// the color profile which can cause this error.
+			l.b.Reset()
+		}
+	}
 }
 
 // Helper marks the calling function as a helper
@@ -274,19 +280,20 @@ func (l *Logger) SetOutput(w io.Writer) {
 	if w == nil {
 		w = os.Stderr
 	}
-	l.w = w
+	l.w.Forward = w
 	var isDiscard uint32
 	if w == io.Discard {
 		isDiscard = 1
 	}
 	atomic.StoreUint32(&l.isDiscard, isDiscard)
-	// Reuse cached renderers
-	if v, ok := registry.Load(w); ok {
-		l.re = v.(*lipgloss.Renderer)
-	} else {
-		l.re = lipgloss.NewRenderer(w, termenv.WithColorCache(true))
-		registry.Store(w, l.re)
-	}
+}
+
+// SetColorProfile force sets the underlying color profile for the
+// TextFormatter.
+func (l *Logger) SetColorProfile(profile colorprofile.Profile) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.w.Profile = profile
 }
 
 // SetFormatter sets the formatter.
@@ -308,12 +315,6 @@ func (l *Logger) SetCallerOffset(offset int) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.callerOffset = offset
-}
-
-// SetColorProfile force sets the underlying Lip Gloss renderer color profile
-// for the TextFormatter.
-func (l *Logger) SetColorProfile(profile termenv.Profile) {
-	l.re.SetColorProfile(profile)
 }
 
 // SetStyles sets the logger styles for the TextFormatter.

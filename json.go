@@ -80,7 +80,7 @@ func (l *Logger) jsonFormatterItem(jw *jsonWriter, key, value any) {
 }
 
 func (l *Logger) writeSlogValue(jw *jsonWriter, v slogValue) {
-	switch v.Kind() { //nolint:exhaustive
+	switch v.Kind() {
 	case slogKindGroup:
 		jw.start()
 		for _, attr := range v.Group() {
