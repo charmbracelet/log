@@ -36,6 +36,10 @@ linters:
   settings:
     exhaustive:
       default-signifies-exhaustive: true
+    revive:
+      rules:
+        - name: var-naming
+          disabled: true
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
