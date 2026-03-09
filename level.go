@@ -27,7 +27,7 @@ const (
 
 // String returns the string representation of the level.
 func (l Level) String() string {
-	switch l { //nolint:exhaustive
+	switch l {
 	case DebugLevel:
 		return "debug"
 	case InfoLevel:
