@@ -65,7 +65,7 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 	// Detect color profile from the writer and environment.
 	l.SetColorProfile(colorprofile.Detect(w, os.Environ()))
 	l.SetLevel(Level(l.level))
-	l.SetStyles(DefaultStyles())
+	l.SetStyles(o.Styles)
 
 	if l.callerFormatter == nil {
 		l.callerFormatter = ShortCallerFormatter
