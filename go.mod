@@ -3,10 +3,10 @@ module charm.land/log/v2
 go 1.25.8
 
 require (
-	charm.land/lipgloss/v2 v2.0.1
-	github.com/charmbracelet/colorprofile v0.4.2
-	github.com/go-logfmt/logfmt v0.6.0
-	github.com/stretchr/testify v1.10.0
+	charm.land/lipgloss/v2 v2.0.2
+	github.com/charmbracelet/colorprofile v0.4.3
+	github.com/go-logfmt/logfmt v0.6.1
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 )
 
