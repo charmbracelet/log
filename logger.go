@@ -29,7 +29,8 @@ type Logger struct {
 
 	isDiscard uint32
 
-	level           int64
+	level       int64
+	parentLevel *int64 // shared with parent logger, nil if root
 	prefix          string
 	timeFunc        TimeFunction
 	timeFormat      string
@@ -58,7 +59,14 @@ func (l *Logger) Log(level Level, msg any, keyvals ...any) {
 	}
 
 	// check if the level is allowed
-	if atomic.LoadInt64(&l.level) > int64(level) {
+	effectiveLevel := atomic.LoadInt64(&l.level)
+	if l.parentLevel != nil {
+		parentLvl := atomic.LoadInt64(l.parentLevel)
+		if parentLvl < effectiveLevel {
+			effectiveLevel = parentLvl
+		}
+	}
+	if effectiveLevel > int64(level) {
 		return
 	}
 
@@ -328,6 +336,9 @@ func (l *Logger) SetStyles(s *Styles) {
 }
 
 // With returns a new logger with the given keyvals added.
+// The child logger inherits the parent's log level: if the parent's level
+// is lowered (e.g. to DebugLevel) after the child is created, the child
+// will also emit messages at the new level.
 func (l *Logger) With(keyvals ...any) *Logger {
 	var st Styles
 	l.mu.Lock()
@@ -340,6 +351,8 @@ func (l *Logger) With(keyvals ...any) *Logger {
 	sl.fields = append(make([]any, 0, len(l.fields)+len(keyvals)), l.fields...)
 	sl.fields = append(sl.fields, keyvals...)
 	sl.styles = &st
+	// Share the parent's level so child loggers inherit level changes.
+	sl.parentLevel = &l.level
 	return &sl
 }
 
