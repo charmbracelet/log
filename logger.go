@@ -81,6 +81,9 @@ func (l *Logger) Log(level Level, msg any, keyvals ...any) {
 }
 
 func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg any, keyvals ...any) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
 	var kvs []any
 	if l.reportTimestamp && !ts.IsZero() {
 		kvs = append(kvs, TimestampKey, ts)
@@ -121,8 +124,6 @@ func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg a
 		kvs = append(kvs, ErrMissingValue)
 	}
 
-	l.mu.Lock()
-	defer l.mu.Unlock()
 	switch l.formatter {
 	case LogfmtFormatter:
 		l.logfmtFormatter(kvs...)
