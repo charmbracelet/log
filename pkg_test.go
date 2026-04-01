@@ -59,7 +59,7 @@ func TestGlobal(t *testing.T) {
 		},
 		{
 			name:     "default logger error with timestamp",
-			expected: "0002/01/01 00:00:00 ERRO info\n",
+			expected: "0002/01/01 00:00:00 ERROR info\n",
 			msg:      "info",
 			kvs:      nil,
 			f:        Error,
@@ -146,7 +146,7 @@ func TestDebugf(t *testing.T) {
 	SetTimeFormat(DefaultTimeFormat)
 	_, file, line, _ := runtime.Caller(0)
 	Debugf("debug %s", "foo")
-	assert.Equal(t, fmt.Sprintf("0002/01/01 00:00:00 DEBU <log/%s:%d> debug foo\n", filepath.Base(file), line+1), buf.String())
+	assert.Equal(t, fmt.Sprintf("0002/01/01 00:00:00 DEBUG <log/%s:%d> debug foo\n", filepath.Base(file), line+1), buf.String())
 }
 
 func TestInfof(t *testing.T) {
@@ -181,7 +181,7 @@ func TestErrorf(t *testing.T) {
 	SetTimeFunction(_zeroTime)
 	SetTimeFormat(time.Kitchen)
 	Errorf("error %s", "foo")
-	assert.Equal(t, "12:00AM ERRO error foo\n", buf.String())
+	assert.Equal(t, "12:00AM ERROR error foo\n", buf.String())
 }
 
 func TestWith(t *testing.T) {
