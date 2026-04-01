@@ -274,6 +274,12 @@ func (l *Logger) SetTimeFunction(f TimeFunction) {
 }
 
 // SetOutput sets the output destination.
+//
+// Note: The logger uses an internal mutex to serialize writes, so a single
+// logger instance is safe for concurrent use. However, if multiple loggers
+// share the same io.Writer, or if application code writes to the same writer
+// concurrently, the writer itself must be safe for concurrent use.
+// Use NewSyncWriter to wrap a non-thread-safe writer.
 func (l *Logger) SetOutput(w io.Writer) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
