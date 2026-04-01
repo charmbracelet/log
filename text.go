@@ -167,9 +167,11 @@ func writeSpace(w io.Writer, first bool) {
 func (l *Logger) textFormatter(keyvals ...any) {
 	st := l.styles
 	lenKeyvals := len(keyvals)
+	// Rastreia se algo ja foi escrito no buffer, para evitar espacos extras
+	// quando componentes estilizados renderizam como vazio.
+	written := false
 
 	for i := 0; i < lenKeyvals; i += 2 {
-		firstKey := i == 0
 		moreKeys := i < lenKeyvals-2
 
 		switch keyvals[i] {
@@ -177,42 +179,46 @@ func (l *Logger) textFormatter(keyvals ...any) {
 			if t, ok := keyvals[i+1].(time.Time); ok {
 				ts := t.Format(l.timeFormat)
 				ts = st.Timestamp.Render(ts)
-				writeSpace(&l.b, firstKey)
+				writeSpace(&l.b, !written)
 				l.b.WriteString(ts)
+				written = true
 			}
 		case LevelKey:
 			if level, ok := keyvals[i+1].(Level); ok {
-				var lvl string
 				lvlStyle, ok := st.Levels[level]
 				if !ok {
 					continue
 				}
 
-				lvl = lvlStyle.String()
+				lvl := lvlStyle.String()
 				if lvl != "" {
-					writeSpace(&l.b, firstKey)
+					writeSpace(&l.b, !written)
 					l.b.WriteString(lvl)
+					written = true
 				}
 			}
 		case CallerKey:
 			if caller, ok := keyvals[i+1].(string); ok {
 				caller = fmt.Sprintf("<%s>", caller)
 				caller = st.Caller.Render(caller)
-				writeSpace(&l.b, firstKey)
+				writeSpace(&l.b, !written)
 				l.b.WriteString(caller)
+				written = true
 			}
 		case PrefixKey:
 			if prefix, ok := keyvals[i+1].(string); ok {
 				prefix = st.Prefix.Render(prefix + ":")
-				writeSpace(&l.b, firstKey)
+				writeSpace(&l.b, !written)
 				l.b.WriteString(prefix)
+				written = true
 			}
 		case MessageKey:
 			if msg := keyvals[i+1]; msg != nil {
 				m := fmt.Sprint(msg)
 				m = st.Message.Render(m)
-				writeSpace(&l.b, firstKey)
+				writeSpace(&l.b, !written)
 				l.b.WriteString(m)
+				written = true
 			}
 		default:
 			sep := separator
@@ -252,18 +258,19 @@ func (l *Logger) textFormatter(keyvals ...any) {
 				l.b.WriteString(sep + "\n")
 				l.writeIndent(&l.b, val, indentSep, moreKeys, actualKey)
 			} else if !raw && needsQuoting(val) {
-				writeSpace(&l.b, firstKey)
+				writeSpace(&l.b, !written)
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				l.b.WriteString(valueStyle.Render(fmt.Sprintf(`"%s"`,
 					escapeStringForOutput(val, true))))
 			} else {
 				val = valueStyle.Render(val)
-				writeSpace(&l.b, firstKey)
+				writeSpace(&l.b, !written)
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				l.b.WriteString(val)
 			}
+			written = true
 		}
 	}
 

@@ -410,6 +410,20 @@ func TestTextValueStyles(t *testing.T) {
 	}
 }
 
+func TestNoLeadingWhitespaceWithSkippedComponents(t *testing.T) {
+	// Quando nivel nao tem estilo definido, nao deve haver espaco extra
+	var buf bytes.Buffer
+	l := New(&buf)
+	l.SetReportTimestamp(false)
+	st := DefaultStyles()
+	// Remove o estilo do InfoLevel para que seja pulado
+	delete(st.Levels, InfoLevel)
+	l.SetStyles(st)
+	l.Info("hello", "key", "value")
+	// Sem nivel estilizado, a saida deve comecar com a mensagem sem espaco extra
+	assert.Equal(t, "hello key=value\n", buf.String())
+}
+
 func TestCustomLevelStyle(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(&buf)
