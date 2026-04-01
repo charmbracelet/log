@@ -210,6 +210,14 @@ func TestTextLogger(t *testing.T) {
 	}
 }
 
+func TestTextLevelKeyAsUserKeyval(t *testing.T) {
+	var buf bytes.Buffer
+	logger := New(&buf)
+	// Quando o usuario usa "level" como chave de keyval, nao deve ser descartado
+	logger.Info("hello", "level", "custom")
+	assert.Equal(t, "INFO hello level=custom\n", buf.String())
+}
+
 func TestTextHelper(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)

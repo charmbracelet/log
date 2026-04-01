@@ -182,18 +182,20 @@ func (l *Logger) textFormatter(keyvals ...any) {
 			}
 		case LevelKey:
 			if level, ok := keyvals[i+1].(Level); ok {
-				var lvl string
 				lvlStyle, ok := st.Levels[level]
 				if !ok {
 					continue
 				}
 
-				lvl = lvlStyle.String()
+				lvl := lvlStyle.String()
 				if lvl != "" {
 					writeSpace(&l.b, firstKey)
 					l.b.WriteString(lvl)
 				}
+				continue
 			}
+			// Se o valor nao e do tipo Level, trata como key-value normal
+			l.writeKeyVal(st, keyvals[i], keyvals[i+1], firstKey, moreKeys)
 		case CallerKey:
 			if caller, ok := keyvals[i+1].(string); ok {
 				caller = fmt.Sprintf("<%s>", caller)
@@ -215,58 +217,61 @@ func (l *Logger) textFormatter(keyvals ...any) {
 				l.b.WriteString(m)
 			}
 		default:
-			sep := separator
-			indentSep := indentSeparator
-			sep = st.Separator.Render(sep)
-			indentSep = st.Separator.Render(indentSep)
-			key := fmt.Sprint(keyvals[i])
-			val := fmt.Sprintf("%+v", keyvals[i+1])
-			raw := val == ""
-			if raw {
-				val = `""`
-			}
-			if key == "" {
-				continue
-			}
-			actualKey := key
-			valueStyle := st.Value
-			if vs, ok := st.Values[actualKey]; ok {
-				valueStyle = vs
-			}
-			if keyStyle, ok := st.Keys[key]; ok {
-				key = keyStyle.Render(key)
-			} else {
-				key = st.Key.Render(key)
-			}
-
-			// Values may contain multiple lines, and that format
-			// is preserved, with each line prefixed with a "  | "
-			// to show it's part of a collection of lines.
-			//
-			// Values may also need quoting, if not all the runes
-			// in the value string are "normal", like if they
-			// contain ANSI escape sequences.
-			if strings.Contains(val, "\n") {
-				l.b.WriteString("\n  ")
-				l.b.WriteString(key)
-				l.b.WriteString(sep + "\n")
-				l.writeIndent(&l.b, val, indentSep, moreKeys, actualKey)
-			} else if !raw && needsQuoting(val) {
-				writeSpace(&l.b, firstKey)
-				l.b.WriteString(key)
-				l.b.WriteString(sep)
-				l.b.WriteString(valueStyle.Render(fmt.Sprintf(`"%s"`,
-					escapeStringForOutput(val, true))))
-			} else {
-				val = valueStyle.Render(val)
-				writeSpace(&l.b, firstKey)
-				l.b.WriteString(key)
-				l.b.WriteString(sep)
-				l.b.WriteString(val)
-			}
+			l.writeKeyVal(st, keyvals[i], keyvals[i+1], firstKey, moreKeys)
 		}
 	}
 
 	// Add a newline to the end of the log message.
 	l.b.WriteByte('\n')
+}
+
+// writeKeyVal escreve um par chave-valor no formato texto.
+func (l *Logger) writeKeyVal(st *Styles, k, v any, firstKey, moreKeys bool) {
+	sep := st.Separator.Render(separator)
+	indentSep := st.Separator.Render(indentSeparator)
+	key := fmt.Sprint(k)
+	val := fmt.Sprintf("%+v", v)
+	raw := val == ""
+	if raw {
+		val = `""`
+	}
+	if key == "" {
+		return
+	}
+	actualKey := key
+	valueStyle := st.Value
+	if vs, ok := st.Values[actualKey]; ok {
+		valueStyle = vs
+	}
+	if keyStyle, ok := st.Keys[key]; ok {
+		key = keyStyle.Render(key)
+	} else {
+		key = st.Key.Render(key)
+	}
+
+	// Values may contain multiple lines, and that format
+	// is preserved, with each line prefixed with a "  | "
+	// to show it's part of a collection of lines.
+	//
+	// Values may also need quoting, if not all the runes
+	// in the value string are "normal", like if they
+	// contain ANSI escape sequences.
+	if strings.Contains(val, "\n") {
+		l.b.WriteString("\n  ")
+		l.b.WriteString(key)
+		l.b.WriteString(sep + "\n")
+		l.writeIndent(&l.b, val, indentSep, moreKeys, actualKey)
+	} else if !raw && needsQuoting(val) {
+		writeSpace(&l.b, firstKey)
+		l.b.WriteString(key)
+		l.b.WriteString(sep)
+		l.b.WriteString(valueStyle.Render(fmt.Sprintf(`"%s"`,
+			escapeStringForOutput(val, true))))
+	} else {
+		val = valueStyle.Render(val)
+		writeSpace(&l.b, firstKey)
+		l.b.WriteString(key)
+		l.b.WriteString(sep)
+		l.b.WriteString(val)
+	}
 }
