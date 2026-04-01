@@ -351,6 +351,11 @@ func (l *Logger) WithPrefix(prefix string) *Logger {
 }
 
 // Debug prints a debug message.
+// Trace prints a trace message. More verbose than debug.
+func (l *Logger) Trace(msg any, keyvals ...any) {
+	l.Log(TraceLevel, msg, keyvals...)
+}
+
 func (l *Logger) Debug(msg any, keyvals ...any) {
 	l.Log(DebugLevel, msg, keyvals...)
 }

@@ -11,6 +11,8 @@ import (
 type Level int
 
 const (
+	// TraceLevel is the trace level. More verbose than debug.
+	TraceLevel Level = -8
 	// DebugLevel is the debug level.
 	DebugLevel Level = -4
 	// InfoLevel is the info level.
@@ -28,6 +30,8 @@ const (
 // String returns the string representation of the level.
 func (l Level) String() string {
 	switch l {
+	case TraceLevel:
+		return "trace"
 	case DebugLevel:
 		return "debug"
 	case InfoLevel:
@@ -49,6 +53,8 @@ var ErrInvalidLevel = errors.New("invalid level")
 // ParseLevel converts level in string to Level type. Default level is InfoLevel.
 func ParseLevel(level string) (Level, error) {
 	switch strings.ToLower(level) {
+	case TraceLevel.String():
+		return TraceLevel, nil
 	case DebugLevel.String():
 		return DebugLevel, nil
 	case InfoLevel.String():
