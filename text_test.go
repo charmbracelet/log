@@ -410,6 +410,15 @@ func TestTextValueStyles(t *testing.T) {
 	}
 }
 
+func TestMultilineFields(t *testing.T) {
+	var buf bytes.Buffer
+	l := New(&buf)
+	l.SetReportTimestamp(false)
+	l.SetMultilineFields(true)
+	l.Info("hello", "key1", "val1", "key2", "val2")
+	assert.Equal(t, "INFO hello\n  key1=val1\n  key2=val2\n", buf.String())
+}
+
 func TestCustomLevelStyle(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(&buf)

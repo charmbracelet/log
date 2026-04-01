@@ -52,6 +52,7 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 		level:           int64(o.Level),
 		reportTimestamp: o.ReportTimestamp,
 		reportCaller:    o.ReportCaller,
+		multilineFields: o.MultilineFields,
 		prefix:          o.Prefix,
 		timeFunc:        o.TimeFunction,
 		timeFormat:      o.TimeFormat,
@@ -85,6 +86,11 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 // SetReportTimestamp sets whether to report timestamp for the default logger.
 func SetReportTimestamp(report bool) {
 	Default().SetReportTimestamp(report)
+}
+
+// SetMultilineFields sets whether key-value fields should be printed on separate lines for the default logger.
+func SetMultilineFields(multiline bool) {
+	Default().SetMultilineFields(multiline)
 }
 
 // SetReportCaller sets whether to report caller location for the default logger.

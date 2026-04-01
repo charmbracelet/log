@@ -239,14 +239,24 @@ func (l *Logger) textFormatter(keyvals ...any) {
 				key = st.Key.Render(key)
 			}
 
-			// Values may contain multiple lines, and that format
-			// is preserved, with each line prefixed with a "  | "
-			// to show it's part of a collection of lines.
-			//
-			// Values may also need quoting, if not all the runes
-			// in the value string are "normal", like if they
-			// contain ANSI escape sequences.
-			if strings.Contains(val, "\n") {
+			// Quando multilineFields esta ativo, cada par chave-valor e impresso em linha separada
+			if l.multilineFields {
+				l.b.WriteString("\n  ")
+				l.b.WriteString(key)
+				l.b.WriteString(sep)
+				if !raw && needsQuoting(val) {
+					l.b.WriteString(valueStyle.Render(fmt.Sprintf(`"%s"`,
+						escapeStringForOutput(val, true))))
+				} else if strings.Contains(val, "\n") {
+					l.b.WriteString("\n")
+					l.writeIndent(&l.b, val, indentSep, moreKeys, actualKey)
+				} else {
+					l.b.WriteString(valueStyle.Render(val))
+				}
+			} else if strings.Contains(val, "\n") {
+				// Values may contain multiple lines, and that format
+				// is preserved, with each line prefixed with a "  | "
+				// to show it's part of a collection of lines.
 				l.b.WriteString("\n  ")
 				l.b.WriteString(key)
 				l.b.WriteString(sep + "\n")

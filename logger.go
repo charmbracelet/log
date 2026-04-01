@@ -39,6 +39,7 @@ type Logger struct {
 
 	reportCaller    bool
 	reportTimestamp bool
+	multilineFields bool
 
 	fields []any
 
@@ -222,6 +223,13 @@ func (l *Logger) SetReportTimestamp(report bool) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.reportTimestamp = report
+}
+
+// SetMultilineFields sets whether key-value fields should be printed on separate lines.
+func (l *Logger) SetMultilineFields(multiline bool) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.multilineFields = multiline
 }
 
 // SetReportCaller sets whether the caller location should be reported.

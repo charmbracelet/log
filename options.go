@@ -54,6 +54,8 @@ type Options struct {
 	CallerFormatter CallerFormatter
 	// CallerOffset is the caller format for the logger. The default is 0.
 	CallerOffset int
+	// MultilineFields prints each key-value pair on its own line. The default is false.
+	MultilineFields bool
 	// Fields is the fields for the logger. The default is no fields.
 	Fields []any
 	// Formatter is the formatter for the logger. The default is TextFormatter.
