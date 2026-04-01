@@ -33,6 +33,7 @@ func TestNilStyles(t *testing.T) {
 func TestTextCaller(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)
+	logger.SetReportTimestamp(false)
 	logger.SetReportCaller(true)
 	// We calculate the caller offset based on the caller line number.
 	_, file, line, _ := runtime.Caller(0)
@@ -102,6 +103,7 @@ func TestTextCaller(t *testing.T) {
 func TestTextLogger(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)
+	logger.SetReportTimestamp(false)
 	cases := []struct {
 		name     string
 		expected string
@@ -213,6 +215,7 @@ func TestTextLogger(t *testing.T) {
 func TestTextHelper(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)
+	logger.SetReportTimestamp(false)
 	logger.SetReportCaller(true)
 	helper := func() {
 		logger.Helper()
@@ -228,6 +231,7 @@ func TestTextHelper(t *testing.T) {
 func TestTextFatal(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)
+	logger.SetReportTimestamp(false)
 	logger.SetColorProfile(colorprofile.TrueColor)
 	logger.SetReportCaller(true)
 	if os.Getenv("FATAL") == "1" {
@@ -247,6 +251,7 @@ func TestTextFatal(t *testing.T) {
 func TestTextValueStyles(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(&buf)
+	logger.SetReportTimestamp(false)
 	logger.SetColorProfile(colorprofile.ANSI256)
 	st := DefaultStyles()
 	st.Value = lipgloss.NewStyle().Bold(true)
@@ -413,6 +418,7 @@ func TestTextValueStyles(t *testing.T) {
 func TestCustomLevelStyle(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(&buf)
+	l.SetReportTimestamp(false)
 	l.SetColorProfile(colorprofile.TrueColor)
 	st := DefaultStyles()
 	lvl := Level(1234)

@@ -16,6 +16,7 @@ import (
 func TestSubLogger(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(colorprofile.NewWriter(&buf, os.Environ()))
+	l.SetReportTimestamp(false)
 	cases := []struct {
 		name     string
 		expected string
@@ -83,6 +84,7 @@ func TestWrongLevel(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			buf.Reset()
 			l := New(colorprofile.NewWriter(&buf, os.Environ()))
+			l.SetReportTimestamp(false)
 			l.SetLevel(c.level)
 			l.Info("info")
 			assert.Equal(t, c.expected, buf.String())
@@ -93,6 +95,7 @@ func TestWrongLevel(t *testing.T) {
 func TestLogFormatter(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(colorprofile.NewWriter(&buf, os.Environ()))
+	l.SetReportTimestamp(false)
 	l.SetLevel(DebugLevel)
 	cases := []struct {
 		name     string
@@ -142,6 +145,7 @@ func TestLogFormatter(t *testing.T) {
 func TestEmptyMessage(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(colorprofile.NewWriter(&buf, os.Environ()))
+	l.SetReportTimestamp(false)
 	cases := []struct {
 		name     string
 		expected string
@@ -199,6 +203,7 @@ func TestLogWithPrefix(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			buf.Reset()
 			l := New(colorprofile.NewWriter(&buf, os.Environ()))
+			l.SetReportTimestamp(false)
 			l.SetPrefix(c.prefix)
 			l.Info(c.msg)
 			assert.Equal(t, c.expected, buf.String())
@@ -283,6 +288,7 @@ func TestCustomLevel(t *testing.T) {
 	var buf bytes.Buffer
 	level500 := Level(500)
 	l := New(&buf)
+	l.SetReportTimestamp(false)
 	l.SetLevel(level500)
 	l.Logf(level500, "foo")
 	assert.Equal(t, "foo\n", buf.String())

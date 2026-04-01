@@ -18,6 +18,7 @@ import (
 func TestSlogSimple(t *testing.T) {
 	var buf bytes.Buffer
 	h := New(colorprofile.NewWriter(&buf, os.Environ()))
+	h.SetReportTimestamp(false)
 	h.SetLevel(DebugLevel)
 	l := slog.New(h)
 	cases := []struct {
@@ -76,6 +77,7 @@ func TestSlogSimple(t *testing.T) {
 func TestSlogWith(t *testing.T) {
 	var buf bytes.Buffer
 	h := New(colorprofile.NewWriter(&buf, os.Environ()))
+	h.SetReportTimestamp(false)
 	h.SetLevel(DebugLevel)
 	l := slog.New(h).With("a", "b")
 	cases := []struct {
@@ -127,6 +129,7 @@ func TestSlogWith(t *testing.T) {
 func TestSlogWithGroup(t *testing.T) {
 	var buf bytes.Buffer
 	h := New(colorprofile.NewWriter(&buf, os.Environ()))
+	h.SetReportTimestamp(false)
 	l := slog.New(h).WithGroup("charm").WithGroup("bracelet")
 	cases := []struct {
 		name     string
@@ -178,6 +181,7 @@ func TestSlogCustomLevel(t *testing.T) {
 		buf.Reset()
 		t.Run(c.name, func(t *testing.T) {
 			l := New(&buf)
+			l.SetReportTimestamp(false)
 			l.SetLevel(c.minLevel)
 			l.Handle(context.Background(), slog.NewRecord(time.Now(), c.level, "foo", 0))
 			assert.Equal(t, c.expected, buf.String())

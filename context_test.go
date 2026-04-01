@@ -24,6 +24,7 @@ func TestLogContext_simple(t *testing.T) {
 func TestLogContext_fields(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(colorprofile.NewWriter(&buf, os.Environ()))
+	l.SetReportTimestamp(false)
 	l.SetLevel(DebugLevel)
 	ctx := WithContext(context.Background(), l.With("foo", "bar"))
 	l = FromContext(ctx)

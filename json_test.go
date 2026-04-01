@@ -16,6 +16,7 @@ import (
 func TestJson(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(colorprofile.NewWriter(&buf, os.Environ()))
+	l.SetReportTimestamp(false)
 	l.SetFormatter(JSONFormatter)
 	cases := []struct {
 		name     string
@@ -135,6 +136,7 @@ func TestJson(t *testing.T) {
 func TestJsonCaller(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(colorprofile.NewWriter(&buf, os.Environ()))
+	l.SetReportTimestamp(false)
 	l.SetFormatter(JSONFormatter)
 	l.SetReportCaller(true)
 	l.SetLevel(DebugLevel)
@@ -187,6 +189,7 @@ func TestJsonTime(t *testing.T) {
 func TestJsonPrefix(t *testing.T) {
 	var buf bytes.Buffer
 	logger := New(colorprofile.NewWriter(&buf, os.Environ()))
+	logger.SetReportTimestamp(false)
 	logger.SetFormatter(JSONFormatter)
 	logger.SetPrefix("my-prefix")
 	logger.Info("info")

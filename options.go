@@ -46,7 +46,7 @@ type Options struct {
 	Level Level
 	// Prefix is the prefix for the logger. The default is no prefix.
 	Prefix string
-	// ReportTimestamp is whether the logger should report the timestamp. The default is false.
+	// ReportTimestamp is whether the logger should report the timestamp. The default for New() is true.
 	ReportTimestamp bool
 	// ReportCaller is whether the logger should report the caller location. The default is false.
 	ReportCaller bool

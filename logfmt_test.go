@@ -13,6 +13,7 @@ import (
 func TestLogfmt(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(colorprofile.NewWriter(&buf, os.Environ()))
+	l.SetReportTimestamp(false)
 	l.SetFormatter(LogfmtFormatter)
 	cases := []struct {
 		name     string
