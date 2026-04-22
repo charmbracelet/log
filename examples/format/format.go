@@ -1,0 +1,15 @@
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"charm.land/log/v2"
+)
+
+func main() {
+	for item := 1; item <= 100; item++ {
+		log.Info(fmt.Sprintf("Baking %d / 100 ...", item))
+		time.Sleep(100 * time.Millisecond)
+	}
+}
