@@ -279,6 +279,24 @@ func TestRace(t *testing.T) {
 	}
 }
 
+func TestWithInheritsParentLevel(t *testing.T) {
+	var buf bytes.Buffer
+	parent := New(&buf)
+	parent.SetLevel(InfoLevel)
+
+	child := parent.With("key", "value")
+
+	// child should see the parent's level change
+	parent.SetLevel(DebugLevel)
+	child.Debug("should appear")
+	assert.NotEmpty(t, buf.String(), "child logger should inherit parent's level change")
+
+	buf.Reset()
+	parent.SetLevel(ErrorLevel)
+	child.Info("should not appear")
+	assert.Empty(t, buf.String(), "child logger should not log below parent's updated level")
+}
+
 func TestCustomLevel(t *testing.T) {
 	var buf bytes.Buffer
 	level500 := Level(500)
