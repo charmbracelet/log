@@ -335,7 +335,9 @@ func (l *Logger) With(keyvals ...any) *Logger {
 	st = *l.styles
 	l.mu.Unlock()
 	sl.b = bytes.Buffer{}
-	sl.mu = &sync.RWMutex{}
+	// Share the parent's mutex so concurrent writes from the parent and any
+	// clones serialize on the same underlying io.Writer. Matches log/slog's
+	// handler clone behavior; see charmbracelet/log#177.
 	sl.helpers = &sync.Map{}
 	sl.fields = append(make([]any, 0, len(l.fields)+len(keyvals)), l.fields...)
 	sl.fields = append(sl.fields, keyvals...)
