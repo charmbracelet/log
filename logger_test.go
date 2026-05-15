@@ -287,3 +287,21 @@ func TestCustomLevel(t *testing.T) {
 	l.Logf(level500, "foo")
 	assert.Equal(t, "foo\n", buf.String())
 }
+
+func TestWithSharesMutex(t *testing.T) {
+	// Regression test for #177. With() must share the parent logger's mutex
+	// with the cloned logger so that concurrent writes to the same output
+	// from the parent and any clones get serialized. log/slog's handler
+	// clone behaves the same way.
+	l := New(io.Discard)
+	sl := l.With("foo", "bar")
+	if l.mu != sl.mu {
+		t.Errorf("With() should share the parent's mutex, got distinct pointers (parent=%p, clone=%p)", l.mu, sl.mu)
+	}
+
+	// Two levels of cloning should still share the original mutex.
+	ssl := sl.With("baz", "qux")
+	if l.mu != ssl.mu {
+		t.Errorf("nested With() should still share the root mutex, got distinct pointers")
+	}
+}
