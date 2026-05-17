@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 	"time"
 
@@ -421,4 +422,27 @@ func TestCustomLevelStyle(t *testing.T) {
 	l.SetLevel(lvl)
 	l.Log(lvl, "foobar")
 	assert.Equal(t, "\x1b[1mFUNKY\x1b[m foobar\n", buf.String())
+}
+
+func TestMultilineMessageStyleNoTrailingPadding(t *testing.T) {
+	var buf bytes.Buffer
+	l := New(&buf)
+	l.SetColorProfile(colorprofile.TrueColor)
+	l.SetReportTimestamp(false)
+
+	st := DefaultStyles()
+	st.Message = lipgloss.NewStyle().Foreground(lipgloss.Color("12"))
+	st.Levels[InfoLevel] = lipgloss.NewStyle().
+		SetString("INFO").
+		Padding(0, 1, 0, 1).
+		Background(lipgloss.Color("2")).
+		Foreground(lipgloss.Color("0"))
+	l.SetStyles(st)
+
+	msg := "head\n\t* detail\n"
+	l.Infof("Error: '%s", msg)
+
+	for _, line := range strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n") {
+		assert.Equal(t, line, strings.TrimRight(line, " "), "line %q has trailing whitespace padding", line)
+	}
 }
