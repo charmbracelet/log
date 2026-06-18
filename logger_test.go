@@ -113,7 +113,7 @@ func TestLogFormatter(t *testing.T) {
 			format:   "%s %s",
 			args:     []any{"foo", "bar"},
 			fun:      l.Debugf,
-			expected: "DEBU foo bar\n",
+			expected: "DEBUG foo bar\n",
 		},
 		{
 			name:     "warn format",
@@ -127,7 +127,7 @@ func TestLogFormatter(t *testing.T) {
 			format:   "%s %s",
 			args:     []any{"foo", "bar"},
 			fun:      l.Errorf,
-			expected: "ERRO foo bar\n",
+			expected: "ERROR foo bar\n",
 		},
 	}
 	for _, c := range cases {

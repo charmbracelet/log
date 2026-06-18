@@ -29,7 +29,7 @@ func TestSlogSimple(t *testing.T) {
 	}{
 		{
 			name:     "slog debug",
-			expected: "DEBU slog debug\n",
+			expected: "DEBUG slog debug\n",
 			msg:      "slog debug",
 			print:    l.Debug,
 			attrs:    nil,
@@ -50,14 +50,14 @@ func TestSlogSimple(t *testing.T) {
 		},
 		{
 			name:     "slog error",
-			expected: "ERRO slog error\n",
+			expected: "ERROR slog error\n",
 			msg:      "slog error",
 			print:    l.Error,
 			attrs:    nil,
 		},
 		{
 			name:     "slog error attrs",
-			expected: "ERRO slog error foo=bar\n",
+			expected: "ERROR slog error foo=bar\n",
 			msg:      "slog error",
 			print:    l.Error,
 			attrs:    []any{"foo", "bar"},
@@ -87,7 +87,7 @@ func TestSlogWith(t *testing.T) {
 	}{
 		{
 			name:     "slog debug",
-			expected: "DEBU slog debug a=b foo=bar\n",
+			expected: "DEBUG slog debug a=b foo=bar\n",
 			msg:      "slog debug",
 			print:    l.Debug,
 			attrs:    []any{"foo", "bar"},
@@ -108,7 +108,7 @@ func TestSlogWith(t *testing.T) {
 		},
 		{
 			name:     "slog error",
-			expected: "ERRO slog error a=b foo=bar\n",
+			expected: "ERROR slog error a=b foo=bar\n",
 			msg:      "slog error",
 			print:    l.Error,
 			attrs:    []any{"foo", "bar"},
