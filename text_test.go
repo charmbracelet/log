@@ -54,7 +54,7 @@ func TestTextCaller(t *testing.T) {
 		},
 		{
 			name:     "helper caller",
-			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+58),
+			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+71),
 			msg:      "info",
 			kvs:      nil,
 			f: func(msg any, kvs ...any) {
@@ -77,7 +77,7 @@ func TestTextCaller(t *testing.T) {
 		},
 		{
 			name:     "double nested helper caller",
-			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+58),
+			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+71),
 			msg:      "info",
 			kvs:      nil,
 			f: func(msg any, kvs ...any) {
@@ -87,6 +87,19 @@ func TestTextCaller(t *testing.T) {
 					logger.Info(msg, kvs...)
 				}
 				fun(msg, kvs...)
+			},
+		},
+		{
+			name:     "encapsulated helper caller",
+			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+71),
+			msg:      "info",
+			kvs:      nil,
+			f: func(msg interface{}, kvs ...interface{}) {
+				encapsulatedHelper := func() {
+					logger.Helper(2)
+				}
+				encapsulatedHelper()
+				logger.Info(msg, kvs...)
 			},
 		},
 	}
