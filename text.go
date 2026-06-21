@@ -179,6 +179,8 @@ func (l *Logger) textFormatter(keyvals ...any) {
 				ts = st.Timestamp.Render(ts)
 				writeSpace(&l.b, firstKey)
 				l.b.WriteString(ts)
+			} else {
+				l.writeKVPair(firstKey, moreKeys, keyvals[i], keyvals[i+1])
 			}
 		case LevelKey:
 			if level, ok := keyvals[i+1].(Level); ok {
@@ -193,6 +195,8 @@ func (l *Logger) textFormatter(keyvals ...any) {
 					writeSpace(&l.b, firstKey)
 					l.b.WriteString(lvl)
 				}
+			} else {
+				l.writeKVPair(firstKey, moreKeys, keyvals[i], keyvals[i+1])
 			}
 		case CallerKey:
 			if caller, ok := keyvals[i+1].(string); ok {
@@ -200,12 +204,16 @@ func (l *Logger) textFormatter(keyvals ...any) {
 				caller = st.Caller.Render(caller)
 				writeSpace(&l.b, firstKey)
 				l.b.WriteString(caller)
+			} else {
+				l.writeKVPair(firstKey, moreKeys, keyvals[i], keyvals[i+1])
 			}
 		case PrefixKey:
 			if prefix, ok := keyvals[i+1].(string); ok {
 				prefix = st.Prefix.Render(prefix + ":")
 				writeSpace(&l.b, firstKey)
 				l.b.WriteString(prefix)
+			} else {
+				l.writeKVPair(firstKey, moreKeys, keyvals[i], keyvals[i+1])
 			}
 		case MessageKey:
 			if msg := keyvals[i+1]; msg != nil {
@@ -215,58 +223,66 @@ func (l *Logger) textFormatter(keyvals ...any) {
 				l.b.WriteString(m)
 			}
 		default:
-			sep := separator
-			indentSep := indentSeparator
-			sep = st.Separator.Render(sep)
-			indentSep = st.Separator.Render(indentSep)
-			key := fmt.Sprint(keyvals[i])
-			val := fmt.Sprintf("%+v", keyvals[i+1])
-			raw := val == ""
-			if raw {
-				val = `""`
-			}
-			if key == "" {
-				continue
-			}
-			actualKey := key
-			valueStyle := st.Value
-			if vs, ok := st.Values[actualKey]; ok {
-				valueStyle = vs
-			}
-			if keyStyle, ok := st.Keys[key]; ok {
-				key = keyStyle.Render(key)
-			} else {
-				key = st.Key.Render(key)
-			}
-
-			// Values may contain multiple lines, and that format
-			// is preserved, with each line prefixed with a "  | "
-			// to show it's part of a collection of lines.
-			//
-			// Values may also need quoting, if not all the runes
-			// in the value string are "normal", like if they
-			// contain ANSI escape sequences.
-			if strings.Contains(val, "\n") {
-				l.b.WriteString("\n  ")
-				l.b.WriteString(key)
-				l.b.WriteString(sep + "\n")
-				l.writeIndent(&l.b, val, indentSep, moreKeys, actualKey)
-			} else if !raw && needsQuoting(val) {
-				writeSpace(&l.b, firstKey)
-				l.b.WriteString(key)
-				l.b.WriteString(sep)
-				l.b.WriteString(valueStyle.Render(fmt.Sprintf(`"%s"`,
-					escapeStringForOutput(val, true))))
-			} else {
-				val = valueStyle.Render(val)
-				writeSpace(&l.b, firstKey)
-				l.b.WriteString(key)
-				l.b.WriteString(sep)
-				l.b.WriteString(val)
-			}
+			l.writeKVPair(firstKey, moreKeys, keyvals[i], keyvals[i+1])
 		}
 	}
 
 	// Add a newline to the end of the log message.
 	l.b.WriteByte('\n')
+}
+
+// writeKVPair writes a key-value pair using the default text formatting.
+// Used by textFormatter for both the default case and as a fallback when a
+// reserved key name is present but the value's type does not match the
+// expected built-in type (e.g. a user-supplied key named "time" with a
+// non-time.Time value).
+func (l *Logger) writeKVPair(firstKey, moreKeys bool, k, v any) {
+	st := l.styles
+	sep := st.Separator.Render(separator)
+	indentSep := st.Separator.Render(indentSeparator)
+	key := fmt.Sprint(k)
+	val := fmt.Sprintf("%+v", v)
+	raw := val == ""
+	if raw {
+		val = `""`
+	}
+	if key == "" {
+		return
+	}
+	actualKey := key
+	valueStyle := st.Value
+	if vs, ok := st.Values[actualKey]; ok {
+		valueStyle = vs
+	}
+	if keyStyle, ok := st.Keys[key]; ok {
+		key = keyStyle.Render(key)
+	} else {
+		key = st.Key.Render(key)
+	}
+
+	// Values may contain multiple lines, and that format
+	// is preserved, with each line prefixed with a "  | "
+	// to show it's part of a collection of lines.
+	//
+	// Values may also need quoting, if not all the runes
+	// in the value string are "normal", like if they
+	// contain ANSI escape sequences.
+	if strings.Contains(val, "\n") {
+		l.b.WriteString("\n  ")
+		l.b.WriteString(key)
+		l.b.WriteString(sep + "\n")
+		l.writeIndent(&l.b, val, indentSep, moreKeys, actualKey)
+	} else if !raw && needsQuoting(val) {
+		writeSpace(&l.b, firstKey)
+		l.b.WriteString(key)
+		l.b.WriteString(sep)
+		l.b.WriteString(valueStyle.Render(fmt.Sprintf(`"%s"`,
+			escapeStringForOutput(val, true))))
+	} else {
+		val = valueStyle.Render(val)
+		writeSpace(&l.b, firstKey)
+		l.b.WriteString(key)
+		l.b.WriteString(sep)
+		l.b.WriteString(val)
+	}
 }
