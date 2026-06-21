@@ -287,3 +287,18 @@ func TestCustomLevel(t *testing.T) {
 	l.Logf(level500, "foo")
 	assert.Equal(t, "foo\n", buf.String())
 }
+
+func TestWithInheritsLevel(t *testing.T) {
+	var buf bytes.Buffer
+	l := New(colorprofile.NewWriter(&buf, os.Environ()))
+	l.SetLevel(InfoLevel)
+	l.SetReportTimestamp(false)
+	l.SetReportCaller(false)
+
+	wrapped := l.With("k", "v")
+
+	// Level raised on parent after wrapped logger created — child must see it.
+	l.SetLevel(DebugLevel)
+	wrapped.Debug("debug msg")
+	assert.Equal(t, "DEBU debug msg k=v\n", buf.String())
+}

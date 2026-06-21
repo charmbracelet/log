@@ -45,11 +45,12 @@ func New(w io.Writer) *Logger {
 
 // NewWithOptions returns a new logger using the provided options.
 func NewWithOptions(w io.Writer, o Options) *Logger {
+	lvl := int64(o.Level)
 	l := &Logger{
 		b:               bytes.Buffer{},
 		mu:              &sync.RWMutex{},
 		helpers:         &sync.Map{},
-		level:           int64(o.Level),
+		level:           &lvl,
 		reportTimestamp: o.ReportTimestamp,
 		reportCaller:    o.ReportCaller,
 		prefix:          o.Prefix,
@@ -64,7 +65,7 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 	l.SetOutput(w)
 	// Detect color profile from the writer and environment.
 	l.SetColorProfile(colorprofile.Detect(w, os.Environ()))
-	l.SetLevel(Level(l.level))
+	l.SetLevel(Level(*l.level))
 	l.SetStyles(DefaultStyles())
 
 	if l.callerFormatter == nil {
