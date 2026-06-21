@@ -3,6 +3,7 @@ package log
 import (
 	"fmt"
 	"io"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
@@ -149,6 +150,90 @@ var needsQuotingSet = [utf8.RuneSelf]bool{
 	'=': true,
 }
 
+func dereferenceValue(v any) any {
+	if v == nil {
+		return v
+	}
+	currValue := reflect.ValueOf(v)
+	switch currValue.Kind() {
+	case reflect.Map:
+		return derefMap(currValue)
+	case reflect.Slice:
+		return derefSlice(currValue)
+	default:
+		return v
+	}
+}
+
+func derefMap(rv reflect.Value) any {
+	if rv.Len() == 0 {
+		return rv.Interface()
+	}
+
+	mapType := rv.Type()
+	valueType := mapType.Elem()
+
+	if valueType.Kind() != reflect.Pointer {
+		return rv.Interface()
+	}
+
+	if valueType.Elem().Kind() != reflect.Struct {
+		return rv.Interface()
+	}
+
+	newMapType := reflect.MapOf(
+		mapType.Key(),
+		valueType.Elem())
+
+	newMap := reflect.MakeMap(newMapType)
+
+	iter := rv.MapRange()
+	for iter.Next() {
+		key := iter.Key()
+		value := iter.Value()
+
+		if value.IsNil() {
+			continue
+		}
+
+		derefValue := value.Elem()
+		newMap.SetMapIndex(key, derefValue)
+	}
+
+	return newMap.Interface()
+}
+
+func derefSlice(rv reflect.Value) any {
+	if rv.Len() == 0 {
+		return rv.Interface()
+	}
+
+	elemType := rv.Type().Elem()
+	if elemType.Kind() != reflect.Pointer {
+		return rv.Interface()
+	}
+
+	if elemType.Elem().Kind() != reflect.Struct {
+		return rv.Interface()
+	}
+
+	derefType := elemType.Elem()
+	newSlice := reflect.MakeSlice(reflect.SliceOf(derefType), 0, rv.Len())
+
+	for i := 0; i < rv.Len(); i++ {
+		elem := rv.Index(i)
+
+		if elem.IsNil() {
+			continue
+		}
+
+		derefElem := elem.Elem()
+		newSlice = reflect.Append(newSlice, derefElem)
+	}
+
+	return newSlice.Interface()
+}
+
 func init() {
 	for i := 0; i < utf8.RuneSelf; i++ {
 		r := rune(i)
@@ -220,7 +305,8 @@ func (l *Logger) textFormatter(keyvals ...any) {
 			sep = st.Separator.Render(sep)
 			indentSep = st.Separator.Render(indentSep)
 			key := fmt.Sprint(keyvals[i])
-			val := fmt.Sprintf("%+v", keyvals[i+1])
+			derefVal := dereferenceValue(keyvals[i+1])
+			val := fmt.Sprintf("%+v", derefVal)
 			raw := val == ""
 			if raw {
 				val = `""`
