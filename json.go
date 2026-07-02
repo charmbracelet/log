@@ -30,30 +30,37 @@ func (l *Logger) jsonFormatter(keyvals ...any) {
 }
 
 func (l *Logger) jsonFormatterRoot(jw *jsonWriter, key, value any) {
+	// Reserved keys get their typed-value rendering. When a user passes one
+	// of the names with a different value type, fall back to the regular
+	// keyval path so the entry isn't silently dropped (see #166).
 	switch key {
 	case TimestampKey:
 		if t, ok := value.(time.Time); ok {
 			jw.objectItem(TimestampKey, t.Format(l.timeFormat))
+			return
 		}
 	case LevelKey:
 		if level, ok := value.(Level); ok {
 			jw.objectItem(LevelKey, level.String())
+			return
 		}
 	case CallerKey:
 		if caller, ok := value.(string); ok {
 			jw.objectItem(CallerKey, caller)
+			return
 		}
 	case PrefixKey:
 		if prefix, ok := value.(string); ok {
 			jw.objectItem(PrefixKey, prefix)
+			return
 		}
 	case MessageKey:
-		if msg := value; msg != nil {
-			jw.objectItem(MessageKey, fmt.Sprint(msg))
+		if value != nil {
+			jw.objectItem(MessageKey, fmt.Sprint(value))
+			return
 		}
-	default:
-		l.jsonFormatterItem(jw, key, value)
 	}
+	l.jsonFormatterItem(jw, key, value)
 }
 
 func (l *Logger) jsonFormatterItem(jw *jsonWriter, key, value any) {
