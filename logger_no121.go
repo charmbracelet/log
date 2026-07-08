@@ -10,7 +10,7 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-// type alises for slog.
+// type aliases for slog.
 type (
 	slogAttr      = slog.Attr
 	slogValue     = slog.Value
