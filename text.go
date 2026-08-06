@@ -102,8 +102,8 @@ func escapeStringForOutput(str string, escapeQuotes bool) string {
 				switch {
 				case r < ' ':
 					bb.WriteString(`\x`)
-					bb.WriteByte(lowerhex[byte(r)>>4])
-					bb.WriteByte(lowerhex[byte(r)&0xF])
+					bb.WriteByte(lowerhex[r>>4&0xF])
+					bb.WriteByte(lowerhex[r&0xF])
 				case !utf8.ValidRune(r):
 					r = 0xFFFD
 					fallthrough
