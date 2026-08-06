@@ -42,13 +42,13 @@ readable logging with batteries included.
 Use `go get` to download the dependency.
 
 ```bash
-go get github.com/charmbracelet/log@latest
+go get charm.land/log/v2@latest
 ```
 
 Then, `import` it in your Go files:
 
 ```go
-import "github.com/charmbracelet/log"
+import "charm.land/log/v2"
 ```
 
 The Charm logger comes with a global package-wise logger with timestamps turned
