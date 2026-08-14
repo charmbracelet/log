@@ -45,7 +45,7 @@ func TestTextCaller(t *testing.T) {
 	}{
 		{
 			name:     "simple caller",
-			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+14),
+			expected: fmt.Sprintf("INFO  <log/%s:%d> info\n", filepath.Base(file), line+14),
 			msg:      "info",
 			kvs:      nil,
 			f: func(msg any, kvs ...any) {
@@ -54,7 +54,7 @@ func TestTextCaller(t *testing.T) {
 		},
 		{
 			name:     "helper caller",
-			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+58),
+			expected: fmt.Sprintf("INFO  <log/%s:%d> info\n", filepath.Base(file), line+58),
 			msg:      "info",
 			kvs:      nil,
 			f: func(msg any, kvs ...any) {
@@ -64,7 +64,7 @@ func TestTextCaller(t *testing.T) {
 		},
 		{
 			name:     "nested helper caller",
-			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+37),
+			expected: fmt.Sprintf("INFO  <log/%s:%d> info\n", filepath.Base(file), line+37),
 			msg:      "info",
 			kvs:      nil,
 			f: func(msg any, kvs ...any) {
@@ -77,7 +77,7 @@ func TestTextCaller(t *testing.T) {
 		},
 		{
 			name:     "double nested helper caller",
-			expected: fmt.Sprintf("INFO <log/%s:%d> info\n", filepath.Base(file), line+58),
+			expected: fmt.Sprintf("INFO  <log/%s:%d> info\n", filepath.Base(file), line+58),
 			msg:      "info",
 			kvs:      nil,
 			f: func(msg any, kvs ...any) {
@@ -111,7 +111,7 @@ func TestTextLogger(t *testing.T) {
 	}{
 		{
 			name:     "simple message",
-			expected: "INFO info\n",
+			expected: "INFO  info\n",
 			msg:      "info",
 			kvs:      nil,
 			f:        logger.Info,
@@ -125,77 +125,77 @@ func TestTextLogger(t *testing.T) {
 		},
 		{
 			name:     "message with keyvals",
-			expected: "INFO info key1=val1 key2=val2\n",
+			expected: "INFO  info key1=val1 key2=val2\n",
 			msg:      "info",
 			kvs:      []any{"key1", "val1", "key2", "val2"},
 			f:        logger.Info,
 		},
 		{
 			name:     "error message with keyvals",
-			expected: "ERRO info key1=val1 key2=val2\n",
+			expected: "ERROR info key1=val1 key2=val2\n",
 			msg:      "info",
 			kvs:      []any{"key1", "val1", "key2", "val2"},
 			f:        logger.Error,
 		},
 		{
 			name:     "error message with multiline",
-			expected: "ERRO info\n  key1=\n  │ val1\n  │ val2\n",
+			expected: "ERROR info\n  key1=\n  │ val1\n  │ val2\n",
 			msg:      "info",
 			kvs:      []any{"key1", "val1\nval2"},
 			f:        logger.Error,
 		},
 		{
 			name:     "odd number of keyvals",
-			expected: "ERRO info key1=val1 key2=val2 key3=\"missing value\"\n",
+			expected: "ERROR info key1=val1 key2=val2 key3=\"missing value\"\n",
 			msg:      "info",
 			kvs:      []any{"key1", "val1", "key2", "val2", "key3"},
 			f:        logger.Error,
 		},
 		{
 			name:     "error field",
-			expected: "ERRO info key1=\"error value\"\n",
+			expected: "ERROR info key1=\"error value\"\n",
 			msg:      "info",
 			kvs:      []any{"key1", errors.New("error value")},
 			f:        logger.Error,
 		},
 		{
 			name:     "struct field",
-			expected: "ERRO info key1={foo:bar}\n",
+			expected: "ERROR info key1={foo:bar}\n",
 			msg:      "info",
 			kvs:      []any{"key1", struct{ foo string }{foo: "bar"}},
 			f:        logger.Error,
 		},
 		{
 			name:     "struct field quoted",
-			expected: "ERRO info key1=\"{foo:bar baz}\"\n",
+			expected: "ERROR info key1=\"{foo:bar baz}\"\n",
 			msg:      "info",
 			kvs:      []any{"key1", struct{ foo string }{foo: "bar baz"}},
 			f:        logger.Error,
 		},
 		{
 			name:     "slice of strings",
-			expected: "ERRO info key1=\"[foo bar]\"\n",
+			expected: "ERROR info key1=\"[foo bar]\"\n",
 			msg:      "info",
 			kvs:      []any{"key1", []string{"foo", "bar"}},
 			f:        logger.Error,
 		},
 		{
 			name:     "slice of structs",
-			expected: "ERRO info key1=\"[{foo:bar} {foo:baz}]\"\n",
+			expected: "ERROR info key1=\"[{foo:bar} {foo:baz}]\"\n",
 			msg:      "info",
 			kvs:      []any{"key1", []struct{ foo string }{{foo: "bar"}, {foo: "baz"}}},
 			f:        logger.Error,
 		},
 		{
 			name:     "slice of errors",
-			expected: "ERRO info key1=\"[error value1 error value2]\"\n",
+			expected: "ERROR info key1=\"[error value1 error value2]\"\n",
 			msg:      "info",
 			kvs:      []any{"key1", []error{errors.New("error value1"), errors.New("error value2")}},
 			f:        logger.Error,
 		},
 		{
 			name:     "map of strings",
-			expected: "ERRO info key1=\"map[baz:qux foo:bar]\"\n",
+			expected: "ERROR info key1=\"map[baz:qux foo:bar]\"\n",
 			msg:      "info",
 			kvs:      []any{"key1", map[string]string{"foo": "bar", "baz": "qux"}},
 			f:        logger.Error,
@@ -222,7 +222,7 @@ func TestTextHelper(t *testing.T) {
 	helper()
 	_, file, line, ok := runtime.Caller(0)
 	require.True(t, ok)
-	assert.Equal(t, fmt.Sprintf("INFO <log/%s:%d> helper func\n", filepath.Base(file), line-1), buf.String())
+	assert.Equal(t, fmt.Sprintf("INFO  <log/%s:%d> helper func\n", filepath.Base(file), line-1), buf.String())
 }
 
 func TestTextFatal(t *testing.T) {

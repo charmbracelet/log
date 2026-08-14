@@ -25,28 +25,28 @@ func TestSubLogger(t *testing.T) {
 	}{
 		{
 			name:     "sub logger nil fields",
-			expected: "INFO info\n",
+			expected: "INFO  info\n",
 			msg:      "info",
 			fields:   nil,
 			kvs:      nil,
 		},
 		{
 			name:     "sub logger info",
-			expected: "INFO info foo=bar\n",
+			expected: "INFO  info foo=bar\n",
 			msg:      "info",
 			fields:   []any{"foo", "bar"},
 			kvs:      nil,
 		},
 		{
 			name:     "sub logger info with kvs",
-			expected: "INFO info foo=bar foobar=baz\n",
+			expected: "INFO  info foo=bar foobar=baz\n",
 			msg:      "info",
 			fields:   []any{"foo", "bar"},
 			kvs:      []any{"foobar", "baz"},
 		},
 		{
 			name:     "emoji",
-			expected: "INFO 👍 🐱\n",
+			expected: "INFO  👍 🐱\n",
 			msg:      "👍 🐱",
 			fields:   nil,
 			kvs:      nil,
@@ -75,7 +75,7 @@ func TestWrongLevel(t *testing.T) {
 		},
 		{
 			name:     "wrong level negative",
-			expected: "INFO info\n",
+			expected: "INFO  info\n",
 			level:    Level(-999),
 		},
 	}
@@ -106,28 +106,28 @@ func TestLogFormatter(t *testing.T) {
 			format:   "%s %s",
 			args:     []any{"foo", "bar"},
 			fun:      l.Infof,
-			expected: "INFO foo bar\n",
+			expected: "INFO  foo bar\n",
 		},
 		{
 			name:     "debug format",
 			format:   "%s %s",
 			args:     []any{"foo", "bar"},
 			fun:      l.Debugf,
-			expected: "DEBU foo bar\n",
+			expected: "DEBUG foo bar\n",
 		},
 		{
 			name:     "warn format",
 			format:   "%s %s",
 			args:     []any{"foo", "bar"},
 			fun:      l.Warnf,
-			expected: "WARN foo bar\n",
+			expected: "WARN  foo bar\n",
 		},
 		{
 			name:     "error format",
 			format:   "%s %s",
 			args:     []any{"foo", "bar"},
 			fun:      l.Errorf,
-			expected: "ERRO foo bar\n",
+			expected: "ERROR foo bar\n",
 		},
 	}
 	for _, c := range cases {
@@ -151,21 +151,21 @@ func TestEmptyMessage(t *testing.T) {
 	}{
 		{
 			name:     "empty message nil fields",
-			expected: "INFO\n",
+			expected: "INFO \n",
 			msg:      "",
 			fields:   nil,
 			kvs:      nil,
 		},
 		{
 			name:     "empty message with fields",
-			expected: "INFO foo=bar\n",
+			expected: "INFO  foo=bar\n",
 			msg:      "",
 			fields:   []any{"foo", "bar"},
 			kvs:      nil,
 		},
 		{
 			name:     "empty message with fields & kvs",
-			expected: "INFO foo=bar foobar=baz\n",
+			expected: "INFO  foo=bar foobar=baz\n",
 			msg:      "",
 			fields:   []any{"foo", "bar"},
 			kvs:      []any{"foobar", "baz"},
@@ -190,7 +190,7 @@ func TestLogWithPrefix(t *testing.T) {
 	}{
 		{
 			name:     "with prefix",
-			expected: "INFO prefix: info\n",
+			expected: "INFO  prefix: info\n",
 			prefix:   "prefix",
 			msg:      "info",
 		},
