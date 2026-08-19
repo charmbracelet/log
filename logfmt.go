@@ -22,6 +22,7 @@ func (l *Logger) logfmtFormatter(keyvals ...any) {
 				keyvals[i] = key
 			}
 		}
+		keyvals[i+1] = resolveLogValuer(keyvals[i+1])
 		err := e.EncodeKeyval(keyvals[i], keyvals[i+1])
 		if err != nil && errors.Is(err, logfmt.ErrUnsupportedValueType) {
 			// If the value is not supported by logfmt, we try to convert it to a string.
