@@ -24,17 +24,17 @@ func TestStdLog(t *testing.T) {
 	}{
 		{
 			name:     "simple",
-			expected: "INFO info\n",
+			expected: "INFO  info\n",
 			f:        func(l *log.Logger) { l.Print("info") },
 		},
 		{
 			name:     "without level",
-			expected: "INFO coffee\n",
+			expected: "INFO  coffee\n",
 			f:        func(l *log.Logger) { l.Print("coffee") },
 		},
 		{
 			name:     "error level",
-			expected: "ERRO coffee\n",
+			expected: "ERROR coffee\n",
 			f:        func(l *log.Logger) { l.Print("ERROR coffee") },
 		},
 	}
@@ -64,12 +64,12 @@ func TestStdLog_forceLevel(t *testing.T) {
 		},
 		{
 			name:     "info",
-			expected: "INFO coffee\n",
+			expected: "INFO  coffee\n",
 			level:    InfoLevel,
 		},
 		{
 			name:     "error",
-			expected: "ERRO coffee\n",
+			expected: "ERROR coffee\n",
 			level:    ErrorLevel,
 		},
 	}
@@ -101,12 +101,12 @@ func TestStdLog_writer(t *testing.T) {
 		},
 		{
 			name:     "info",
-			expected: fmt.Sprintf("INFO <log/%s:%d> coffee\n", filepath.Base(file), line+27),
+			expected: fmt.Sprintf("INFO  <log/%s:%d> coffee\n", filepath.Base(file), line+27),
 			level:    InfoLevel,
 		},
 		{
 			name:     "error",
-			expected: fmt.Sprintf("ERRO <log/%s:%d> coffee\n", filepath.Base(file), line+27),
+			expected: fmt.Sprintf("ERROR <log/%s:%d> coffee\n", filepath.Base(file), line+27),
 			level:    ErrorLevel,
 		},
 	}

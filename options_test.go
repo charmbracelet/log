@@ -41,24 +41,24 @@ func TestCallerFormatter(t *testing.T) {
 	}{
 		{
 			name:     "short caller formatter",
-			expected: fmt.Sprintf("INFO <log/options_test.go:%d> hi\n", line+3),
+			expected: fmt.Sprintf("INFO  <log/options_test.go:%d> hi\n", line+3),
 			format:   ShortCallerFormatter,
 		},
 		{
 			name:     "long caller formatter",
-			expected: fmt.Sprintf("INFO <%s:%d> hi\n", file, line+3),
+			expected: fmt.Sprintf("INFO  <%s:%d> hi\n", file, line+3),
 			format:   LongCallerFormatter,
 		},
 		{
 			name:     "foo caller formatter",
-			expected: "INFO <foo> hi\n",
+			expected: "INFO  <foo> hi\n",
 			format: func(file string, line int, fn string) string {
 				return "foo"
 			},
 		},
 		{
 			name:     "custom caller formatter",
-			expected: fmt.Sprintf("INFO <%s:%d:%s.func1> hi\n", file, line+3, fn),
+			expected: fmt.Sprintf("INFO  <%s:%d:%s.func1> hi\n", file, line+3, fn),
 			format: func(file string, line int, fn string) string {
 				return fmt.Sprintf("%s:%d:%s", file, line, fn)
 			},

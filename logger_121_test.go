@@ -29,35 +29,35 @@ func TestSlogSimple(t *testing.T) {
 	}{
 		{
 			name:     "slog debug",
-			expected: "DEBU slog debug\n",
+			expected: "DEBUG slog debug\n",
 			msg:      "slog debug",
 			print:    l.Debug,
 			attrs:    nil,
 		},
 		{
 			name:     "slog info",
-			expected: "INFO slog info\n",
+			expected: "INFO  slog info\n",
 			msg:      "slog info",
 			print:    l.Info,
 			attrs:    nil,
 		},
 		{
 			name:     "slog warn",
-			expected: "WARN slog warn\n",
+			expected: "WARN  slog warn\n",
 			msg:      "slog warn",
 			print:    l.Warn,
 			attrs:    nil,
 		},
 		{
 			name:     "slog error",
-			expected: "ERRO slog error\n",
+			expected: "ERROR slog error\n",
 			msg:      "slog error",
 			print:    l.Error,
 			attrs:    nil,
 		},
 		{
 			name:     "slog error attrs",
-			expected: "ERRO slog error foo=bar\n",
+			expected: "ERROR slog error foo=bar\n",
 			msg:      "slog error",
 			print:    l.Error,
 			attrs:    []any{"foo", "bar"},
@@ -87,28 +87,28 @@ func TestSlogWith(t *testing.T) {
 	}{
 		{
 			name:     "slog debug",
-			expected: "DEBU slog debug a=b foo=bar\n",
+			expected: "DEBUG slog debug a=b foo=bar\n",
 			msg:      "slog debug",
 			print:    l.Debug,
 			attrs:    []any{"foo", "bar"},
 		},
 		{
 			name:     "slog info",
-			expected: "INFO slog info a=b foo=bar\n",
+			expected: "INFO  slog info a=b foo=bar\n",
 			msg:      "slog info",
 			print:    l.Info,
 			attrs:    []any{"foo", "bar"},
 		},
 		{
 			name:     "slog warn",
-			expected: "WARN slog warn a=b foo=bar\n",
+			expected: "WARN  slog warn a=b foo=bar\n",
 			msg:      "slog warn",
 			print:    l.Warn,
 			attrs:    []any{"foo", "bar"},
 		},
 		{
 			name:     "slog error",
-			expected: "ERRO slog error a=b foo=bar\n",
+			expected: "ERROR slog error a=b foo=bar\n",
 			msg:      "slog error",
 			print:    l.Error,
 			attrs:    []any{"foo", "bar"},
@@ -136,12 +136,12 @@ func TestSlogWithGroup(t *testing.T) {
 		{
 			name:     "simple",
 			msg:      "message",
-			expected: "INFO charm.bracelet: message\n",
+			expected: "INFO  charm.bracelet: message\n",
 		},
 		{
 			name:     "empty",
 			msg:      "",
-			expected: "INFO charm.bracelet:\n",
+			expected: "INFO  charm.bracelet:\n",
 		},
 	}
 	for _, c := range cases {
