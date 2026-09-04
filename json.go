@@ -34,18 +34,26 @@ func (l *Logger) jsonFormatterRoot(jw *jsonWriter, key, value any) {
 	case TimestampKey:
 		if t, ok := value.(time.Time); ok {
 			jw.objectItem(TimestampKey, t.Format(l.timeFormat))
+		} else {
+			l.jsonFormatterItem(jw, key, value)
 		}
 	case LevelKey:
 		if level, ok := value.(Level); ok {
 			jw.objectItem(LevelKey, level.String())
+		} else {
+			l.jsonFormatterItem(jw, key, value)
 		}
 	case CallerKey:
 		if caller, ok := value.(string); ok {
 			jw.objectItem(CallerKey, caller)
+		} else {
+			l.jsonFormatterItem(jw, key, value)
 		}
 	case PrefixKey:
 		if prefix, ok := value.(string); ok {
 			jw.objectItem(PrefixKey, prefix)
+		} else {
+			l.jsonFormatterItem(jw, key, value)
 		}
 	case MessageKey:
 		if msg := value; msg != nil {

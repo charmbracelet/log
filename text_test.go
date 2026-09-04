@@ -410,6 +410,19 @@ func TestTextValueStyles(t *testing.T) {
 	}
 }
 
+func TestReservedKeyNonBuiltinValue(t *testing.T) {
+	// When a user-provided key has the same name as a built-in key (e.g.
+	// "time") but holds a non-matching value type, the key-value pair should
+	// be printed as a regular field instead of being silently dropped.
+	var buf bytes.Buffer
+	l := New(&buf)
+	l.SetReportTimestamp(false)
+	l.Info("msg", "time", "0", "other", "1", "time", "2")
+	assert.Contains(t, buf.String(), "time=0")
+	assert.Contains(t, buf.String(), "other=1")
+	assert.Contains(t, buf.String(), "time=2")
+}
+
 func TestCustomLevelStyle(t *testing.T) {
 	var buf bytes.Buffer
 	l := New(&buf)
