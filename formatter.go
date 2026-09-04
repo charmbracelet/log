@@ -13,6 +13,23 @@ const (
 	LogfmtFormatter
 )
 
+// resolveLogValuer resolves values that implement slog.LogValuer to their
+// LogValue, mirroring what the JSON formatter already does. A value passed
+// directly satisfies slog.LogValuer, while the slog.Handler path wraps it in a
+// slog.Value first; both are handled. The resolved slog.Value is returned so it
+// renders the same way a slog.Value passed directly would, leaving values that
+// are already resolved untouched. Values that carry no LogValue are returned
+// unchanged.
+func resolveLogValuer(value any) any {
+	switch v := value.(type) {
+	case slogLogValuer:
+		return v.LogValue().Resolve()
+	case slogValue:
+		return v.Resolve()
+	}
+	return value
+}
+
 var (
 	// TimestampKey is the key for the timestamp.
 	TimestampKey = "time"

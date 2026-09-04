@@ -220,7 +220,7 @@ func (l *Logger) textFormatter(keyvals ...any) {
 			sep = st.Separator.Render(sep)
 			indentSep = st.Separator.Render(indentSep)
 			key := fmt.Sprint(keyvals[i])
-			val := fmt.Sprintf("%+v", keyvals[i+1])
+			val := fmt.Sprintf("%+v", resolveLogValuer(keyvals[i+1]))
 			raw := val == ""
 			if raw {
 				val = `""`

@@ -276,3 +276,64 @@ func TestSlogAttr(t *testing.T) {
 		})
 	}
 }
+
+// TestFormatterLogValuer verifies that the text and logfmt formatters resolve
+// slog.LogValuer values instead of dumping the underlying struct, matching the
+// JSON formatter. See https://github.com/charmbracelet/log/issues/96.
+func TestFormatterLogValuer(t *testing.T) {
+	scalar := testLogValue{slog.StringValue("resolved")}
+	group := testLogValue{slog.GroupValue(
+		slog.String("first", "hello"),
+		slog.String("last", "world"),
+	)}
+
+	cases := []struct {
+		name      string
+		formatter Formatter
+		expected  string
+		kvs       []any
+	}{
+		{
+			name:      "text scalar",
+			formatter: TextFormatter,
+			expected:  "INFO message lv=resolved\n",
+			kvs:       []any{"lv", scalar},
+		},
+		{
+			name:      "text group",
+			formatter: TextFormatter,
+			expected:  "INFO message lv=\"[first=hello last=world]\"\n",
+			kvs:       []any{"lv", group},
+		},
+		{
+			name:      "logfmt scalar",
+			formatter: LogfmtFormatter,
+			expected:  "level=info msg=message lv=resolved\n",
+			kvs:       []any{"lv", scalar},
+		},
+		{
+			name:      "logfmt group",
+			formatter: LogfmtFormatter,
+			expected:  "level=info msg=message lv=\"[first=hello last=world]\"\n",
+			kvs:       []any{"lv", group},
+		},
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
+			// expect the same output whether the value arrives through the
+			// log or the slog API.
+			var buf bytes.Buffer
+			l := NewWithOptions(&buf, Options{Formatter: c.formatter})
+			l.Info("message", c.kvs...)
+			assert.Equal(t, c.expected, buf.String())
+
+			buf.Truncate(0)
+			slog.New(l).Info("message", c.kvs...)
+			assert.Equal(t, c.expected, buf.String())
+		})
+	}
+}
