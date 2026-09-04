@@ -172,9 +172,16 @@ func (l *Logger) textFormatter(keyvals ...any) {
 		firstKey := i == 0
 		moreKeys := i < lenKeyvals-2
 
+		// Reserved keys (timestamp, level, caller, prefix, msg) get special
+		// rendering only when paired with the type the internal logger emits.
+		// When a user passes one of these names with a different value type
+		// (e.g. "level", "foo"), the keyval is silently dropped — see #166.
+		// Detect the mismatch up front and let the default branch render it.
+		reserved := false
 		switch keyvals[i] {
 		case TimestampKey:
 			if t, ok := keyvals[i+1].(time.Time); ok {
+				reserved = true
 				ts := t.Format(l.timeFormat)
 				ts = st.Timestamp.Render(ts)
 				writeSpace(&l.b, firstKey)
@@ -182,20 +189,19 @@ func (l *Logger) textFormatter(keyvals ...any) {
 			}
 		case LevelKey:
 			if level, ok := keyvals[i+1].(Level); ok {
-				var lvl string
+				reserved = true
 				lvlStyle, ok := st.Levels[level]
 				if !ok {
 					continue
 				}
-
-				lvl = lvlStyle.String()
-				if lvl != "" {
+				if lvl := lvlStyle.String(); lvl != "" {
 					writeSpace(&l.b, firstKey)
 					l.b.WriteString(lvl)
 				}
 			}
 		case CallerKey:
 			if caller, ok := keyvals[i+1].(string); ok {
+				reserved = true
 				caller = fmt.Sprintf("<%s>", caller)
 				caller = st.Caller.Render(caller)
 				writeSpace(&l.b, firstKey)
@@ -203,18 +209,24 @@ func (l *Logger) textFormatter(keyvals ...any) {
 			}
 		case PrefixKey:
 			if prefix, ok := keyvals[i+1].(string); ok {
+				reserved = true
 				prefix = st.Prefix.Render(prefix + ":")
 				writeSpace(&l.b, firstKey)
 				l.b.WriteString(prefix)
 			}
 		case MessageKey:
 			if msg := keyvals[i+1]; msg != nil {
+				reserved = true
 				m := fmt.Sprint(msg)
 				m = st.Message.Render(m)
 				writeSpace(&l.b, firstKey)
 				l.b.WriteString(m)
 			}
-		default:
+		}
+		if reserved {
+			continue
+		}
+		{
 			sep := separator
 			indentSep := indentSeparator
 			sep = st.Separator.Render(sep)

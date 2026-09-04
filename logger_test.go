@@ -287,3 +287,21 @@ func TestCustomLevel(t *testing.T) {
 	l.Logf(level500, "foo")
 	assert.Equal(t, "foo\n", buf.String())
 }
+
+func TestKeyvalNamedAsReservedKey(t *testing.T) {
+	// #166. A user-provided keyval whose key collides with a reserved name
+	// (level, ts, caller, prefix, msg) used to be silently dropped when the
+	// value wasn't the type the internal logger emits.
+	var buf bytes.Buffer
+	l := New(&buf)
+	l.SetReportTimestamp(false)
+	l.SetReportCaller(false)
+
+	l.Info("test", "level", "foo", "anything-else", "bar")
+	assert.Equal(t, "INFO test level=foo anything-else=bar\n", buf.String())
+
+	buf.Reset()
+	l.SetFormatter(JSONFormatter)
+	l.Info("test", "level", "foo", "anything-else", "bar")
+	assert.Equal(t, "{\"level\":\"info\",\"msg\":\"test\",\"level\":\"foo\",\"anything-else\":\"bar\"}\n", buf.String())
+}
