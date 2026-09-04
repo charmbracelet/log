@@ -40,7 +40,11 @@ func (l *Logger) writeIndent(w io.Writer, str string, indent string, newline boo
 
 		_, _ = w.Write([]byte(indent))
 		val := escapeStringForOutput(str[:nl], false)
-		val = st.Value.Render(val)
+		if valueStyle, ok := st.Values[key]; ok {
+			val = valueStyle.Render(val)
+		} else {
+			val = st.Value.Render(val)
+		}
 		_, _ = w.Write([]byte(val))
 		_, _ = w.Write([]byte{'\n'})
 		str = str[nl+1:]
