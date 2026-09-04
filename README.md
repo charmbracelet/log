@@ -356,7 +356,7 @@ information.
 
 ## License
 
-[MIT](https://github.com/charmbracelet/log/raw/master/LICENSE)
+[MIT](https://github.com/charmbracelet/log/raw/main/LICENSE)
 
 ---
 
