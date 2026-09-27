@@ -8,6 +8,8 @@ import (
 	"time"
 	"unicode"
 	"unicode/utf8"
+
+	"charm.land/lipgloss/v2"
 )
 
 const (
@@ -164,6 +166,25 @@ func writeSpace(w io.Writer, first bool) {
 	}
 }
 
+// renderStyledMultiline applies style per line. lipgloss pads every line to the
+// width of the widest line when Render is called on a string containing newlines,
+// which produces trailing whitespace on shorter and empty lines (#187).
+func renderStyledMultiline(style lipgloss.Style, s string) string {
+	if !strings.Contains(s, "\n") {
+		return style.Render(s)
+	}
+
+	lines := strings.Split(s, "\n")
+	for i, line := range lines {
+		if line == "" {
+			continue
+		}
+		lines[i] = style.Render(line)
+	}
+
+	return strings.Join(lines, "\n")
+}
+
 func (l *Logger) textFormatter(keyvals ...any) {
 	st := l.styles
 	lenKeyvals := len(keyvals)
@@ -210,7 +231,7 @@ func (l *Logger) textFormatter(keyvals ...any) {
 		case MessageKey:
 			if msg := keyvals[i+1]; msg != nil {
 				m := fmt.Sprint(msg)
-				m = st.Message.Render(m)
+				m = renderStyledMultiline(st.Message, m)
 				writeSpace(&l.b, firstKey)
 				l.b.WriteString(m)
 			}
