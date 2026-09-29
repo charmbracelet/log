@@ -8,6 +8,8 @@ import (
 	"time"
 	"unicode"
 	"unicode/utf8"
+
+	"charm.land/lipgloss/v2"
 )
 
 const (
@@ -17,6 +19,7 @@ const (
 
 func (l *Logger) writeIndent(w io.Writer, str string, indent string, newline bool, key string) {
 	st := l.styles
+	str = normalizeLogNewlines(str)
 
 	// kindly borrowed from hclog
 	for {
@@ -26,9 +29,9 @@ func (l *Logger) writeIndent(w io.Writer, str string, indent string, newline boo
 				_, _ = w.Write([]byte(indent))
 				val := escapeStringForOutput(str, false)
 				if valueStyle, ok := st.Values[key]; ok {
-					val = valueStyle.Render(val)
+					val = renderKeepTabs(valueStyle, val)
 				} else {
-					val = st.Value.Render(val)
+					val = renderKeepTabs(st.Value, val)
 				}
 				_, _ = w.Write([]byte(val))
 				if newline {
@@ -40,11 +43,25 @@ func (l *Logger) writeIndent(w io.Writer, str string, indent string, newline boo
 
 		_, _ = w.Write([]byte(indent))
 		val := escapeStringForOutput(str[:nl], false)
-		val = st.Value.Render(val)
+		val = renderKeepTabs(st.Value, val)
 		_, _ = w.Write([]byte(val))
 		_, _ = w.Write([]byte{'\n'})
 		str = str[nl+1:]
 	}
+}
+
+// normalizeLogNewlines turns CRLF and leftover CR into LF so Windows line
+// endings don't show up as a literal \r in the text formatter.
+func normalizeLogNewlines(s string) string {
+	s = strings.ReplaceAll(s, "\r\n", "\n")
+	return strings.ReplaceAll(s, "\r", "\n")
+}
+
+// renderKeepTabs styles s without converting tabs to spaces. Lip Gloss
+// otherwise replaces tabs with 4 spaces (or removes them when TabWidth is 0),
+// which breaks pretty-printed errors that indent with tabs.
+func renderKeepTabs(style lipgloss.Style, s string) string {
+	return style.TabWidth(lipgloss.NoTabConversion).Render(s)
 }
 
 func needsEscaping(str string) bool {
@@ -95,7 +112,9 @@ func escapeStringForOutput(str string, escapeQuotes bool) string {
 			case '\r':
 				bb.WriteString(`\r`)
 			case '\t':
-				bb.WriteString(`\t`)
+				// Keep tabs as tabs so multiline values (pretty-printed
+				// errors, source fragments) retain their indentation.
+				bb.WriteRune(r)
 			case '\v':
 				bb.WriteString(`\v`)
 			default:
@@ -209,8 +228,8 @@ func (l *Logger) textFormatter(keyvals ...any) {
 			}
 		case MessageKey:
 			if msg := keyvals[i+1]; msg != nil {
-				m := fmt.Sprint(msg)
-				m = st.Message.Render(m)
+				m := normalizeLogNewlines(fmt.Sprint(msg))
+				m = renderKeepTabs(st.Message, m)
 				writeSpace(&l.b, firstKey)
 				l.b.WriteString(m)
 			}
@@ -255,10 +274,10 @@ func (l *Logger) textFormatter(keyvals ...any) {
 				writeSpace(&l.b, firstKey)
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
-				l.b.WriteString(valueStyle.Render(fmt.Sprintf(`"%s"`,
+				l.b.WriteString(renderKeepTabs(valueStyle, fmt.Sprintf(`"%s"`,
 					escapeStringForOutput(val, true))))
 			} else {
-				val = valueStyle.Render(val)
+				val = renderKeepTabs(valueStyle, val)
 				writeSpace(&l.b, firstKey)
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
