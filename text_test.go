@@ -145,6 +145,27 @@ func TestTextLogger(t *testing.T) {
 			f:        logger.Error,
 		},
 		{
+			name:     "multiline value preserves tabs",
+			expected: "ERROR oops\n  error=\n  │ src:\n  │ \tline\n",
+			msg:      "oops",
+			kvs:      []any{"error", "src:\n\tline"},
+			f:        logger.Error,
+		},
+		{
+			name:     "multiline value treats CRLF as a line break",
+			expected: "ERROR oops\n  error=\n  │ src:\n  │ \tline\n",
+			msg:      "oops",
+			kvs:      []any{"error", "src:\r\n\tline"},
+			f:        logger.Error,
+		},
+		{
+			name:     "message preserves tabs",
+			expected: "ERROR src:\tline\n",
+			msg:      "src:\tline",
+			kvs:      nil,
+			f:        logger.Error,
+		},
+		{
 			name:     "odd number of keyvals",
 			expected: "ERROR info key1=val1 key2=val2 key3=\"missing value\"\n",
 			msg:      "info",
