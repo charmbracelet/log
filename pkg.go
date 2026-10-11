@@ -50,6 +50,7 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 		mu:              &sync.RWMutex{},
 		helpers:         &sync.Map{},
 		level:           int64(o.Level),
+		hasCustomLevel:  1,
 		reportTimestamp: o.ReportTimestamp,
 		reportCaller:    o.ReportCaller,
 		prefix:          o.Prefix,

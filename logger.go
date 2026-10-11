@@ -30,6 +30,8 @@ type Logger struct {
 	isDiscard uint32
 
 	level           int64
+	hasCustomLevel  uint32
+	parent          *Logger
 	prefix          string
 	timeFunc        TimeFunction
 	timeFormat      string
@@ -58,7 +60,7 @@ func (l *Logger) Log(level Level, msg any, keyvals ...any) {
 	}
 
 	// check if the level is allowed
-	if atomic.LoadInt64(&l.level) > int64(level) {
+	if l.getLevel() > int64(level) {
 		return
 	}
 
@@ -231,11 +233,20 @@ func (l *Logger) SetReportCaller(report bool) {
 	l.reportCaller = report
 }
 
+func (l *Logger) getLevel() int64 {
+	for cur := l; cur != nil; cur = cur.parent {
+		if atomic.LoadUint32(&cur.hasCustomLevel) != 0 || cur.parent == nil {
+			return atomic.LoadInt64(&cur.level)
+		}
+	}
+	return int64(InfoLevel)
+}
+
 // GetLevel returns the current level.
 func (l *Logger) GetLevel() Level {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
-	return Level(l.level)
+	return Level(l.getLevel())
 }
 
 // SetLevel sets the current level.
@@ -243,6 +254,7 @@ func (l *Logger) SetLevel(level Level) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	atomic.StoreInt64(&l.level, int64(level))
+	atomic.StoreUint32(&l.hasCustomLevel, 1)
 }
 
 // GetPrefix returns the current prefix.
@@ -340,6 +352,8 @@ func (l *Logger) With(keyvals ...any) *Logger {
 	sl.fields = append(make([]any, 0, len(l.fields)+len(keyvals)), l.fields...)
 	sl.fields = append(sl.fields, keyvals...)
 	sl.styles = &st
+	sl.parent = l
+	sl.hasCustomLevel = 0
 	return &sl
 }
 

@@ -287,3 +287,159 @@ func TestCustomLevel(t *testing.T) {
 	l.Logf(level500, "foo")
 	assert.Equal(t, "foo\n", buf.String())
 }
+
+func TestWrappedLoggerInheritsLevel(t *testing.T) {
+	var buf bytes.Buffer
+	logger := NewWithOptions(&buf, Options{
+		Level:           InfoLevel,
+		ReportTimestamp: false,
+		ReportCaller:    false,
+	})
+
+	wrappedLogger := logger.With("component", "auth")
+
+	// Initially InfoLevel: debug message must be suppressed on child.
+	wrappedLogger.Debug("auth debug suppressed")
+	assert.Empty(t, buf.String())
+
+	// Changing parent level to DebugLevel must propagate to child.
+	logger.SetLevel(DebugLevel)
+	assert.Equal(t, DebugLevel, wrappedLogger.GetLevel())
+
+	wrappedLogger.Debug("auth debug allowed")
+	assert.Equal(t, "DEBUG auth debug allowed component=auth\n", buf.String())
+
+	// Changing parent level to WarnLevel must suppress info messages on child.
+	buf.Reset()
+	logger.SetLevel(WarnLevel)
+	assert.Equal(t, WarnLevel, wrappedLogger.GetLevel())
+
+	wrappedLogger.Info("auth info suppressed")
+	assert.Empty(t, buf.String())
+
+	wrappedLogger.Warn("auth warning allowed")
+	assert.Equal(t, "WARN  auth warning allowed component=auth\n", buf.String())
+}
+
+func TestWrappedLoggerExplicitChildLevel(t *testing.T) {
+	var buf bytes.Buffer
+	logger := NewWithOptions(&buf, Options{
+		Level:           InfoLevel,
+		ReportTimestamp: false,
+		ReportCaller:    false,
+	})
+
+	child := logger.With("component", "worker")
+	child.SetLevel(WarnLevel)
+
+	// Child override must not mutate parent level.
+	assert.Equal(t, InfoLevel, logger.GetLevel())
+	assert.Equal(t, WarnLevel, child.GetLevel())
+
+	// Subsequent parent level change must not override explicit child setting.
+	logger.SetLevel(DebugLevel)
+	assert.Equal(t, DebugLevel, logger.GetLevel())
+	assert.Equal(t, WarnLevel, child.GetLevel())
+
+	// Parent permits debug messages while child suppresses them.
+	logger.Debug("parent debug allowed")
+	assert.Equal(t, "DEBUG parent debug allowed\n", buf.String())
+
+	buf.Reset()
+	child.Debug("child debug suppressed")
+	assert.Empty(t, buf.String())
+
+	child.Info("child info suppressed")
+	assert.Empty(t, buf.String())
+
+	child.Warn("child warn allowed")
+	assert.Equal(t, "WARN  child warn allowed component=worker\n", buf.String())
+}
+
+func TestWrappedLoggerHierarchy(t *testing.T) {
+	var buf bytes.Buffer
+	root := NewWithOptions(&buf, Options{
+		Level:           InfoLevel,
+		ReportTimestamp: false,
+		ReportCaller:    false,
+	})
+
+	child := root.With("tier", 1)
+	grandchild := child.With("tier", 2)
+
+	assert.Equal(t, InfoLevel, root.GetLevel())
+	assert.Equal(t, InfoLevel, child.GetLevel())
+	assert.Equal(t, InfoLevel, grandchild.GetLevel())
+
+	// Root update propagates down entire hierarchy.
+	root.SetLevel(DebugLevel)
+	assert.Equal(t, DebugLevel, root.GetLevel())
+	assert.Equal(t, DebugLevel, child.GetLevel())
+	assert.Equal(t, DebugLevel, grandchild.GetLevel())
+
+	grandchild.Debug("grandchild debug")
+	assert.Equal(t, "DEBUG grandchild debug tier=1 tier=2\n", buf.String())
+
+	// Overriding child propagates to grandchild, while root is unaffected.
+	buf.Reset()
+	child.SetLevel(ErrorLevel)
+	assert.Equal(t, DebugLevel, root.GetLevel())
+	assert.Equal(t, ErrorLevel, child.GetLevel())
+	assert.Equal(t, ErrorLevel, grandchild.GetLevel())
+
+	grandchild.Warn("grandchild warn suppressed")
+	assert.Empty(t, buf.String())
+
+	grandchild.Error("grandchild error allowed")
+	assert.Equal(t, "ERROR grandchild error allowed tier=1 tier=2\n", buf.String())
+
+	buf.Reset()
+	root.Debug("root debug allowed")
+	assert.Equal(t, "DEBUG root debug allowed\n", buf.String())
+}
+
+func TestWrappedLoggerRace(t *testing.T) {
+	w := io.Discard
+	logger := New(w)
+	child := logger.With("component", "worker")
+	grandchild := child.With("task", 42)
+
+	var wg sync.WaitGroup
+	levels := []Level{DebugLevel, InfoLevel, WarnLevel, ErrorLevel}
+
+	for i := 0; i < 20; i++ {
+		wg.Add(4)
+		lvl := levels[i%len(levels)]
+
+		go func() {
+			defer wg.Done()
+			logger.SetLevel(lvl)
+			logger.Debug("logger debug")
+			logger.Info("logger info")
+		}()
+
+		go func() {
+			defer wg.Done()
+			child.GetLevel()
+			child.Info("child info")
+			child.Warn("child warn")
+		}()
+
+		go func() {
+			defer wg.Done()
+			grandchild.GetLevel()
+			grandchild.Debug("grandchild debug")
+			grandchild.Error("grandchild error")
+		}()
+
+		go func(idx int) {
+			defer wg.Done()
+			if idx%2 == 0 {
+				child.SetLevel(lvl)
+			}
+		}(i)
+	}
+
+	wg.Wait()
+}
+

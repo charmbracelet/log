@@ -5,7 +5,6 @@ package log
 import (
 	"context"
 	"runtime"
-	"sync/atomic"
 
 	"golang.org/x/exp/slog"
 )
@@ -25,7 +24,7 @@ const slogKindGroup = slog.KindGroup
 //
 // Implements slog.Handler.
 func (l *Logger) Enabled(_ context.Context, level slog.Level) bool {
-	return atomic.LoadInt64(&l.level) <= int64(level)
+	return l.getLevel() <= int64(level)
 }
 
 // Handle handles the Record. It will only be called if Enabled returns true.
