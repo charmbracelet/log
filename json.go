@@ -82,11 +82,13 @@ func (l *Logger) jsonFormatterItem(jw *jsonWriter, key, value any) {
 func (l *Logger) writeSlogValue(jw *jsonWriter, v slogValue) {
 	switch v.Kind() {
 	case slogKindGroup:
+		d := jw.d
 		jw.start()
 		for _, attr := range v.Group() {
 			l.jsonFormatterItem(jw, attr.Key, attr.Value)
 		}
 		jw.end()
+		jw.d = d
 	default:
 		a := v.Any()
 		_, jm := a.(json.Marshaler)

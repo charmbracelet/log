@@ -256,6 +256,14 @@ func TestSlogAttr(t *testing.T) {
 				)},
 			},
 		},
+		{
+			name:     "log valuer empty group",
+			expected: `{"level":"info","msg":"message","lv":{},"k":"v"}` + "\n",
+			kvs: []any{
+				"lv", testLogValue{slog.GroupValue()},
+				"k", "v",
+			},
+		},
 	}
 
 	for _, c := range cases {
